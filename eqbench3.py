@@ -82,7 +82,8 @@ def print_summary_box(run_key: str, local_runs_file: str, run_elo: bool, run_rub
             rubric_score_100_str = f"Error ({rubric_error[:20]}...)"
         elif isinstance(rubric_score_0_20, (int, float)):
             # Scale the 0-20 score to 0-100
-            rubric_score_0_100 = rubric_score_0_20 * 5.0
+            rubric_score_0_100 = rubric_score_0_20
+            # * 5.0
             rubric_score_100_str = f"{rubric_score_0_100:.2f}" # Format the 0-100 score
         else:
             # Handle cases where score might be "N/A" or other non-numeric string

@@ -4,3 +4,6 @@ backup
 *.log
 __pycache__/
 *.pyc
+venv/
+eqbench3_runs.json
+.DS_Store
