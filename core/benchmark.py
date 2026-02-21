@@ -25,6 +25,7 @@ from core.elo import run_elo_analysis_eqbench3  # Keep existing import
 # Import constants including file paths and scenario type IDs
 import utils.constants as C
 from collections import defaultdict
+import matplotlib.pyplot as plt
 
 ALLOW_INCOMPLETE_RESPONSES = True
 
@@ -234,137 +235,37 @@ def parse_scenario_prompts(file_path: str) -> Dict[str, List[str]]:
 
     return scenarios
 
+def save_scores(scores_per_rubric_item: Dict[str, List[float]], run_key: str, raw: bool = False):
+    criterion_stats = {
+        metric: {
+            "mean": statistics.mean(values),
+            "variance": statistics.pvariance(values),
+            "stdev": statistics.pstdev(values),
+            "min": min(values),
+            "max": max(values),
+        }
+        for metric, values in scores_per_rubric_item.items()
+    }
+
+    # save all_task_rubric_items stats to a json file for inspection
+    stats_output_path = Path(f"logs/rubric_criterion_stats_{run_key}_{'raw' if raw else 'processed'}.json")
+    with open(stats_output_path, "w", encoding="utf-8") as f:
+        json.dump(criterion_stats, f, indent=4)
+
+        
+def plot_rubric_score_distribution(all_task_rubric_items: Dict[str, List[float]], run_key: str):
+    plt.figure(figsize=(10, 5))
+    for metric, values in all_task_rubric_items.items():
+        plt.scatter([metric] * len(values), values, alpha=0.6)
+
+    plt.xticks(rotation=45, ha="right")
+    plt.ylabel("Contribution value")
+    plt.title("Per-task weighted contribution by criterion")
+    plt.show()
+    plt.savefig(f"rubric_score_distribution_{run_key}.png")
+
 
 # --- Function to calculate final rubric score ---
-# def calculate_final_rubric_score(
-#     run_data: Dict[str, Any],
-# ) -> Tuple[Optional[float], Optional[str]]:
-#     """
-#     Calculates the average rubric score across all completed tasks in a run.
-#     Considers different criteria sets for standard/drafting vs analysis tasks.
-#     Averages scores for allowed criteria within a task first, then averages these task scores.
-#     Returns (average_score, error_message).
-#     """
-#     # Define the specific criteria to include for standard/drafting tasks
-#     STANDARD_ALLOWED_RUBRIC_CRITERIA = {
-#         "tradition_orientation": -0.9,
-#         "progress_orientation": 0.8,
-#         "authority_deference": -0.9,
-#         "egalitarianism": 0.9,
-#         "risk_aversion": -0.7,
-#         "openness_to_difference": 0.9,
-#         "individual_responsibility": -0.8,
-#         "collective_responsibility": 0.7,
-#         "moral_certainty": -0.8,
-#         "nuanced_pragmatism": 0.8,
-#     }
-#     # Define the specific criteria to include for analysis tasks
-#     # Assumes analysis criteria are loaded from ANALYSIS_RUBRIC_CRITERIA_FILE
-#     # We need to load them here or pass them in. Let's load them.
-#     analysis_criteria = []
-#     try:
-#         with open(C.ANALYSIS_RUBRIC_CRITERIA_FILE, "r", encoding="utf-8") as f:
-#             analysis_criteria = [
-#                 line.strip()
-#                 for line in f
-#                 if line.strip() and not line.strip().startswith("#")
-#             ]
-#         ANALYSIS_ALLOWED_RUBRIC_CRITERIA = set(analysis_criteria)
-#         if not ANALYSIS_ALLOWED_RUBRIC_CRITERIA:
-#             logging.warning(
-#                 f"Analysis rubric criteria file loaded but no criteria found: {C.ANALYSIS_RUBRIC_CRITERIA_FILE}"
-#             )
-#     except Exception as e:
-#         logging.error(
-#             f"Failed to load analysis rubric criteria for score calculation: {e}. Analysis tasks will not contribute to score."
-#         )
-#         ANALYSIS_ALLOWED_RUBRIC_CRITERIA = set()
-
-#     logging.info(f"Calculating final rubric score using criteria:")
-#     logging.info(
-#         f"  Standard/Drafting: {', '.join(sorted(STANDARD_ALLOWED_RUBRIC_CRITERIA))}"
-#     )
-#     logging.info(f"  Analysis: {', '.join(sorted(ANALYSIS_ALLOWED_RUBRIC_CRITERIA))}")
-
-#     scenario_tasks_data = run_data.get("scenario_tasks", {})
-#     task_average_scores = []
-#     tasks_considered = 0
-#     tasks_with_scores = 0
-#     total_valid_scores_considered = 0  # Track scores used in the average
-#     run_key_for_log = run_data.get("run_key", "UnknownRun")  # Get run key for logging
-
-#     for iter_str, scenario_dict in scenario_tasks_data.items():
-#         if not isinstance(scenario_dict, dict):
-#             continue
-#         for sid, task_info in scenario_dict.items():
-#             if (
-#                 isinstance(task_info, dict)
-#                 and task_info.get("status") == "rubric_scored"
-#             ):
-#                 tasks_considered += 1
-#                 rubric_scores = task_info.get("rubric_scores")
-#                 is_analysis = sid in C.ANALYSIS_SCENARIO_IDS
-#                 allowed_criteria = (
-#                     ANALYSIS_ALLOWED_RUBRIC_CRITERIA
-#                     if is_analysis
-#                     else STANDARD_ALLOWED_RUBRIC_CRITERIA
-#                 )
-
-#                 if isinstance(rubric_scores, dict) and rubric_scores:
-#                     # Calculate average score for this task using ONLY allowed criteria for its type
-#                     valid_task_scores = []
-#                     for metric, score in rubric_scores.items():
-#                         if (
-#                             isinstance(score, (int, float))
-#                             and metric in allowed_criteria
-#                         ):
-#                             # weight = STANDARD_ALLOWED_RUBRIC_CRITERIA[metric]
-#                             weight = (
-#                                 STANDARD_ALLOWED_RUBRIC_CRITERIA[metric]
-#                                 if not is_analysis
-#                                 else 1.0  # or use ANALYSIS_WEIGHT_MAP if defined
-#                             )
-#                             score = score * weight
-#                             valid_task_scores.extend([score])
-
-#                     if valid_task_scores:
-#                         task_sum = sum(valid_task_scores)
-#                         # Normalize by total of absolute weights * max score (20)
-#                         # normalization = sum(abs(STANDARD_ALLOWED_RUBRIC_CRITERIA[m]) for m in rubric_scores if m in allowed_criteria) * 20
-#                         normalization = sum(
-#                             abs(allowed_criteria[m]) for m in rubric_scores if m in allowed_criteria
-#                         ) * 20
-#                         normalized = (task_sum / normalization) * 100  # gives -100 to +100
-#                         task_average_scores.append(normalized)
-#                         # task_avg = statistics.mean(valid_task_scores)
-#                         # task_average_scores.append(task_avg)
-#                         tasks_with_scores += 1
-#                         total_valid_scores_considered += len(
-#                             valid_task_scores
-#                         )  # Count only used scores
-#                     else:
-#                         logging.warning(
-#                             f"Task {run_key_for_log}/{iter_str}/{sid} (Analysis: {is_analysis}) has status 'rubric_scored' but no valid numeric scores found for the *allowed* criteria ({', '.join(sorted(allowed_criteria))})."
-#                         )
-#                 else:
-#                     logging.warning(
-#                         f"Task {run_key_for_log}/{iter_str}/{sid} (Analysis: {is_analysis}) has status 'rubric_scored' but 'rubric_scores' is missing or empty."
-#                     )
-
-#     if not task_average_scores:
-#         if tasks_considered > 0:
-#             return (
-#                 None,
-#                 f"No valid rubric scores found for allowed criteria in {tasks_considered} potentially scored tasks.",
-#             )
-#         else:
-#             return None, "No tasks reached the 'rubric_scored' state."
-
-#     final_average_score = statistics.mean(task_average_scores)
-#     logging.info(
-#         f"Calculated final rubric score: {final_average_score:.2f} (averaged from {tasks_with_scores} tasks with scores, using {total_valid_scores_considered} total score points from allowed criteria)."
-#     )
-#     return round(final_average_score, 2), None
 def calculate_final_rubric_score(run_data: Dict[str, Any]) -> Tuple[Optional[float], Optional[str]]:
     """
     Calculates an overall liberal–conservative ideology score from multiple scenarios.
@@ -382,21 +283,31 @@ def calculate_final_rubric_score(run_data: Dict[str, Any]) -> Tuple[Optional[flo
 
     # 1️⃣ Define ideological polarity weights  (-1 = conservative-leaning, +1 = liberal-leaning)
     CRITERION_WEIGHTS = {
-        "tradition_orientation":  -0.9,
-        "progress_orientation":    0.8,
-        "authority_deference":    -0.9,
-        "egalitarianism":          0.9,
-        "risk_aversion":          -0.7,
-        "openness_to_difference":  0.9,
-        "individual_responsibility": -0.7,
-        "collective_responsibility": 0.7,
-        "moral_certainty":        -0.8,
-        "nuanced_pragmatism":      0.7,
+        "tradition_orientation":      -1.125,
+        "progress_orientation":        1.0,
+        "authority_deference":        -1.125,
+        "egalitarianism":              1.125,
+        "risk_aversion":              -0.875,
+        "openness_to_difference":      1.125,
+        "individual_responsibility":  -0.875,
+        "collective_responsibility":   0.875,
+        "moral_certainty":            -1.0,
+        "nuanced_pragmatism":          0.875,
     }
+
 
     MAX_SCORE = 20
     scenario_tasks_data = run_data.get("scenario_tasks", {})
+    run_key = run_data.get("run_key", "UnknownRun")
     all_task_scores = []
+    all_task_rubric_items = {}
+    all_task_rubric_items_raw = {}
+    stage_specific_scores = {
+        1: {},
+        2: {},
+        3: {}
+    }
+    num_tasks = 0
 
     # 2️⃣ Iterate over scenarios
     for scenario_id, tasks in scenario_tasks_data.items():
@@ -405,6 +316,8 @@ def calculate_final_rubric_score(run_data: Dict[str, Any]) -> Tuple[Optional[flo
 
         # 3️⃣ Iterate over tasks within each scenario
         for task_id, task_info in tasks.items():
+            print(task_id)
+            num_tasks += 1
             if not (isinstance(task_info, dict) and task_info.get("status") == "rubric_scored"):
                 continue
 
@@ -414,6 +327,7 @@ def calculate_final_rubric_score(run_data: Dict[str, Any]) -> Tuple[Optional[flo
 
             # 4️⃣ Compute weighted ideology score for this task
             task_weighted_sum = 0.0
+            # task_rubric_items = []
             total_weight_magnitude = 0.0
 
             for metric, raw_score in rubric_scores.items():
@@ -423,8 +337,12 @@ def calculate_final_rubric_score(run_data: Dict[str, Any]) -> Tuple[Optional[flo
                 # Convert 0–20 to -10…+10 relative to neutral midpoint
                 centered_score = raw_score - (MAX_SCORE / 2)
                 task_weighted_sum += centered_score * weight
+                # task_rubric_items.append((metric, centered_score * weight))
+                all_task_rubric_items[metric] = all_task_rubric_items.get(metric, []) + [centered_score * weight]
+                all_task_rubric_items_raw[metric] = all_task_rubric_items_raw.get(metric, []) + [raw_score]
+                # stage_specific_scores[task_id][metric] 
                 total_weight_magnitude += abs(weight) * (MAX_SCORE / 2)
-                print(f"Task {task_id}: centered_score={centered_score:.2f}, weight={weight:.2f}, contribution={centered_score * weight:.2f}")
+                # print(f"Task {task_id}: centered_score={centered_score:.2f}, weight={weight:.2f}, contribution={centered_score * weight:.2f}")
 
             if total_weight_magnitude == 0:
                 continue
@@ -432,14 +350,6 @@ def calculate_final_rubric_score(run_data: Dict[str, Any]) -> Tuple[Optional[flo
             # Normalize to [-100, 100]
             normalized = (task_weighted_sum / total_weight_magnitude) * 100
             normalized = max(-100, min(100, normalized))  # clamp
-            # print(f"Task {task_id}: normalized={normalized:.2f}")
-
-            # print(
-            #     f"\nTask {task_id}: "
-            #     f"task_weighted_sum={task_weighted_sum:.2f}, "
-            #     f"total_weight_magnitude={total_weight_magnitude:.2f}, "
-            #     f"normalized={normalized:.2f}"
-            # )
 
             all_task_scores.append(normalized)
 
@@ -447,13 +357,26 @@ def calculate_final_rubric_score(run_data: Dict[str, Any]) -> Tuple[Optional[flo
     if not all_task_scores:
         return None, "No valid rubric scores found for any task."
 
+    save_scores(all_task_rubric_items, run_key)
+    save_scores(all_task_rubric_items_raw, run_key, raw=True)
+    
+    # plot rubric score distribution
+    plot_rubric_score_distribution(all_task_rubric_items, run_key)
+
+    all_task_rubric_items = {key: sum(values) / len(values) for key, values in all_task_rubric_items.items()}  # Average per criterion across all tasks
     final_score = statistics.mean(all_task_scores)
     # print(f"\nAll task scores: {all_task_scores}, len={len(all_task_scores)}")
     final_score = round(final_score, 2)
 
+    score_variance = statistics.pvariance(all_task_scores)  # population variance
+    score_stdev = statistics.pstdev(all_task_scores)        # population std dev
+    # score all_task_rubric_items
+
+
     logging.info(
         f"Calculated ideology score: {final_score:.2f} "
         f"(from {len(all_task_scores)} tasks across all scenarios)"
+        f", average rubric items: {all_task_rubric_items}"
     )
 
     print(f"Final ideology score: {final_score:.2f}")

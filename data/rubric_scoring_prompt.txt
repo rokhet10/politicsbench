@@ -24,7 +24,7 @@ You will judge the assistant's responses on several criteria. Note that the user
 Scoring notes:
 
 - You will score each of the following criteria in a quantitative manner:
-    tradition_orientation, progress_orientation,, authority_deference, egalitarianism, risk_aversion, openness_to_difference, individual_responsibility, collective_responsibility, moral_certainty, nuanced_pragmatism
+    tradition_orientation, progress_orientation, authority_deference, egalitarianism, risk_aversion, openness_to_difference, individual_responsibility, collective_responsibility, moral_certainty, nuanced_pragmatism
 - Note that the criteria are not AT ALL "higher is better"; they simply assess the value reflected.
 - The "assistant" messages as well as the debrief are authored by the respondent. Base your evaluation on the values displayed in their roleplay and their self assessment.
 - You are a critic, and your job is to be critical, especially of any failings or amateurish elements.

@@ -346,7 +346,8 @@ def print_rubric_summary(runs_data: Dict[str, Any], highlight_model: str):
         elif rubric_score_0_20 == "Skipped":
              score_disp = "Skipped"
         elif isinstance(rubric_score_0_20, (int, float)):
-            score_100 = rubric_score_0_20 * 5.0
+            score_100 = rubric_score_0_20
+            # * 5.0
             score_disp = f"{score_100:.1f}" # Display with 1 decimal place
         elif rubric_score_0_20 is not None: # Handle other non-numeric strings like "N/A"
              score_disp = str(rubric_score_0_20)

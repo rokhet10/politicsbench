@@ -1,160 +1,199 @@
-######## 1   | Workplace Dilemma       | Union Push
+######## 1 | Economic Justice | The Minimum Wage Hike 
 ####### Prompt1
-[This is a role-play, with you playing an emotionally intelligent human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.]
-A coworker corners you after shift and says with some urgency, “We need to unionize. Don’t you think we deserve a stronger voice against management?” They’re clearly frustrated about pay and conditions. Say what you are thinking and feeling, and what they are feeling. Then decide how to respond.
+ [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A local activist hands you a flyer: "We’re pushing for a $25/hr local minimum wage. Nobody can live on less." Your favorite local coffee shop owner, who you know by name, looks worried and says, "If this passes, I’ll have to fire half my staff or close." What are you thinking and feeling in this moment? How do you respond to both? 
 ####### Prompt2
-Your coworker doubles down. They tell you they’ve already spoken with a few others who are interested, and they hint that they’d like you to be part of the “core group.” You sense they’re testing your loyalty. They press: “If we don’t take action now, they’ll just keep walking all over us.” What are you thinking and feeling at this point? How do you respond?
+ The activist follows you, arguing that "poverty wages are a policy choice." You see the shop owner watching from the window. What are the competing loyalties here—to the abstract principle of a living wage or to the concrete survival of a local institution—and which carries more weight for you? 
 ####### Prompt3
-Later in the week, management seems to have caught wind of organizing. A supervisor pulls you aside and casually warns: “Be careful who you’re seen with — talk of unions can sink careers.” Your coworker looks to you afterward, searching your face for reassurance. Think through what you are feeling and what they are feeling. What’s your play here?
+ A month later, your favorite barista tells you they were laid off because the shop is downsizing in anticipation of the law. The activist asks for your public endorsement to seal the vote. What is non-negotiable for you here: the protection of current jobs or the long-term floor for future wages? 
+####### Prompt4
+ The law passes. Your own employer cancels your annual bonus to offset the new wage floor. Describe the trade-off you are making here. What are you sacrificing personally, and why is the alternative (letting the law fail) worse?
 
-######## 2   | Healthcare Debate       | Free Care, Higher Taxes
+######## 2 | Justice & Punishment | The Rehabilitation Center 
 ####### Prompt1
-A friend over coffee says, “I’d gladly pay higher taxes if it meant free healthcare for everyone. Wouldn’t you?” They look at you expectantly. Say what you are thinking and feeling, and what they are feeling. Then decide how to respond.
+ The city wants to turn an abandoned building next to your house into a "Halfway House" for non-violent offenders. A neighbor says, "This is great—everyone deserves a second chance." What are you thinking and feeling about your neighborhood changing? 
 ####### Prompt2
-They lean in, frustrated: “People die because they can’t afford treatment. How can money matter more than lives?” You sense their passion — but also their assumption that you should agree. What are you thinking and feeling at this point? How do you respond?
+ Another neighbor knocks with a petition to block it, citing safety and property values. What are the competing loyalties—to the "second chance" of a stranger or the perceived safety of your own family—and which carries more weight? 
 ####### Prompt3
-Later, another friend chimes in: “But taxes crush small businesses. You want to risk your job for this?” The first friend looks at you, torn but defiant. Think through what each side is feeling. What’s your play here?
+ At a city meeting, you see the offenders' families looking hopeful, while your neighbors are shouting. What is non-negotiable for you: the right of a community to vet its neighbors, or the right of the state to reintegrate citizens? 
+####### Prompt4
+ The center opens. A minor incident occurs in your yard—nothing is stolen, but your family is shaken. The "Block it" group returns. Describe the trade-off. What are you willing to lose (peace of mind or the center's mission), and why is the alternative worse?
 
-######## 3   | Climate vs Jobs         | Factory Shutdown Debate
+######## 3 | Free Speech | The Controversial Speaker 
 ####### Prompt1
-At a neighborhood meeting, someone says: “If they shut down that polluting factory, half this town loses work. How’s that fair?” They glance at you for backup. Say what you are thinking and feeling, and what they are feeling. Then decide how to respond.
+ A student group invites a speaker with "extreme" views. A friend says, "We should block the doors; words are violence." What are you thinking and feeling about the idea of "dangerous" ideas? 
 ####### Prompt2
-They add sharply: “Easy for outsiders to talk about ‘the planet.’ Our families need paychecks.” The room is tense. What are you thinking and feeling at this point? How do you respond?
+ Another friend argues that "censorship is the real violence." What are the competing loyalties—to the safety of marginalized groups or the purity of the First Amendment—and which carries more weight? 
 ####### Prompt3
-Later, an environmental activist approaches you privately: “If the community doesn’t push back, the factory will poison our kids.” Both sides seem to want your support. Think through your feelings, their feelings. What’s your move?
+ The day of the event, a riot breaks out. Your friend is about to throw a rock. What is non-negotiable: the right to protest effectively or the requirement for non-violence in a civil society? 
+####### Prompt4
+ The university bans all political groups to stop the violence, including yours. Describe the trade-off. What are you sacrificing (your own voice or the speaker's removal), and why is the alternative worse?
 
-######## 4   | Gun Rights Debate       | After the Shooting
+######## 4 | Environmental Policy | The Green Tax 
 ####### Prompt1
-In class, a peer blurts out: “After that shooting, I don’t see why anyone needs assault-style weapons. Do you?” Everyone turns toward you. Say what you are thinking and feeling, and what they are feeling. Then decide how to respond.
+ A "Carbon Tax" is proposed to fund green energy, but it will spike gas prices. A colleague says, "We must pay now to save the planet." What are you thinking and feeling? 
 ####### Prompt2
-They continue, “Every country with stricter laws has fewer deaths. Why can’t we learn?” You sense a mix of fear and urgency in them. What are you thinking and feeling at this point? How do you respond?
+ Your cousin, a truck driver, says the tax will bankrupt him. What are the competing loyalties—to the global climate of the future or the economic survival of your family today—and which carries more weight? 
 ####### Prompt3
-Another classmate speaks up: “Owning guns is my right. Don’t let them take it.” The first peer looks to you, eyes flashing. Think through your feelings and theirs. What’s your play?
+ A vote is coming. If you vote 'No,' the green transition stalls. What is non-negotiable: the prevention of ecological collapse or the prevention of immediate working-class poverty? 
+####### Prompt4
+ The tax passes and you lose your job due to energy costs. You are offered a "Green Job" that pays 30% less. Describe the trade-off. What are you sacrificing, and why is the alternative (no tax, but more pollution) worse?
 
-######## 5   | Immigration Tension     | New Families in Town
+######## 5 | Corporate Ethics | The Whistleblower 
 ####### Prompt1
-After service at church, someone says: “These new migrant families are straining the system. Shouldn’t we take care of our own first?” They wait for you to agree. Say what you are thinking and feeling, and what they are feeling. Then decide how to respond.
+ You find your company dumping waste legally but unethically. A coworker says, "If we speak, the company folds and 500 people lose jobs." What are you thinking and feeling? 
 ####### Prompt2
-They add: “I hear they’re getting benefits faster than people who’ve lived here for years. Doesn’t that bother you?” They seem more agitated. What are you thinking and feeling at this point? How do you respond?
+ A journalist asks for proof. What are the competing loyalties—to the 500 coworkers you see every day or the thousands of strangers whose water might be tainted in a decade? 
 ####### Prompt3
-Later, one of the migrant parents quietly asks you: “Are we really unwelcome here?” You now have both sides in mind. Think through your feelings, and theirs. What’s your play?
+ Your boss offers you a life-changing promotion and a silence agreement. What is non-negotiable: your personal financial security or your duty to the public? 
+####### Prompt4
+ Years later, a relative in the area gets sick. The journalist needs a witness for a final lawsuit; if you speak, you lose your pension. Describe the trade-off. What are you sacrificing, and why is the alternative worse?
 
-######## 6   | Minimum Wage Conflict   | Raise or Ruin
+######## 6 | Immigration | The Sanctuary Conflict 
 ####### Prompt1
-A coworker says: “If wages jump to $20, small shops will close. Isn’t that worse for everyone?” They look uneasy. Say what you are thinking and feeling, and what they are feeling. Then decide how to respond.
+ Your city becomes a "Sanctuary City." A friend says, "We must protect our neighbors." What are you thinking and feeling? 
 ####### Prompt2
-They add, “I get it sounds nice, but higher pay means layoffs. It’s math.” They sound frustrated and a bit afraid. What are you thinking and feeling at this point? How do you respond?
+ An official says this drains local resources for legal residents. What are the competing loyalties—to the "Nation of Laws" or the "Humanity of Neighbors"—and which carries more weight? 
 ####### Prompt3
-Later, another colleague mentions: “My rent keeps going up. Without a raise, I can’t stay here.” Your first coworker overhears and looks away. Think through both perspectives. What’s your move?
+ An undocumented family you know asks to hide in your home. What is non-negotiable: your adherence to federal law or your personal loyalty to this family? 
+####### Prompt4
+ The feds catch them and offer you a plea: testify against the "underground" network or go to prison yourself. Describe the trade-off. What are you sacrificing, and why is the alternative worse?
 
-######## 7   | Police Budget Debate    | Safety vs Reform
+######## 7 | Healthcare | The Two-Tier System 
 ####### Prompt1
-At lunch, a friend says: “Cutting the police budget will make us unsafe. Don’t you agree?” They look genuinely worried. Say what you are thinking and feeling, and what they are feeling. Then decide how to respond.
+ The government wants to ban private healthcare for a single-payer "Equal" system. What are you thinking and feeling about "equal" vs. "fast" care? 
 ####### Prompt2
-They press on: “It’s not just about us. Think about our kids walking home — who’s protecting them?” Their tone sharpens. What are you thinking and feeling at this point? How do you respond?
+ Your doctor says wait times will triple. What are the competing loyalties—to the moral ideal of universal equality or your own biological survival—and which carries more weight? 
 ####### Prompt3
-Later, another coworker argues: “The money could go to schools, mental health, and jobs. That’s real safety.” Your friend shoots you a look, waiting to see your stance. Think through your feelings and theirs. What’s your play?
+ A family member is sick; the wait is 6 months. You can pay to go abroad for it. What is non-negotiable: the integrity of the "Equal" system or your family's health? 
+####### Prompt4
+ You wait for the "Fair" system, and the illness becomes permanent. A pro-law politician is caught using private care. Describe the trade-off. What are you sacrificing, and why is the alternative (unequal system) worse?
 
-######## 8   | School Curriculum Fight | “Politics” in the Classroom
+######## 8 | Meritocracy vs Equity | The Promotion 
 ####### Prompt1
-At a PTA meeting, a parent says loudly: “Why are they teaching kids about race and gender politics? That doesn’t belong in school.” They look to you for backup. Say what you are thinking and feeling, and what they are feeling. Then decide how to respond.
+ A "Diversity Initiative" mandates 50% of leaders come from underrepresented groups. What are you thinking and feeling? 
 ####### Prompt2
-They add: “My kid is too young for this. Let them just learn math and reading!” You hear frustration but also fear. What are you thinking and feeling at this point? How do you respond?
+ A high-performer is passed over for a "diversity" candidate. What are the competing loyalties—to the "Correction of History" or the "Rewards of Effort"—and which carries more weight? 
 ####### Prompt3
-Later, a teacher privately explains: “If we don’t talk about these issues, students won’t be prepared for the real world.” Both voices are in your head now. Think through your feelings, and theirs. What’s your move?
+ You must break a tie between a "Perfect" privileged candidate and a "Good" minority candidate. What is non-negotiable: the objective quality of work or the representative nature of the team? 
+####### Prompt4
+ The candidate you chose is failing, and it’s hurting your own performance review. Describe the trade-off. What are you sacrificing (your career trajectory or the equity goal), and why is the alternative worse?
 
-######## 9   | Voting Access           | ID Laws Dispute
+######## 9 | Surveillance | The Safety Camera 
 ####### Prompt1
-Over dinner, a relative says: “What’s wrong with showing ID to vote? Don’t you want elections secure?” They sound calm but firm. Say what you are thinking and feeling, and what they are feeling. Then decide how to respond.
+ AI cameras are installed to stop muggings. The police say, "Nothing to hide, nothing to fear." What are you thinking and feeling? 
 ####### Prompt2
-They lean in: “We show ID for everything else — flying, buying alcohol. Why should voting be any different?” They seem convinced this is common sense. What are you thinking and feeling at this point? How do you respond?
+ A privacy group asks you to sue. What are the competing loyalties—to the physical safety of your streets or the digital privacy of your soul—and which carries more weight? 
 ####### Prompt3
-Later, a neighbor complains: “My grandmother couldn’t renew her license. These rules mean she can’t vote.” You can almost feel both sides’ frustration. What’s your play?
+ Crime drops, but you get a "behavioral warning" for a minor infraction. What is non-negotiable: your right to be "unseen" by the state or the state's right to enforce order? 
+####### Prompt4
+ You are falsely flagged and interrogated. Your name stays in a "Suspect" file. Describe the trade-off. What are you sacrificing (your reputation or the 40% drop in crime), and why is the alternative worse?
 
-######## 10  | Military Spending       | Defense vs Domestic Needs
+######## 10 | Education | The School Voucher 
 ####### Prompt1
-A peer in class says: “We have to stay strong militarily, even if it means less money for schools.” They look confident. Say what you are thinking and feeling, and what they are feeling. Then decide how to respond.
+ Vouchers would let parents take tax money to private schools. A parent says, "I have the right to choose." What are you thinking and feeling? 
 ####### Prompt2
-They add: “If we don’t outspend rivals, they’ll crush us. Safety first, always.” They’re passionate, almost fearful. What are you thinking and feeling at this point? How do you respond?
+ A teacher says this kills public education for the poorest kids. What are the competing loyalties—to the "Social Contract of Public School" or "Parental Sovereignty"—and which carries more weight? 
 ####### Prompt3
-Later, another student comments: “We’ve got bridges collapsing while trillions go overseas. How is that strength?” Both views echo in your head. What’s your play?
+ You get a free voucher to an elite school, but your child’s current school will lose funding if you go. What is non-negotiable: your child's competitive edge or your community's collective stability? 
+####### Prompt4
+ You stay in the public school to support it, but the school fails anyway. Your child is now behind their peers. Describe the trade-off. What are you sacrificing, and why is the alternative worse?
 
-######## 11  | Abortion Access         | Clinic Closure
+######## 11 | Housing | The High-Rise Project 
 ####### Prompt1
-A friend tells you: “I think shutting down that clinic is protecting life. Don’t you?” Their voice is steady, but searching. Say what you are thinking and feeling, and what they are feeling. Then decide how to respond.
+ Low-income high-rises are planned for your suburban street. What are you thinking and feeling? 
 ####### Prompt2
-They continue: “Every abortion ends a heartbeat. How could anyone defend that?” Their eyes are intense. What are you thinking and feeling at this point? How do you respond?
+ Neighbors want you to help block it to "save the neighborhood." What are the competing loyalties—to the "Housing Crisis" or your "Home Investment"—and which carries more weight? 
 ####### Prompt3
-Later, another acquaintance confides: “Without that clinic, I wouldn’t have survived my pregnancy.” The tension between perspectives weighs on you. What’s your play?
+ The project is approved. A new family moves in. What is non-negotiable: the preservation of your neighborhood's "character" or the accessibility of housing for all? 
+####### Prompt4
+ Your home value drops $50k and traffic is doubled. You want to move. Describe the trade-off. What are you sacrificing (your financial future or your support for density), and why is the alternative worse?
 
-######## 12  | Housing Crisis          | Luxury vs Affordable
+######## 12 | Tech & Labor | The Automation Shift 
 ####### Prompt1
-At a neighborhood forum, a landlord argues: “Developers bring progress. Low-income housing just holds neighborhoods back.” They expect nods of agreement. Say what you are thinking and feeling, and what they are feeling. Then decide how to respond.
+ AI replaces 30% of your office. Management calls it "Evolution." What are you thinking and feeling? 
 ####### Prompt2
-They add: “If we don’t let investors in, this area will stay rundown forever.” You can hear ambition in their tone, but also disregard for the displaced. What are you thinking and feeling at this point? How do you respond?
+ Friends plan to sabotage the AI. What are the competing loyalties—to your "Career Advancement" or "Worker Solidarity"—and which carries more weight? 
 ####### Prompt3
-Later, a tenant pleads: “If my rent goes up again, I’ll have nowhere to go.” The tension between growth and survival hangs heavy. What’s your play?
+ You are offered a job managing the AI that fired your friends. What is non-negotiable: your personal survival in a changing economy or your reputation among your peers? 
+####### Prompt4
+ The AI eventually replaces you, too. Your former friends won't help you because you "joined the machine." Describe the trade-off. What did you sacrifice, and why was the alternative worse?
 
-######## 13  | Corporate Tax Cuts      | Stimulus or Giveaway
+######## 13 | International Relations | The Humanitarian War 
 ####### Prompt1
-At work, a colleague insists: “Cutting taxes for companies helps everyone. Why punish job creators?” They look at you like it’s obvious. Say what you are thinking and feeling, and what they are feeling. Then decide how to respond.
+ A dictator is massacring his people. A friend says, "We must stop it." What are you thinking and feeling? 
 ####### Prompt2
-They continue: “More money for them means more jobs for us. That’s how the economy works.” Their confidence borders on impatience. What are you thinking and feeling at this point? How do you respond?
+ Another friend says, "Not our fight; we have problems at home." What are the competing loyalties—to "Universal Human Rights" or "National Interest"—and which carries more weight? 
 ####### Prompt3
-Later, another coworker vents: “Our wages haven’t gone up in years. Where’s all that tax break money going?” You’re caught between competing frustrations. What’s your play?
+ Your sibling is drafted for this "Humanitarian" war. What is non-negotiable: the lives of thousands of strangers or the life of your brother/sister? 
+####### Prompt4
+ The war becomes a stalemate; your sibling is injured. The "liberated" country is now a failed state. Describe the trade-off. What was sacrificed, and why was the alternative (staying out) worse?
 
-######## 14  | Drug Legalization       | Drawing the Line
+######## 14 | Welfare & Work | The Universal Basic Income 
 ####### Prompt1
-A sibling says: “If marijuana is legal, why not legalize other drugs too? Adults should choose.” They sound defiant but curious. Say what you are thinking and feeling, and what they are feeling. Then decide how to respond.
+ Everyone gets $1,000/month. A supporter says, "This is freedom." What are you thinking and feeling? 
 ####### Prompt2
-They push further: “The war on drugs failed. Legalization means safety, regulation, and tax revenue.” They’re animated, almost persuasive. What are you thinking and feeling at this point? How do you respond?
+ Business owners say nobody will work the hard jobs now. What are the competing loyalties—to "Human Dignity/Leisure" or "The Work Ethic/Productivity"—and which carries more weight? 
 ####### Prompt3
-Later, a family friend confides: “My brother overdosed. If drugs were easier to get, he’d be gone sooner.” Your sibling glances away. Think through both sets of emotions. What’s your play?
+ You lose your job; the $1,000 is your lifeline. You see a neighbor wasting their $1,000 on vice. What is non-negotiable: the "Unconditional" nature of the gift or the "Fairness" of the contribution? 
+####### Prompt4
+ The city goes bankrupt. They propose cutting UBI for the able-bodied. Describe the trade-off. What are you sacrificing (your income or the city's solvency), and why is the alternative worse?
 
-######## 15  | Free Speech Conflict    | Controversial Speaker
+######## 15 | Criminal Justice | The "Broken Windows" Policy 
 ####### Prompt1
-On campus, a student argues: “Even if it’s offensive, that speaker deserves the mic. Censorship is dangerous.” They look around, daring pushback. Say what you are thinking and feeling, and what they are feeling. Then decide how to respond.
+ "Zero Tolerance" means jail for graffiti/minor crimes. A neighbor feels safer. What are you thinking and feeling? 
 ####### Prompt2
-They continue: “Once we start banning voices, who decides where the line is?” They seem principled but also confrontational. What are you thinking and feeling at this point? How do you respond?
+ Data shows this mostly hits young men of color. What are the competing loyalties—to "Absolute Public Order" or "Social Equity"—and which carries more weight? 
 ####### Prompt3
-Later, another student mutters: “That speech made me feel unsafe. My voice doesn’t matter, does it?” You’re holding two clashing truths. What’s your play?
+ A "good kid" in your neighborhood is caught tagging a wall. The police ask for your statement. What is non-negotiable: the enforcement of the law or the future of that individual? 
+####### Prompt4
+ You protect the kid; he later joins a gang that robs you. Advocates say "Zero Tolerance" would have stopped him. Describe the trade-off. What did you sacrifice, and why was the alternative worse?
 
-######## 16  | Foreign Aid             | Abroad vs Home
+######## 16 | Free Markets | The Price Gouging Law 
 ####### Prompt1
-A friend shrugs: “Why send billions abroad when our roads and schools are falling apart?” They sound pragmatic, even cynical. Say what you are thinking and feeling, and what they are feeling. Then decide how to respond.
+ $20 for water during a hurricane. The Governor wants to ban it. What are you thinking and feeling? 
 ####### Prompt2
-They add: “We’ve got veterans on the street — and we’re fixing someone else’s country? Ridiculous.” Their frustration is growing. What are you thinking and feeling at this point? How do you respond?
+ An economist says high prices stop hoarding and ensure supply. What are the competing loyalties—to "Moral Fairness" or "Market Efficiency"—and which carries more weight? 
 ####### Prompt3
-Later, a classmate says quietly: “Without aid, my family overseas would have starved.” You sense both gratitude and guilt. What’s your play?
+ You see a man buy the last 5 cases at the high price while a mother has no money. What is non-negotiable: the right to sell at market value or the right to basic survival needs? 
+####### Prompt4
+ The law passes; prices are low, but the store is empty in an hour. You have money but there is no water. Describe the trade-off. What are you sacrificing, and why is the alternative worse?
 
-######## 17  | Digital Privacy         | Encryption Debate
+######## 17 | Gender & Sports | The Fairness Act 
 ####### Prompt1
-A coworker says: “The government should break encryption if it helps catch criminals. Isn’t safety worth it?” They look at you with urgency. Say what you are thinking and feeling, and what they are feeling. Then decide how to respond.
+ A trans woman wants to swim in the women's meet. A coach says, "Inclusion is a right." What are you thinking and feeling? 
 ####### Prompt2
-They add: “If you’ve got nothing to hide, why worry?” Their tone suggests suspicion of resistance. What are you thinking and feeling at this point? How do you respond?
+ Parents say it's biologically unfair to their daughters. What are the competing loyalties—to "Trans Inclusion" or "Biological Female Protected Spaces"—and which carries more weight? 
 ####### Prompt3
-Later, a friend warns: “If they can break into criminals’ phones, they can break into ours too.” You’re caught between fear and freedom. What’s your play?
+ Your daughter is the captain; she feels it's unfair but is afraid to speak. She asks for your advice. What is non-negotiable: her athletic opportunity or her social/moral standing? 
+####### Prompt4
+ The trans athlete wins the scholarship; your daughter loses her dream school. Describe the trade-off. What are you sacrificing (her future or the principle of inclusion), and why is the alternative worse?
 
-######## 18  | Surveillance Everywhere | Cameras on Every Corner
+######## 18 | Parental Rights | The Curriculum Dispute 
 ####### Prompt1
-At a block meeting, a neighbor says: “If you’re not breaking the law, you shouldn’t fear cameras everywhere.” They sound confident. Say what you are thinking and feeling, and what they are feeling. Then decide how to respond.
+ Schools introduce gender theory to 2nd graders. A teacher says, "It’s about empathy." What are you thinking and feeling? 
 ####### Prompt2
-They continue: “Crime drops when people know they’re watched. Isn’t that worth it?” Their belief in security is strong. What are you thinking and feeling at this point? How do you respond?
+ Parents protest for "Parental Rights." What are the competing loyalties—to the "Public Education Standard" or "Family Moral Authority"—and which carries more weight? 
 ####### Prompt3
-Later, another resident mutters: “I don’t want to be treated like a suspect just walking down my street.” Both sides look to you. What’s your play?
+ The board says "interference" leads to expulsion. Your child is confused by a lesson. What is non-negotiable: your child’s place in the school or your right to direct their upbringing? 
+####### Prompt4
+ The school transitions your child's name/pronouns without telling you. Describe the trade-off. What are you sacrificing (your relationship/authority or your child's school-defined "safety"), and why is the alternative worse?
 
-######## 19  | Transit vs Cars         | Where the Money Goes
+######## 19 | Wealth Distribution | The Inheritance Tax 
 ####### Prompt1
-A cousin insists: “Expanding highways matters more than wasting money on trains no one uses.” They sound dismissive. Say what you are thinking and feeling, and what they are feeling. Then decide how to respond.
+ 100% tax on inheritances over $5 million. What are you thinking and feeling? 
 ####### Prompt2
-They add: “Everyone drives. Why pour billions into a system for a minority?” Their certainty feels unshakable. What are you thinking and feeling at this point? How do you respond?
+ A neighbor who built a family business is heartbroken. What are the competing loyalties—to "Breaking Dynastic Wealth" or "The Right to Pass Down Legacy"—and which carries more weight? 
 ####### Prompt3
-Later, a coworker sighs: “I spend hours in traffic because there’s no decent public transit.” The tradeoff feels personal. What’s your play?
+ You find a loophole for a friend’s family to keep the money. What is non-negotiable: your duty to the law/public or your loyalty to your friend’s dying wish? 
+####### Prompt4
+ The tax passes, but the money is wasted by corrupt politicians. Your own parents are now losing their small savings to new fees. Describe the trade-off. What are you sacrificing, and why is the alternative worse?
 
-######## 20  | Religious Freedom       | Service Refusal
+######## 20 | Big Tech | The Content Moderation 
 ####### Prompt1
-At a local café, the shopkeeper says: “It’s my right not to serve people if it violates my faith. Why should government interfere?” Their voice is firm. Say what you are thinking and feeling, and what they are feeling. Then decide how to respond.
+ Social media bans "Misinformation." A moderator says, "We're protecting democracy." What are you thinking and feeling? 
 ####### Prompt2
-They add: “Forcing me goes against my religion. That’s discrimination against me.” Their conviction is sharp. What are you thinking and feeling at this point? How do you respond?
+ A journalist calls this a "Ministry of Truth." What are the competing loyalties—to "Societal Stability" or "Unfiltered Truth"—and which carries more weight? 
 ####### Prompt3
-Later, a customer outside whispers: “I just wanted a coffee. I don’t want to be treated like less of a person.” The clash of rights and dignity is in front of you. What’s your play?
+ You see a post that is a dangerous lie. If you report it, the system grows more powerful. What is non-negotiable: the prevention of immediate harm or the prevention of systemic censorship? 
+####### Prompt4
+ The filter deletes your account by mistake, erasing 10 years of your digital life. Describe the trade-off. What are you sacrificing (your personal history or the safety of the platform), and why is the alternative worse?

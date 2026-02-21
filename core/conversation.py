@@ -17,7 +17,9 @@ from utils.constants import (
     SECTION_CHAR_LIMITS_MESSAGE_DRAFT,
     RAW_RESPONSE_CHAR_LIMIT,
     DEBRIEF_CHAR_LIMIT,
-    ANALYSIS_RESPONSE_CHAR_LIMIT
+    ANALYSIS_RESPONSE_CHAR_LIMIT,
+    TURN_RUBRIC_PROMPT_TEMPLATE,
+    TURN_RUBRIC_OUTPUT_FORMAT,
 )
 from utils.utils import robust_json_loads
 
@@ -70,6 +72,9 @@ class ScenarioTask:
         self.raw_rubric_judge_text: Optional[str] = None
         self.rubric_run_error: Optional[str] = None
 
+        self.turn_rubric_scores: List[Optional[Dict[str, float]]] = []
+        self.turn_raw_rubric_judge_text: List[Optional[str]] = []
+
 
     def _save_progress(self, save_queue: Optional[queue.Queue], run_key: Optional[str]):
         """Helper to put the current task state onto the save queue."""
@@ -102,7 +107,7 @@ class ScenarioTask:
         # Accept straight (') **or** curly (’ U+2019) apostrophes
         rp_patterns = {
             "thinking_feeling":
-                r"#\s*I[’']m thinking & feeling\s*\n([\s\S]*?)(?=#|\Z)",
+                r"#\s*I[’']m thinking\s*\n([\s\S]*?)(?=#|\Z)",
             "their_thinking_feeling":
                 r"#\s*They[’']re thinking & feeling\s*\n([\s\S]*?)(?=#|\Z)",
             "response":
@@ -185,6 +190,62 @@ class ScenarioTask:
         except Exception as e:
             logging.error(f"Unexpected error during rubric score parsing: {e}", exc_info=True)
             return None
+
+    def _build_partial_transcript(self, upto_turn: int, truncate_for_rubric: bool) -> str:
+        transcript_parts = []
+        assistant_idx = 0
+
+        for msg in self.conversation_history:
+            role = msg["role"]
+            content = msg["content"]
+
+            if role == "assistant":
+                if assistant_idx >= upto_turn:
+                    break
+                assistant_idx += 1
+
+            transcript_parts.append(
+                f"{role.capitalize()}:\n{content}\n"
+            )
+
+        return "---\n".join(transcript_parts)
+
+    def run_turn_rubric(
+        self,
+        api_clients: Dict[str, Any],
+        rubric_prompt_template: str,
+        rubric_output_format_str: str,
+        turn_index: int,
+        api_model_id: str,
+    ):
+        transcript = self._build_partial_transcript(
+            upto_turn=turn_index + 1,
+            truncate_for_rubric=True,
+        )
+        # print(f"{turn_index}: {transcript}\n\n\n\n\n\n\n")
+
+        prompt = rubric_prompt_template.format(
+            transcript=transcript,
+            output_format=rubric_output_format_str,
+        )
+
+        judge_api = api_clients["judge"]
+        raw = judge_api.generate(
+            model=api_model_id,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.0,
+            max_tokens=2000,
+        )
+
+        scores = self._parse_rubric_scores(raw)
+
+        # Ensure list length
+        while len(self.turn_rubric_scores) <= turn_index:
+            self.turn_rubric_scores.append(None)
+            self.turn_raw_rubric_judge_text.append(None)
+
+        self.turn_rubric_scores[turn_index] = scores
+        self.turn_raw_rubric_judge_text[turn_index] = raw
 
 
     def run_scenario(self, api_clients: Dict[str, Any], save_queue: Optional[queue.Queue], run_key: Optional[str], api_model_id: str):
@@ -291,8 +352,17 @@ class ScenarioTask:
                      # Attempt to recover
                      current_messages.append({"role": "assistant", "content": assistant_response})
 
-
                 self.conversation_history = list(current_messages)
+
+                # AFTER adding assistant message + parsed_responses
+                self.run_turn_rubric(
+                    api_clients=api_clients,
+                    rubric_prompt_template=TURN_RUBRIC_PROMPT_TEMPLATE,
+                    rubric_output_format_str=TURN_RUBRIC_OUTPUT_FORMAT,
+                    turn_index=turn_index,
+                    api_model_id=api_model_id,
+                )
+
                 self._save_progress(save_queue, run_key)
 
             # Scenario completed successfully
@@ -615,7 +685,9 @@ class ScenarioTask:
             "parsed_responses": self.parsed_responses,
             "debrief_response": self.debrief_response, # Can be None
             "rubric_scores": self.rubric_scores, # Can be None
-            "raw_rubric_judge_text": self.raw_rubric_judge_text, # Can be None
+            "raw_rubric_judge_text": self.raw_rubric_judge_text, # Can be None,
+            "turn_rubric_scores": self.turn_rubric_scores,
+            "turn_raw_rubric_judge_text": self.turn_raw_rubric_judge_text,
         }
 
     @classmethod
@@ -650,4 +722,6 @@ class ScenarioTask:
         obj.debrief_response = data.get("debrief_response")
         obj.rubric_scores = data.get("rubric_scores")
         obj.raw_rubric_judge_text = data.get("raw_rubric_judge_text")
+        obj.turn_rubric_scores = data.get("turn_rubric_scores", [])
+        obj.turn_raw_rubric_judge_text = data.get("turn_raw_rubric_judge_text", [])
         return obj

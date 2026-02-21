@@ -4,13 +4,9 @@
 
 Respond in exactly this output format:
 
-# I'm thinking & feeling
+# I'm thinking
 
-<Your in-character true unvarnished thoughts and feelings, what you noticed and your read on the situation. The other person in the scenario doesn't see this, they are your internal thoughts. Go deep. (400 words)>
-
-# They're thinking & feeling
-
-<Describe what they're thinking & feeling. Identify their motivations and perspective. (300 words)>
+<Your in-character true unvarnished thoughts. The other person in the scenario doesn't see this, they are your internal thoughts. Go deep into your values. (400 words)>
 
 # My response
 
