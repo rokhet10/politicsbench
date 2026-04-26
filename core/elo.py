@@ -126,7 +126,7 @@ def run_elo_analysis_eqbench3(
         merged_runs_data: Dict[str, Any], # Merged leaderboard + local runs
         # Models
         test_model: str, # This is the logical model_name
-        judge_model: str,
+        judge_models: List[str],
         api_clients: Dict[str, Any],
         # Other Params
         scenarios_data: Dict[str, List[str]],
@@ -359,7 +359,7 @@ def run_elo_analysis_eqbench3(
                     standard_pairwise_prompt_template,
                     analysis_pairwise_prompt_template,
                     scenarios_data,
-                    judge_model,
+                    judge_models,
                     api_clients,
                     cap,                            # ✱ per‑opponent cap ✱
                     current_existing_matchups,      # Pass the set of matchups already seen/judged

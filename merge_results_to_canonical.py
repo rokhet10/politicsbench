@@ -606,7 +606,9 @@ def _recalculate_elo_ratings(elo_data: Dict[str, Any]) -> bool:
         # --- make sure every record has fraction_for_test etc. -------------
         changed = 0
         for comp in all_comparisons:
-            if "error" not in comp and "judge_response" in comp:
+            if "error" not in comp and (
+                "judge_response" in comp or "judge_responses" in comp
+            ):
                 before = comp.get("fraction_for_test")
                 _recompute_comparison_stats(comp)      # adds / refreshes fields
                 if comp.get("fraction_for_test") != before:
@@ -833,7 +835,9 @@ def _refresh_comparison_fields(comps: List[Dict[str, Any]]) -> None:
     """Populate margin / fraction fields so every record is usable."""
     changed = 0
     for c in comps:
-        if "error" not in c and "judge_response" in c:
+        if "error" not in c and (
+            "judge_response" in c or "judge_responses" in c
+        ):
             before = c.get("fraction_for_test")
             _recompute_comparison_stats(c)
             if c.get("fraction_for_test") != before:

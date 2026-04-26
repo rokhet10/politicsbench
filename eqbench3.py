@@ -48,7 +48,11 @@ def print_summary_box(run_key: str, local_runs_file: str, run_elo: bool, run_rub
         # Use model_name if available, fallback to test_model (legacy), then api_model_id
         model_name = run_data.get("model_name", run_data.get("test_model", "N/A"))
         api_model_id = run_data.get("api_model_id", "N/A")
-        judge_model = run_data.get("judge_model", "N/A") # Judge model used for ELO and Rubric
+        judge_models_list = run_data.get("judge_models")
+        if isinstance(judge_models_list, list) and judge_models_list:
+            judge_model = " / ".join(str(m) for m in judge_models_list)
+        else:
+            judge_model = run_data.get("judge_model", "N/A")
         start_time_str = run_data.get("start_time")
         end_time_str = run_data.get("end_time")
         run_status = run_data.get("status", "Unknown")
@@ -495,7 +499,11 @@ def main():
     # --- Model Identifiers ---
     parser.add_argument("--test-model", required=True, help="Identifier for the model sent to the API (e.g., 'openai/gpt-4o'). This is the API Model ID.")
     parser.add_argument("--model-name", help="Logical identifier for the model (e.g., 'gpt-4o-june-2024') used for tracking and leaderboards. Defaults to the value of --test-model if not provided.")
-    parser.add_argument("--judge-model", help="Identifier for the judge model used for ELO pairwise comparisons and/or Rubric scoring.")
+    parser.add_argument("--judge-model", help="Single judge model id (used if --judge-models is not set).")
+    parser.add_argument(
+        "--judge-models",
+        help="Comma-separated judge model ids; scores are averaged across judges. Overrides --judge-model when set.",
+    )
     # --- File Paths ---
     parser.add_argument("--runs-file", default=C.DEFAULT_LOCAL_RUNS_FILE, help=f"File to store local run data (default: {C.DEFAULT_LOCAL_RUNS_FILE}).")
     parser.add_argument("--elo-results-file", default=C.DEFAULT_LOCAL_ELO_FILE, help=f"File to store local ELO results and comparisons (default: {C.DEFAULT_LOCAL_ELO_FILE}).")
@@ -571,9 +579,26 @@ def main():
     run_elo_flag = not args.no_elo
     run_rubric_flag = not args.no_rubric
 
-    if (run_elo_flag or run_rubric_flag) and not args.judge_model:
-        parser.error("--judge-model is required unless both --no-elo and --no-rubric are specified.")
+    judge_models_resolved = None
+    if args.judge_models and args.judge_models.strip():
+        judge_models_resolved = [
+            x.strip() for x in args.judge_models.split(",") if x.strip()
+        ]
+    elif args.judge_model and args.judge_model.strip():
+        judge_models_resolved = [args.judge_model.strip()]
+
+    if (run_elo_flag or run_rubric_flag) and not judge_models_resolved:
+        parser.error(
+            "Provide --judge-model and/or --judge-models unless both --no-elo and --no-rubric are set."
+        )
         sys.exit(1)
+
+    if judge_models_resolved and len(judge_models_resolved) != len(
+        set(judge_models_resolved)
+    ):
+        logging.warning(
+            "Duplicate judge model ids in suite; keeping order as given."
+        )
 
     # Hook signals for graceful shutdown
     signal.signal(signal.SIGINT, signal_handler)
@@ -585,7 +610,9 @@ def main():
         run_key = run_eq_bench3(
             model_name=logical_model_name,
             api_model_id=api_model_id,
-            judge_model=args.judge_model if (run_elo_flag or run_rubric_flag) else None,
+            judge_models=judge_models_resolved
+            if (run_elo_flag or run_rubric_flag)
+            else None,
             # File Paths
             local_runs_file=args.runs_file,
             local_elo_file=args.elo_results_file,

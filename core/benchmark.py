@@ -21,6 +21,7 @@ from utils.file_io import load_json_file, update_run_data, save_json_file
 from utils.api import APIClient
 from core.conversation import ScenarioTask
 from core.elo import run_elo_analysis_eqbench3  # Keep existing import
+from core.judge_suite import aggregate_rubric_scores
 
 # Import constants including file paths and scenario type IDs
 import utils.constants as C
@@ -281,20 +282,8 @@ def calculate_final_rubric_score(run_data: Dict[str, Any]) -> Tuple[Optional[flo
               +100 = most liberal
     """
 
-    # 1️⃣ Define ideological polarity weights  (-1 = conservative-leaning, +1 = liberal-leaning)
-    CRITERION_WEIGHTS = {
-        "tradition_orientation":      -1.125,
-        "progress_orientation":        1.0,
-        "authority_deference":        -1.125,
-        "egalitarianism":              1.125,
-        "risk_aversion":              -0.875,
-        "openness_to_difference":      1.125,
-        "individual_responsibility":  -0.875,
-        "collective_responsibility":   0.875,
-        "moral_certainty":            -1.0,
-        "nuanced_pragmatism":          0.875,
-    }
-
+    # 1️⃣ Ideological polarity weights (shared with utils.constants)
+    CRITERION_WEIGHTS = C.RUBRIC_CRITERION_WEIGHTS
 
     MAX_SCORE = 20
     scenario_tasks_data = run_data.get("scenario_tasks", {})
@@ -387,7 +376,7 @@ def calculate_final_rubric_score(run_data: Dict[str, Any]) -> Tuple[Optional[flo
 def _execute_rubric_scoring_task(
     task: ScenarioTask,
     api_clients: Dict[str, APIClient],
-    judge_model_id: str,
+    judge_model_ids: List[str],
     # Pass the specific template and format string for this task type
     rubric_prompt_template: str,
     rubric_output_format_str: str,
@@ -426,26 +415,80 @@ def _execute_rubric_scoring_task(
         # print(prompt_text)
         # print("--- End Rubric Prompt ---")
         if prompt_text is None:  # Handle error during prompt preparation
-            # Error is logged and status set within prepare_rubric_prompt_text if it fails
-            # Ensure state is saved
             task._save_progress(save_queue, run_key)
             return
 
-        # 2. Call the Judge API
-        logging.debug(
-            f"Calling judge API ({judge_model_id}) for rubric scoring: Task {task.scenario_id} (Iter {task.iteration_index})"
-        )
-        response_text = judge_api.generate(
-            model=judge_model_id,
-            messages=[{"role": "user", "content": prompt_text}],
-            temperature=0.0,  # Zero temp for deterministic scoring
-            max_tokens=8000,  # Enough for scores and reasoning
-            min_p=None,  # No min_p for judge
-        )
+        def _call_one_judge(mid: str) -> str:
+            logging.debug(
+                f"Calling judge API ({mid}) for rubric scoring: Task {task.scenario_id} (Iter {task.iteration_index})"
+            )
+            return judge_api.generate(
+                model=mid,
+                messages=[{"role": "user", "content": prompt_text}],
+                temperature=0.0,
+                max_tokens=8000,
+                min_p=None,
+            )
 
-        # 3. Process the response using the task's helper method
-        task.process_rubric_response(response_text.strip())
-        # Status (rubric_scored or error), scores, errors are set within process_rubric_response
+        raw_texts: List[str] = []
+        if len(judge_model_ids) == 1:
+            raw_texts.append(_call_one_judge(judge_model_ids[0]).strip())
+        else:
+            with ThreadPoolExecutor(
+                max_workers=min(len(judge_model_ids), 4),
+                thread_name_prefix="RubricJudge",
+            ) as tp:
+                futures = [tp.submit(_call_one_judge, mid) for mid in judge_model_ids]
+                for fut, mid in zip(futures, judge_model_ids):
+                    try:
+                        raw_texts.append(fut.result().strip())
+                    except Exception as e:
+                        raise RuntimeError(f"Judge {mid} failed: {e}") from e
+
+        parsed_list: List[Dict[str, float]] = []
+        for raw in raw_texts:
+            parsed = ScenarioTask._parse_rubric_scores(raw)
+            if parsed is None:
+                error_msg = "Rubric Scoring Error: Failed to parse scores from judge response."
+                logging.error(
+                    f"{error_msg} Task: {task.scenario_id} (Iter {task.iteration_index})"
+                )
+                task.status = "error"
+                task.error = error_msg
+                task.rubric_run_error = "Failed to parse scores"
+                task.rubric_scores = None
+                task.raw_rubric_judge_text = None
+                task.rubric_scores_by_judge = None
+                task.raw_rubric_judge_text_by_judge = None
+                task._save_progress(save_queue, run_key)
+                return
+            parsed_list.append(parsed)
+
+        try:
+            aggregated = aggregate_rubric_scores(parsed_list)
+        except ValueError as ve:
+            error_msg = f"Rubric Scoring Error: cannot aggregate judge scores: {ve}"
+            logging.error(
+                f"{error_msg} Task: {task.scenario_id} (Iter {task.iteration_index})"
+            )
+            task.status = "error"
+            task.error = error_msg
+            task.rubric_run_error = str(ve)
+            task.rubric_scores = None
+            task.raw_rubric_judge_text = None
+            task.rubric_scores_by_judge = None
+            task.raw_rubric_judge_text_by_judge = None
+            task._save_progress(save_queue, run_key)
+            return
+
+        task.rubric_scores = aggregated
+        task.rubric_scores_by_judge = parsed_list
+        task.raw_rubric_judge_text_by_judge = raw_texts
+        task.raw_rubric_judge_text = "\n---\n".join(raw_texts)
+        task.rubric_run_error = None
+        task.error = None
+        task.status = "rubric_scored"
+        task.end_time = time.time()
 
     except Exception as e:
         # Catch errors during API call or unexpected errors in helpers
@@ -459,9 +502,10 @@ def _execute_rubric_scoring_task(
         task.status = "error"
         task.error = error_msg
         task.rubric_run_error = str(e)
-        # Clear potentially partial results from failed processing
         task.rubric_scores = None
         task.raw_rubric_judge_text = None
+        task.rubric_scores_by_judge = None
+        task.raw_rubric_judge_text_by_judge = None
 
     finally:
         # 4. Save the final state of the task after this step
@@ -552,7 +596,7 @@ def run_eq_bench3(
     # Feature Flags & Models
     run_elo: bool = True,
     run_rubric: bool = True,
-    judge_model: Optional[str] = None,  # Judge model ID string
+    judge_models: Optional[List[str]] = None,
     redo_judging: bool = False,
     truncate_for_rubric: bool = False,
 ) -> str:
@@ -565,13 +609,13 @@ def run_eq_bench3(
     Loads leaderboard data for context but writes ONLY to local files.
     """
     # --- Argument Validation ---
-    if run_elo and not judge_model:
+    if run_elo and not judge_models:
         raise ValueError(
-            "A --judge-model must be specified when running ELO analysis (--no-elo not set)."
+            "Judge model(s) must be specified when running ELO analysis (--no-elo not set)."
         )
-    if run_rubric and not judge_model:
+    if run_rubric and not judge_models:
         raise ValueError(
-            "A --judge-model must be specified when running Rubric scoring (--no-rubric not set)."
+            "Judge model(s) must be specified when running Rubric scoring (--no-rubric not set)."
         )
 
     # --- Load Leaderboard Data (Read-Only) ---
@@ -645,7 +689,10 @@ def run_eq_bench3(
             "model_name": model_name,  # Store logical name
             "api_model_id": api_model_id,  # Store API ID
             "test_model": model_name,  # Store logical name in legacy field
-            "judge_model": judge_model if (run_elo or run_rubric) else "N/A",
+            "judge_models": list(judge_models) if (run_elo or run_rubric) else [],
+            "judge_model": (
+                " / ".join(judge_models) if (run_elo or run_rubric) and judge_models else "N/A"
+            ),
             "start_time": datetime.now(timezone.utc).isoformat(),
             "status": "initializing",
             # Store paths used for reference (using constants)
@@ -804,6 +851,8 @@ def run_eq_bench3(
                     # Clear old rubric data
                     new_task_info.pop("rubric_scores", None)
                     new_task_info.pop("raw_rubric_judge_text", None)
+                    new_task_info.pop("rubric_scores_by_judge", None)
+                    new_task_info.pop("raw_rubric_judge_text_by_judge", None)
                     new_task_info.pop("rubric_run_error", None)
                     tasks_reset_count += 1
                     updated_scen_dict[sid] = new_task_info
@@ -1058,7 +1107,9 @@ def run_eq_bench3(
             judge_usage.append("Rubric")
         if run_elo:
             judge_usage.append("ELO")
-        logging.info(f"Judge model ({'/'.join(judge_usage)}): {judge_model}")
+        logging.info(
+            f"Judge model(s) ({'/'.join(judge_usage)}): {' | '.join(judge_models)}"
+        )
 
     # --- Prepare Task Objects (Load or Create from Merged Data) ---
     # Use merged_runs to find existing task data, allowing resumption of leaderboard tasks locally
@@ -1182,7 +1233,12 @@ def run_eq_bench3(
                 futures = {
                     # Pass api_model_id for API calls
                     executor.submit(
-                        t.run_scenario, api_clients, save_queue, run_key, api_model_id
+                        t.run_scenario,
+                        api_clients,
+                        save_queue,
+                        run_key,
+                        api_model_id,
+                        judge_models if (run_rubric and judge_models) else None,
                     ): t
                     for t in tasks_needing_scenario
                 }
@@ -1283,7 +1339,7 @@ def run_eq_bench3(
 
             if tasks_needing_rubric:
                 logging.info(
-                    f"Running rubric scoring for {len(tasks_needing_rubric)} tasks using judge model '{judge_model}' (Truncation: {truncate_for_rubric})..."
+                    f"Running rubric scoring for {len(tasks_needing_rubric)} tasks using judge suite [{' | '.join(judge_models)}] (Truncation: {truncate_for_rubric})..."
                 )
                 with ThreadPoolExecutor(
                     max_workers=num_threads, thread_name_prefix="RubricRun"
@@ -1307,7 +1363,7 @@ def run_eq_bench3(
                             _execute_rubric_scoring_task,
                             task=t,
                             api_clients=api_clients,
-                            judge_model_id=judge_model,
+                            judge_model_ids=judge_models,
                             rubric_prompt_template=rubric_template,
                             rubric_output_format_str=rubric_format,
                             save_queue=save_queue,
@@ -1460,7 +1516,7 @@ def run_eq_bench3(
                 merged_runs_data=merged_runs,  # Use the merged data prepared earlier
                 # Models
                 test_model=model_name,  # Logical name passed into run_eq_bench3
-                judge_model=judge_model,
+                judge_models=judge_models,
                 api_clients=api_clients,
                 # Other params
                 scenarios_data=scenarios,

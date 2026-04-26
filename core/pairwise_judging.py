@@ -29,6 +29,7 @@ from .elo_helpers import (
 from .matchup_selection import (
     create_matchup_signature
 )
+from .judge_suite import aggregate_pairwise_comparison
 
 
 ##############################################
@@ -177,7 +178,7 @@ def do_pairwise_judge(
     history_B: List[Dict[str, str]],
     debrief_B: Optional[str],
     pairwise_prompt_template: str,
-    judge_model: str,
+    judge_models: List[str],
     api_clients: Dict[str, Any],
     parsed_responses_A: Optional[List[Dict[str, str]]] = None,
     parsed_responses_B: Optional[List[Dict[str, str]]] = None,
@@ -277,44 +278,55 @@ def do_pairwise_judge(
     #print("----------------------------")
     #print("\n\n\n\n\n")
 
-    # --- 5. call judge model ----------------------------------------------
+    # --- 5. call judge model(s) -------------------------------------------
     judge_messages = [{"role": "user", "content": final_prompt}]
-    response_text  = ""
-    try:
-        response_text = judge_api.generate(
-            model      = judge_model,
-            messages   = judge_messages,
-            temperature= 0.0,
-            max_tokens = 8000,
-            min_p      = None,
-        )
 
-        # extract JSON using existing robust logic -------------------------
-        #start = response_text.find("{")
-        #end   = response_text.rfind("}")
-        #if start != -1 and end != -1 and end > start:
-        #    json_str = response_text[start : end + 1]
-        result   = robust_json_loads(response_text)
-        if isinstance(result, dict) and result:
-            return result
+    def _one_judge(mid: str) -> Dict[str, Any]:
+        response_text = ""
+        try:
+            response_text = judge_api.generate(
+                model=mid,
+                messages=judge_messages,
+                temperature=0.0,
+                max_tokens=8000,
+                min_p=None,
+            )
+            result = robust_json_loads(response_text)
+            if isinstance(result, dict) and result and "error" not in result:
+                return result
+            return {
+                "error": "No valid JSON block found",
+                "raw_response": response_text,
+            }
+        except Exception as e:
+            logging.error(
+                f"Error during pairwise judge API call ({mid}) for scenario {scenario_id}: {e}",
+                exc_info=True,
+            )
+            return {
+                "error": f"API call failed: {str(e)}",
+                "raw_response": response_text or "No response",
+            }
 
-        # fallback attempts ------------------------------------------------
-        #json_match = re.search(r"```json\s*(\{.*?\})\s*```", response_text, re.DOTALL)
-        #if json_match:
-        #    result = robust_json_loads(json_match.group(1))
-        #   if isinstance(result, dict):
-        #        return result
+    if len(judge_models) == 1:
+        r = _one_judge(judge_models[0])
+        if "error" in r:
+            return r
+        return {"judge_models": list(judge_models), "judge_responses": [r]}
 
-        # last fallback – try whole response
-        #result = robust_json_loads(response_text)
-        #if isinstance(result, dict):
-        #    return result
+    judge_responses: List[Dict[str, Any]] = []
+    with ThreadPoolExecutor(max_workers=min(len(judge_models), 4)) as _pool:
+        futures = [_pool.submit(_one_judge, mid) for mid in judge_models]
+        for fut, mid in zip(futures, judge_models):
+            r = fut.result()
+            if "error" in r:
+                return {
+                    "error": f"judge {mid}: {r.get('error')}",
+                    "raw_response": r.get("raw_response", ""),
+                }
+            judge_responses.append(r)
 
-        return {"error": "No valid JSON block found", "raw_response": response_text}
-
-    except Exception as e:
-        logging.error(f"Error during pairwise judge API call for scenario {scenario_id}: {e}", exc_info=True)
-        return {"error": f"API call failed: {str(e)}", "raw_response": response_text or "No response"}
+    return {"judge_models": list(judge_models), "judge_responses": judge_responses}
 
 
 def _judge_scenario_pairs_in_parallel(
@@ -326,7 +338,7 @@ def _judge_scenario_pairs_in_parallel(
     standard_pairwise_prompt_template: str,
     analysis_pairwise_prompt_template: str,
     scenarios_data: Dict[str, List[str]],
-    judge_model: str,
+    judge_models: List[str],
     api_clients: Dict[str, Any],
     max_pairs_per_model_matchup: int = MAX_ITEMS_PER_MODEL_MATCHUP,
     existing_matchups: Optional[set] = None
@@ -541,7 +553,7 @@ def _judge_scenario_pairs_in_parallel(
                 task["data_A"]["conversation_history"], task["data_A"].get("debrief_response"),
                 task["data_B"]["conversation_history"], task["data_B"].get("debrief_response"),
                 task["pairwise_template"],
-                judge_model, api_clients,
+                judge_models, api_clients,
                 task["data_A"].get("parsed_responses", []),
                 task["data_B"].get("parsed_responses", [])
             )
@@ -556,7 +568,11 @@ def _judge_scenario_pairs_in_parallel(
             try:
                 judge_result = future.result()
 
-                if isinstance(judge_result, dict) and "error" not in judge_result:
+                if (
+                    isinstance(judge_result, dict)
+                    and "error" not in judge_result
+                    and "judge_responses" in judge_result
+                ):
                     comparison_result = None
 
                     # Calculate average response length for both models
@@ -569,77 +585,62 @@ def _judge_scenario_pairs_in_parallel(
                     model_B_avg_length = sum(len(response) for response in model_B_responses) / max(1, len(model_B_responses))
 
                     if direction == "forward":
-                        # model_A is test_model_name, model_B is neighbor_model_name
-                        outcome_for_test_model, test_model_plus_count, neighbor_plus_count = interpret_pairwise_result(judge_result)
-                        #fracTest, diff, diff_norm, diff_blend = compute_fraction_for_test(outcome_for_test_model, test_model_plus_count, neighbor_plus_count)
-                        (test_model_plus_count,
-                        neighbor_plus_count,
-                        diff,
-                        diff_norm,
-                        diff_blend,
-                        fracTest) = downscale_analysis_pair(
-                                        scenario_id, outcome_for_test_model,
-                                        test_model_plus_count, neighbor_plus_count)
-
+                        order_str = "A0493:test / A0488:other"
+                        agg, per_judge = aggregate_pairwise_comparison(
+                            judge_result["judge_responses"],
+                            order_str,
+                            scenario_id,
+                        )
                         comparison_result = {
                             "scenario_id": scenario_id,
                             "pair": {
-                                "test_model": test_model_name, # Logical name
-                                "neighbor_model": neighbor_model_name, # Logical name
+                                "test_model": test_model_name,
+                                "neighbor_model": neighbor_model_name,
                                 "iteration_index": iter_idx,
                             },
-                            "order": "A0493:test / A0488:other",
-                            "judge_response": judge_result,
-                            "outcome_for_test_model": outcome_for_test_model,
-                            "plus_for_test": test_model_plus_count,
-                            "plus_for_other": neighbor_plus_count,
-                            "plus_diff": diff,
-                            "plus_diff_normalized": diff_norm,
-                            "plus_diff_blended": diff_blend,
-                            "fraction_for_test": fracTest,
+                            "order": order_str,
+                            "judge_models": list(judge_result["judge_models"]),
+                            "judge_responses": judge_result["judge_responses"],
+                            "per_judge_pairwise_stats": per_judge,
+                            "judge_response": judge_result["judge_responses"][0],
+                            "outcome_for_test_model": agg["outcome_for_test_model"],
+                            "plus_for_test": agg["plus_for_test"],
+                            "plus_for_other": agg["plus_for_other"],
+                            "plus_diff": agg["plus_diff"],
+                            "plus_diff_normalized": agg["plus_diff_normalized"],
+                            "plus_diff_blended": agg["plus_diff_blended"],
+                            "fraction_for_test": agg["fraction_for_test"],
                             "test_model_avg_response_length": model_A_avg_length,
-                            "neighbor_model_avg_response_length": model_B_avg_length
+                            "neighbor_model_avg_response_length": model_B_avg_length,
                         }
                     else: # direction == "reversed"
-                        # model_A is neighbor_model_name, model_B is test_model_name
-                        outcome_for_neighbor_model, neighbor_plus_count, test_model_plus_count = interpret_pairwise_result(judge_result)
-                        # Invert outcome to be relative to the *test* model
-                        if outcome_for_neighbor_model == 1.0:
-                            outcome_for_test_model = 0.0
-                        elif outcome_for_neighbor_model == 0.0:
-                            outcome_for_test_model = 1.0
-                        else:
-                            outcome_for_test_model = 0.5
-                        #fracTest, diff, diff_norm, diff_blend = compute_fraction_for_test(outcome_for_test_model, test_model_plus_count, neighbor_plus_count)                        
-                        (test_model_plus_count,
-                        neighbor_plus_count,
-                        diff,
-                        diff_norm,
-                        diff_blend,
-                        fracTest) = downscale_analysis_pair(
-                                        scenario_id, outcome_for_test_model,
-                                        test_model_plus_count, neighbor_plus_count)
-                        
+                        order_str = "A0493:other / A0488:test"
+                        agg, per_judge = aggregate_pairwise_comparison(
+                            judge_result["judge_responses"],
+                            order_str,
+                            scenario_id,
+                        )
                         comparison_result = {
                             "scenario_id": scenario_id,
                             "pair": {
-                                # Store consistently with test_model_name as 'test_model'
-                                "test_model": test_model_name, # Logical name
-                                "neighbor_model": neighbor_model_name, # Logical name
+                                "test_model": test_model_name,
+                                "neighbor_model": neighbor_model_name,
                                 "iteration_index": iter_idx,
                             },
-                            "order": "A0493:other / A0488:test", # Reflects the A/B assignment in this specific judge call
-                            "judge_response": judge_result,
-                            "outcome_for_test_model": outcome_for_test_model,
-                            "plus_for_test": test_model_plus_count,
-                            "plus_for_other": neighbor_plus_count,
-                            "plus_diff": diff,
-                            "plus_diff_normalized": diff_norm,
-                            "plus_diff_blended": diff_blend,
-                            "fraction_for_test": fracTest,
-                            # Lengths correspond to the logical models
-                            "test_model_avg_response_length": model_B_avg_length, # B was test model in this call
-                            "neighbor_model_avg_response_length": model_A_avg_length # A was neighbor in this call
+                            "order": order_str,
+                            "judge_models": list(judge_result["judge_models"]),
+                            "judge_responses": judge_result["judge_responses"],
+                            "per_judge_pairwise_stats": per_judge,
+                            "judge_response": judge_result["judge_responses"][0],
+                            "outcome_for_test_model": agg["outcome_for_test_model"],
+                            "plus_for_test": agg["plus_for_test"],
+                            "plus_for_other": agg["plus_for_other"],
+                            "plus_diff": agg["plus_diff"],
+                            "plus_diff_normalized": agg["plus_diff_normalized"],
+                            "plus_diff_blended": agg["plus_diff_blended"],
+                            "fraction_for_test": agg["fraction_for_test"],
+                            "test_model_avg_response_length": model_B_avg_length,
+                            "neighbor_model_avg_response_length": model_A_avg_length,
                         }
 
                     comparisons.append(comparison_result)
@@ -739,17 +740,42 @@ def _recompute_comparison_stats(comp: Dict[str, Any]) -> None:
     from an *existing* comparison record – in-place.
     Assumes pair['test_model'] and pair['neighbor_model'] hold logical names.
 
-    Skips entries that contain an 'error' key or lack 'judge_response'.
+    Skips entries that contain an 'error' key or lack usable judge payload.
     """
-    if "error" in comp or "judge_response" not in comp:
-        return                                # nothing to do / unusable
+    if "error" in comp:
+        return
+
+    order_str = comp.get("order", "")
+    scenario_id = comp.get("scenario_id", "")
+
+    if "judge_responses" in comp and comp["judge_responses"]:
+        agg, per_judge = aggregate_pairwise_comparison(
+            comp["judge_responses"],
+            order_str,
+            scenario_id,
+        )
+        comp["per_judge_pairwise_stats"] = per_judge
+        comp.update(
+            {
+                "plus_for_test": agg["plus_for_test"],
+                "plus_for_other": agg["plus_for_other"],
+                "plus_diff": agg["plus_diff"],
+                "plus_diff_normalized": agg["plus_diff_normalized"],
+                "plus_diff_blended": agg["plus_diff_blended"],
+                "outcome_for_test_model": agg["outcome_for_test_model"],
+                "fraction_for_test": agg["fraction_for_test"],
+            }
+        )
+        return
+
+    if "judge_response" not in comp:
+        return
 
     judge_dict = comp["judge_response"]
     outcome_A, plus_A, plus_B = interpret_pairwise_result(judge_dict)
 
     # Figure out whether the *logical* test model corresponds to A0493 or A0488
     # We encoded this once in the human-readable 'order' string.
-    order_str = comp.get("order", "")
     a_is_test = order_str.startswith("A0493:test") # This reflects the A/B assignment during the judge call
 
     if a_is_test:

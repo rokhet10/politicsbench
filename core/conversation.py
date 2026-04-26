@@ -9,6 +9,9 @@ import re
 import json # For parsing rubric scores
 from typing import Dict, Any, List, Optional, Tuple
 import queue
+from concurrent.futures import ThreadPoolExecutor
+
+from core.judge_suite import aggregate_rubric_scores
 from utils.constants import (
     NO_RP_SCENARIO_IDS,
     MESSAGE_DRAFTING_SCENARIO_IDS,
@@ -70,6 +73,8 @@ class ScenarioTask:
         # Rubric Scoring Phase Data
         self.rubric_scores: Optional[Dict[str, float]] = None
         self.raw_rubric_judge_text: Optional[str] = None
+        self.rubric_scores_by_judge: Optional[List[Dict[str, float]]] = None
+        self.raw_rubric_judge_text_by_judge: Optional[List[str]] = None
         self.rubric_run_error: Optional[str] = None
 
         self.turn_rubric_scores: List[Optional[Dict[str, float]]] = []
@@ -216,39 +221,81 @@ class ScenarioTask:
         rubric_prompt_template: str,
         rubric_output_format_str: str,
         turn_index: int,
-        api_model_id: str,
+        judge_models: List[str],
     ):
         transcript = self._build_partial_transcript(
             upto_turn=turn_index + 1,
             truncate_for_rubric=True,
         )
-        # print(f"{turn_index}: {transcript}\n\n\n\n\n\n\n")
 
         prompt = rubric_prompt_template.format(
             transcript=transcript,
             output_format=rubric_output_format_str,
         )
 
-        judge_api = api_clients["judge"]
-        raw = judge_api.generate(
-            model=api_model_id,
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.0,
-            max_tokens=2000,
-        )
+        judge_api = api_clients.get("judge")
+        if not judge_api:
+            logging.warning(
+                f"No judge API client for turn rubric (task {self.scenario_id}, turn {turn_index})"
+            )
+            return
 
-        scores = self._parse_rubric_scores(raw)
+        def _one(mid: str) -> str:
+            return judge_api.generate(
+                model=mid,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.0,
+                max_tokens=2000,
+            )
 
-        # Ensure list length
+        raws: List[str] = []
+        if len(judge_models) == 1:
+            raws.append(_one(judge_models[0]))
+        else:
+            with ThreadPoolExecutor(
+                max_workers=min(len(judge_models), 4),
+                thread_name_prefix="TurnRubric",
+            ) as tp:
+                futures = [tp.submit(_one, mid) for mid in judge_models]
+                for fut in futures:
+                    raws.append(fut.result())
+
+        parsed_list: List[Dict[str, float]] = []
+        for raw in raws:
+            s = self._parse_rubric_scores(raw.strip())
+            if s is None:
+                logging.warning(
+                    f"Turn rubric parse failed for {self.scenario_id} (Iter {self.iteration_index}) turn {turn_index}"
+                )
+                return
+            parsed_list.append(s)
+
+        try:
+            scores = aggregate_rubric_scores(parsed_list)
+        except ValueError as e:
+            logging.warning(
+                f"Turn rubric aggregate failed for {self.scenario_id} turn {turn_index}: {e}"
+            )
+            return
+
+        combined_raw = "\n---\n".join(r.strip() for r in raws)
+
         while len(self.turn_rubric_scores) <= turn_index:
             self.turn_rubric_scores.append(None)
             self.turn_raw_rubric_judge_text.append(None)
 
         self.turn_rubric_scores[turn_index] = scores
-        self.turn_raw_rubric_judge_text[turn_index] = raw
+        self.turn_raw_rubric_judge_text[turn_index] = combined_raw
 
 
-    def run_scenario(self, api_clients: Dict[str, Any], save_queue: Optional[queue.Queue], run_key: Optional[str], api_model_id: str):
+    def run_scenario(
+        self,
+        api_clients: Dict[str, Any],
+        save_queue: Optional[queue.Queue],
+        run_key: Optional[str],
+        api_model_id: str,
+        judge_models: Optional[List[str]] = None,
+    ):
         """
         Runs the multi-turn scenario simulation sequentially using the test model.
         Updates conversation_history and status. Puts progress updates on the save_queue.
@@ -354,14 +401,14 @@ class ScenarioTask:
 
                 self.conversation_history = list(current_messages)
 
-                # AFTER adding assistant message + parsed_responses
-                self.run_turn_rubric(
-                    api_clients=api_clients,
-                    rubric_prompt_template=TURN_RUBRIC_PROMPT_TEMPLATE,
-                    rubric_output_format_str=TURN_RUBRIC_OUTPUT_FORMAT,
-                    turn_index=turn_index,
-                    api_model_id=api_model_id,
-                )
+                if judge_models:
+                    self.run_turn_rubric(
+                        api_clients=api_clients,
+                        rubric_prompt_template=TURN_RUBRIC_PROMPT_TEMPLATE,
+                        rubric_output_format_str=TURN_RUBRIC_OUTPUT_FORMAT,
+                        turn_index=turn_index,
+                        judge_models=judge_models,
+                    )
 
                 self._save_progress(save_queue, run_key)
 
@@ -648,6 +695,8 @@ class ScenarioTask:
 
         if parsed_scores is not None:
             self.rubric_scores = parsed_scores
+            self.rubric_scores_by_judge = None
+            self.raw_rubric_judge_text_by_judge = None
             self.status = "rubric_scored" # Final success state for rubric
             self.end_time = time.time() # Mark final completion time
             self.error = None # Clear general error if scoring succeeded
@@ -661,6 +710,8 @@ class ScenarioTask:
             self.error = error_msg
             self.rubric_run_error = "Failed to parse scores"
             self.rubric_scores = None # Ensure scores are None
+            self.rubric_scores_by_judge = None
+            self.raw_rubric_judge_text_by_judge = None
 
 
     def to_dict(self) -> Dict[str, Any]:
@@ -686,6 +737,8 @@ class ScenarioTask:
             "debrief_response": self.debrief_response, # Can be None
             "rubric_scores": self.rubric_scores, # Can be None
             "raw_rubric_judge_text": self.raw_rubric_judge_text, # Can be None,
+            "rubric_scores_by_judge": self.rubric_scores_by_judge,
+            "raw_rubric_judge_text_by_judge": self.raw_rubric_judge_text_by_judge,
             "turn_rubric_scores": self.turn_rubric_scores,
             "turn_raw_rubric_judge_text": self.turn_raw_rubric_judge_text,
         }
@@ -722,6 +775,8 @@ class ScenarioTask:
         obj.debrief_response = data.get("debrief_response")
         obj.rubric_scores = data.get("rubric_scores")
         obj.raw_rubric_judge_text = data.get("raw_rubric_judge_text")
+        obj.rubric_scores_by_judge = data.get("rubric_scores_by_judge")
+        obj.raw_rubric_judge_text_by_judge = data.get("raw_rubric_judge_text_by_judge")
         obj.turn_rubric_scores = data.get("turn_rubric_scores", [])
         obj.turn_raw_rubric_judge_text = data.get("turn_raw_rubric_judge_text", [])
         return obj
