@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Scenario JSON Viewer</title>
+
+<style>
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+    display: flex;
+    height: 100vh;
+  }
+  #sidebar {
+    width: 260px;
+    border-right: 1px solid #ddd;
+    padding: 10px;
+    overflow-y: auto;
+  }
+  #main {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+  }
+  .scenario {
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+  }
+  .scenario:hover {
+    background: #f0f0f0;
+  }
+  .scenario.active {
+    background: #e0e7ff;
+  }
+  .tabs button {
+    margin-right: 6px;
+    margin-bottom: 10px;
+  }
+  .section {
+    margin-bottom: 20px;
+  }
+  .section h3 {
+    margin-bottom: 6px;
+  }
+  pre {
+    white-space: pre-wrap;
+    background: #fafafa;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #eee;
+  }
+</style>
+</head>
+
+<body>
+
+<div id="sidebar">
+  <h3>Upload JSON</h3>
+  <input type="file" id="fileInput" accept=".json" />
+  <hr />
+  <h3>Scenarios</h3>
+  <div id="scenarioList"></div>
+</div>
+
+<div id="main">
+  <h2 id="title">Select a scenario</h2>
+  <div class="tabs" id="tabs"></div>
+  <div id="stats" class="section"></div>
+  <div id="content"></div>
+</div>
+
+<script>
+let data;
+let currentScenario = null;
+let currentPrompt = 0;
+
+document.getElementById("fileInput").addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    data = JSON.parse(reader.result);
+    initialize(data);
+  };
+  reader.readAsText(file);
+});
+
+function initialize(json) {
+  const run = Object.values(json)[0];
+  // const tasks = run.scenario_tasks;
+  const tasks = Object.values(run.scenario_tasks)
+    .flatMap(group => Object.values(group))
+    .filter(Boolean);
+
+  const list = document.getElementById("scenarioList");
+
+  list.innerHTML = "";
+  document.getElementById("content").innerHTML = "";
+  document.getElementById("tabs").innerHTML = "";
+  document.getElementById("title").textContent = "Select a scenario";
+
+  tasks.forEach(obj => {
+    if (!obj || !obj.scenario_id || !obj.prompts) return;
+
+    const div = document.createElement("div");
+    div.textContent = `Scenario ${obj.scenario_id}`;
+    div.className = "scenario";
+    div.onclick = () => loadScenario(obj, div);
+    list.appendChild(div);
+  });
+
+  const averages = computePerPromptAverages(tasks);
+
+  document.getElementById("stats").innerHTML = `
+    <h3>Per-Task Average Rubric Scores</h3>
+    ${Object.entries(averages).map(([turn, scores]) => `
+      <h4>Prompt ${Number(turn) + 1}</h4>
+      <pre>${JSON.stringify(scores, null, 2)}</pre>
+    `).join("")}
+  `;
+}
+
+function computePerPromptAverages(tasks) {
+  const sums = {};
+  const counts = {};
+
+  tasks.forEach(task => {
+    const scoresByTurn = task.turn_rubric_scores;
+    if (!scoresByTurn) return;
+
+    scoresByTurn.forEach((scores, turnIdx) => {
+      if (!scores) return;
+
+      if (!sums[turnIdx]) {
+        sums[turnIdx] = {};
+        counts[turnIdx] = {};
+      }
+
+      Object.entries(scores).forEach(([trait, val]) => {
+        if (typeof val !== "number") return;
+
+        sums[turnIdx][trait] = (sums[turnIdx][trait] || 0) + val;
+        counts[turnIdx][trait] = (counts[turnIdx][trait] || 0) + 1;
+      });
+    });
+  });
+
+  // compute averages
+  const averages = {};
+  Object.keys(sums).forEach(turnIdx => {
+    averages[turnIdx] = {};
+    Object.keys(sums[turnIdx]).forEach(trait => {
+      averages[turnIdx][trait] =
+        sums[turnIdx][trait] / counts[turnIdx][trait];
+    });
+  });
+
+  return averages;
+}
+
+function loadScenario(scenario, el) {
+  document.querySelectorAll(".scenario").forEach(e => e.classList.remove("active"));
+  el.classList.add("active");
+
+  currentScenario = scenario;
+  currentPrompt = 0;
+
+  document.getElementById("title").textContent =
+    `Scenario ${scenario.scenario_id}`;
+
+  renderTabs();
+  renderContent();
+}
+
+function renderTabs() {
+  const tabs = document.getElementById("tabs");
+  tabs.innerHTML = "";
+
+  currentScenario.prompts.forEach((_, i) => {
+    const btn = document.createElement("button");
+    btn.textContent = `Prompt ${i + 1}`;
+    btn.onclick = () => {
+      currentPrompt = i;
+      renderContent();
+    };
+    tabs.appendChild(btn);
+  });
+}
+
+function renderContent() {
+  const r = currentScenario.parsed_responses[currentPrompt];
+  console.log(r);
+  const c = document.getElementById("content");
+  const turnScores =
+  currentScenario.turn_rubric_scores &&
+  currentScenario.turn_rubric_scores[currentPrompt];
+
+  c.innerHTML = `
+  <div class="section">
+    <h3>Prompt</h3>
+    <pre>${currentScenario.prompts[currentPrompt]}</pre>
+  </div>
+
+  <div class="section">
+    <h3>I'm thinking & feeling</h3>
+    <pre>${r.thinking_feeling}</pre>
+  </div>
+
+  <div class="section">
+    <h3>They're thinking & feeling</h3>
+    <pre>${r.their_thinking_feeling}</pre>
+  </div>
+
+  <div class="section">
+    <h3>My response</h3>
+    <pre>${r.response}</pre>
+  </div>
+
+  <div class="section">
+    <h3>Rubric Scores (Prompt ${currentPrompt + 1})</h3>
+    <pre>${
+      turnScores
+        ? JSON.stringify(turnScores, null, 2)
+        : "No rubric scores for this prompt."
+    }</pre>
+  </div>
+
+  <div class="section">
+    <h3>Raw Rubric Judge Text</h3>
+    <pre>${
+      currentScenario.raw_rubric_judge_text
+        ? currentScenario.raw_rubric_judge_text
+        : "No raw rubric judge text."
+    }</pre>
+  </div>
+`;
+
+}
+</script>
+
+</body>
+</html>
