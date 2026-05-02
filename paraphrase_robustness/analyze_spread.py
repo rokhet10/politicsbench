@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Paraphrase spread: cross-variant dispersion of rubric scores at turn 0 vs turn 3.
+Cross-variant spread: dispersion of rubric scores at turn 0 vs turn 3 within each base.
 
-Expectation (paper): spread_turn_3 < spread_turn_0 for kind=main scenarios.
+Manifest pairs may be wording-only (wa/wb) or archived framing (pro/anti); math is the same.
 """
 from __future__ import annotations
 
@@ -41,17 +41,43 @@ def load_manifest(path: Path) -> Tuple[int, List[Dict[str, Any]]]:
     return ver, variants
 
 
-def pick_run_payload(runs: Dict[str, Any], run_key: Optional[str]) -> Tuple[str, Dict[str, Any]]:
+def pick_run_payload(
+    runs: Dict[str, Any],
+    run_key: Optional[str],
+    *,
+    use_latest: bool = False,
+) -> Tuple[str, Dict[str, Any]]:
+    if not isinstance(runs, dict):
+        raise TypeError("runs JSON root must be an object mapping run_key -> run data")
+    if not runs:
+        raise ValueError("runs JSON is empty (no top-level keys)")
+
     if run_key:
         if run_key not in runs:
-            raise KeyError(f"run_key {run_key!r} not in runs file")
+            raise KeyError(
+                f"run_key {run_key!r} not in runs file. Available: {sorted(runs)!r}"
+            )
         return run_key, runs[run_key]
-    if len(runs) != 1:
-        raise ValueError(
-            f"runs JSON has {len(runs)} top-level keys; pass --run-key explicitly"
-        )
-    k = next(iter(runs))
-    return k, runs[k]
+
+    if use_latest:
+        def start_stamp(item: Tuple[str, Any]) -> str:
+            _, obj = item
+            if not isinstance(obj, dict):
+                return ""
+            return str(obj.get("start_time") or "")
+
+        rk, run_obj = max(runs.items(), key=start_stamp)
+        return rk, run_obj
+
+    if len(runs) == 1:
+        k = next(iter(runs))
+        return k, runs[k]
+
+    keys = ", ".join(repr(k) for k in sorted(runs.keys()))
+    raise ValueError(
+        f"runs JSON has {len(runs)} top-level keys; pass --run-key KEY or --latest. "
+        f"Available keys: {keys}"
+    )
 
 
 def extract_turn_scores(
@@ -123,9 +149,10 @@ def summarize_run(
     run_key: Optional[str],
     iteration: str,
     kind_filter: Optional[str],
+    use_latest: bool = False,
 ) -> Dict[str, Any]:
     runs = json.loads(runs_path.read_text(encoding="utf-8"))
-    rk, run_obj = pick_run_payload(runs, run_key)
+    rk, run_obj = pick_run_payload(runs, run_key, use_latest=use_latest)
     _, variants = load_manifest(manifest_path)
 
     if kind_filter:
@@ -231,7 +258,7 @@ def plot_paired_spread(per_base: List[Dict[str, Any]], out_path: Path) -> None:
     ax.set_xticks(idx)
     ax.set_xticklabels(labels)
     ax.set_ylabel("Cross-variant std (weighted scalar)")
-    ax.set_title("Paraphrase spread: Stage 1 vs Stage 4")
+    ax.set_title("Cross-variant spread (surface wording): Stage 1 vs Stage 4")
     ax.legend()
     ax.grid(True, axis="y", linestyle="--", alpha=0.35)
     fig.tight_layout()
@@ -243,7 +270,13 @@ def main() -> None:
     ap = argparse.ArgumentParser(description="Paraphrase spread analysis (turn 0 vs 3).")
     ap.add_argument("--manifest", type=Path, required=True)
     ap.add_argument("--runs-json", type=Path, required=True)
-    ap.add_argument("--run-key", default=None)
+    pick = ap.add_mutually_exclusive_group()
+    pick.add_argument("--run-key", default=None, help="Which run to analyze when the JSON has multiple top-level keys.")
+    pick.add_argument(
+        "--latest",
+        action="store_true",
+        help="Pick the run with the lexicographically greatest start_time (for multi-run files).",
+    )
     ap.add_argument("--iteration", default="1")
     ap.add_argument(
         "--kind",
@@ -263,6 +296,7 @@ def main() -> None:
         run_key=args.run_key,
         iteration=args.iteration,
         kind_filter=kind_filter,
+        use_latest=bool(args.latest),
     )
 
     stem = args.runs_json.stem + ("_" + kind_filter if kind_filter else "_all")

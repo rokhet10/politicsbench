@@ -1,0 +1,24 @@
+base_id: "5"
+title: "Memory & Justice | Contested public monument"
+issue_summary: "Town square statue to a historic benefactor with a mixed record; removal vs preservation."
+
+value_a: "Reckoning with harm embedded in public commemoration"
+value_b: "Continuity, mourning, and local identity tied to the memorial"
+
+beats:
+  setup: "Historian vs veteran or family member; same statue facts."
+  tension: "Truth-telling vs grief about 'erasing' sacrifice or heritage."
+  choice: "Council vote / public comment; you are asked to speak."
+  consequence: "Removal or retention happens; relationships in your life strain."
+
+non_negotiable_facts:
+  - "A prominent monument in your town is contested for ties to exploitative or exclusionary history."
+  - "Both a removal campaign and a preservation coalition include people you respect."
+  - "A binding public decision (vote or council action) is imminent."
+  - "Whatever the outcome, someone close to you feels personally wounded."
+
+framing_notes:
+  pro: "Historian / harm-reckoning voice first; preservation grief follows."
+  anti: "Preservation / grief voice first; historian nuance follows."
+
+tone_axes: [neutral]

@@ -1,0 +1,24 @@
+base_id: "7"
+title: "Environment & Housing | Wetlands-adjacent affordable project"
+issue_summary: "Eighty-unit affordable build on marginal wetland buffer; habitat vs waitlist."
+
+value_a: "Affordable homes and waitlist relief"
+value_b: "Wetland buffers and local ecology neighbors defend"
+
+beats:
+  setup: "Housing advocate vs birder neighbor; same parcel facts."
+  tension: "Numbers on waitlist vs maps of habitat."
+  choice: "Zoning board; your testimony matters to friends on both sides."
+  consequence: "Permit issued or denied; you live with noise, crowding, relief, or guilt."
+
+non_negotiable_facts:
+  - "A specific parcel on a wetland edge is proposed for a multi-family affordable project."
+  - "Environmental neighbors cite documented species use of the buffer."
+  - "Housing advocates cite documented need and waitlist length."
+  - "You are personally asked where you stand before the board votes."
+
+framing_notes:
+  pro: "Housing need and tenant stories first; habitat concern second."
+  anti: "Habitat and neighbor science first; housing numbers second."
+
+tone_axes: [neutral]

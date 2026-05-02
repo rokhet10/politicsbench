@@ -1,0 +1,24 @@
+base_id: "3"
+title: "Infrastructure | Transit line & eminent domain"
+issue_summary: "Ballot-funded light rail easement through residential blocks; climate mobility vs neighborhood loss."
+
+value_a: "Regional decarbonization and affordable mobility"
+value_b: "Neighborhood trees, setbacks, and local consent"
+
+beats:
+  setup: "Organizer vs neighbor you know; same route facts."
+  tension: "Climate math vs lived place attachment."
+  choice: "Public hearing; speak for easement or resistance."
+  consequence: "Construction fences; your lot line or peace affected."
+
+non_negotiable_facts:
+  - "A voter-approved transit corridor requires eminent-domain easements on some residential lots."
+  - "You know at least one neighbor personally who opposes the taking."
+  - "You are asked to take a public position before construction begins."
+  - "If built, you face a tangible nuisance or property impact (noise, easement, or tree loss)."
+
+framing_notes:
+  pro: "Transit/climate advocate speaks first; neighbor worry follows."
+  anti: "Neighbor loss-of-home-place voice first; advocate explains benefits second."
+
+tone_axes: [neutral]

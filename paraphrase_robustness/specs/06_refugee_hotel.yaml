@@ -1,0 +1,24 @@
+base_id: "6"
+title: "Migration & Solidarity | Refugee hotel placement"
+issue_summary: "County books motel rooms for resettled families; tax line vs welcome."
+
+value_a: "Moral welcome and practical support for displaced people"
+value_b: "Municipal budget strain and constituent skepticism"
+
+beats:
+  setup: "Volunteer vs treasurer framing; same motel contract facts."
+  tension: "Compassion vs ledger lines."
+  choice: "Funding extension vote; you are visible in the community."
+  consequence: "Program continues or shrinks; you feel a personal cost or relief."
+
+non_negotiable_facts:
+  - "The county is housing newly arrived refugees in a local motel under a time-limited contract."
+  - "Hotel costs show up as a visible budget line debated in public meetings."
+  - "You know both a volunteer helping families and a resident worried about taxes or crowding."
+  - "You are asked to take a side in a public forum before the contract is renewed or cut."
+
+framing_notes:
+  pro: "Volunteer welcome narrative first; fiscal worry second."
+  anti: "Budget/tax concern first; volunteer humanizes families second."
+
+tone_axes: [neutral]

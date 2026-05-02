@@ -1,0 +1,24 @@
+base_id: "4"
+title: "Labor & Education | Teacher strike during exam season"
+issue_summary: "District-wide walkout over pay and class size while seniors face AP/standardized testing."
+
+value_a: "Fair compensation and classroom conditions for educators"
+value_b: "Instructional continuity and student stakes in high-stakes weeks"
+
+beats:
+  setup: "Teacher vs parent voices; same calendar facts."
+  tension: "Solidarity with staff vs panic about lost prep time."
+  choice: "Board meeting or picket line moment of public alignment."
+  consequence: "Strike ends partially; your household pays a concrete cost (time, money, opportunity)."
+
+non_negotiable_facts:
+  - "Teachers are on lawful strike during a high-stakes testing window."
+  - "At least one family you care about is directly stressed about lost instructional days."
+  - "You are nudged to pick a side publicly (letter, meeting, or social post)."
+  - "A settlement happens with partial gains and partial losses for both sides."
+
+framing_notes:
+  pro: "Teacher explains classroom conditions first; anxious parent follows."
+  anti: "Parent/student distress about exams first; teacher explains strike second."
+
+tone_axes: [neutral]

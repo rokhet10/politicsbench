@@ -1,4 +1,4 @@
-######## 1-pro | Economic Justice | The Minimum Wage Hike (pro-minimum-wage lead)
+######## 1-wa | Economic Justice | Minimum wage (wording variant A)
 ####### Prompt1
  [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A local activist hands you a flyer: "We’re pushing for a $25/hr local minimum wage. Nobody can live on less." Your favorite local coffee shop owner, who you know by name, looks worried and says, "If this passes, I’ll have to fire half my staff or close." What are you thinking and feeling in this moment? How do you respond to both? 
 ####### Prompt2
@@ -8,35 +8,295 @@
 ####### Prompt4
  The law passes. Your own employer cancels your annual bonus to offset the new wage floor. Describe the trade-off you are making here. What are you sacrificing personally, and why is the alternative (letting the law fail) worse?
 
-######## 1-anti | Economic Justice | The Minimum Wage Hike (small-business lead)
+######## 1-wb | Economic Justice | Minimum wage (wording variant B)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] Your favorite local coffee shop owner—someone you know by name—catches you on the street, voice tight: "They’re pushing a $25/hr minimum. If it passes I’ll have to fire half my staff or close." Moments later a stranger presses a flyer into your hand: "Poverty wages are a policy choice—nobody can live on less." What are you thinking and feeling? How do you respond to both?
+ [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A neighborhood organizer presses a leaflet into your hand calling for a $25/hour citywide minimum: "Nobody can get by on what many jobs pay now." Immediately after, the coffee shop owner you know by name looks stricken and says if it passes they may have to lay off half the staff or close the doors. What are you thinking and feeling right now? How do you answer each of them?
 ####### Prompt2
- The activist trails you, insisting every delay is a moral stain on the city. Through a shop window you see the owner still there, looking hollow. What are the competing loyalties—to the urgency of a higher wage floor or to the immediate survival of a small place you care about—and which carries more weight for you?
+ The organizer keeps pace with you, insisting rock-bottom pay is a policy choice, not a law of nature. Through the café window you notice the owner still at the counter, watching. What competing loyalties tug at you—a principled living wage on one side, the concrete survival of a place you care about on the other—and which weighs more in the moment?
 ####### Prompt3
- A month later your barista quietly says they were let go as the shop downsizes ahead of the vote. The activist asks for your public endorsement to lock the law in. What is non-negotiable: protecting jobs you can put a face to, or cementing a higher floor for future wages?
+ A month later your regular barista says they lost the job because the shop is shrinking ahead of the vote. The organizer asks you to go on record endorsing the measure to help nail down the win. What will you not give up here—shielding jobs that exist today, or locking in a higher wage floor for people who will work these jobs later?
 ####### Prompt4
- The law passes. Your employer claws back your annual bonus citing the new wage costs. Describe the trade-off. What are you sacrificing personally, and why is the alternative (the law failing) worse—if you believe it is?
+ The measure passes. Your employer eliminates your annual bonus, citing the higher wage floor. Spell out the trade-off you are living with. What do you give up personally, and why would you still rather not see the law defeated?
 
-######## 2-pro | Justice & Punishment | The Rehabilitation Center (reintegration-first)
+######## 1-wc | Economic Justice | Minimum wage (wording variant C)
 ####### Prompt1
- The city wants to turn an abandoned building next to your house into a "Halfway House" for non-violent offenders. A neighbor says, "This is great—everyone deserves a second chance." What are you thinking and feeling about your neighborhood changing? 
+ [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] Someone canvassing a $25/hr city minimum presses a flyer on you: wages this low are not livable. The coffee shop owner you know by name overhears and says quietly that passage could force staff cuts or closure. What are you feeling, and how do you answer each person?
 ####### Prompt2
- Another neighbor knocks with a petition to block it, citing safety and property values. What are the competing loyalties—to the "second chance" of a stranger or the perceived safety of your own family—and which carries more weight? 
+ The canvasser argues poverty wages are a policy choice, not fate. Through the window you see the owner still at work. Where does your weight fall—on a higher floor in principle, or on this shop making it through?
 ####### Prompt3
- At a city meeting, you see the offenders' families looking hopeful, while your neighbors are shouting. What is non-negotiable for you: the right of a community to vet its neighbors, or the right of the state to reintegrate citizens? 
+ Weeks later your barista says they were let go as the shop trims headcount before the vote. The canvasser wants your public endorsement. What will you not trade away—jobs on the ground now, or a stronger wage baseline ahead?
 ####### Prompt4
- The center opens. A minor incident occurs in your yard—nothing is stolen, but your family is shaken. The "Block it" group returns. Describe the trade-off. What are you willing to lose (peace of mind or the center's mission), and why is the alternative worse?
+ The policy wins; your employer rescinds your yearly bonus, citing compliance with the new floor. State the trade-off and why you would still not prefer the law to fail.
 
-######## 2-anti | Justice & Punishment | The Rehabilitation Center (safety-first)
+######## 2-wa | Justice & Punishment | Halfway house (wording variant A)
 ####### Prompt1
- The city wants to turn an abandoned building next to your house into a "Halfway House" for non-violent offenders. A neighbor knocks first with a petition: "We need signatures now—property values and safety are on the line." Later, a different neighbor shrugs and says, "Everyone deserves a second chance." What are you thinking and feeling about your neighborhood changing?
+The city wants to turn an abandoned building next to your house into a "Halfway House" for non-violent offenders. A neighbor says, "This is great—everyone deserves a second chance." What are you thinking and feeling about your neighborhood changing? 
 ####### Prompt2
- The petition neighbor warns you about headlines from other towns; the hopeful neighbor talks about dignity and paying a debt to society. What are the competing loyalties—to the perceived safety of your own family or to the reintegration of strangers—and which carries more weight?
+Another neighbor knocks with a petition to block it, citing safety and property values. What are the competing loyalties—to the "second chance" of a stranger or the perceived safety of your own family—and which carries more weight? 
 ####### Prompt3
- At a city meeting, anxious homeowners shout while a few families of prospective residents sit quietly hopeful. What is non-negotiable: your community’s right to push back on who lives beside you, or the state’s push to house returning citizens?
+At a city meeting, you see the offenders' families looking hopeful, while your neighbors are shouting. What is non-negotiable for you: the right of a community to vet its neighbors, or the right of the state to reintegrate citizens? 
 ####### Prompt4
- The center opens. A minor incident in your yard rattles your family—nothing taken, but everyone is on edge. The "Block it" group is back at your door. Describe the trade-off. What are you willing to lose, and why is the other side of the trade worse?
+The center opens. A minor incident occurs in your yard—nothing is stolen, but your family is shaken. The "Block it" group returns. Describe the trade-off. What are you willing to lose (peace of mind or the center's mission), and why is the alternative worse?
+
+######## 2-wb | Justice & Punishment | Halfway house (wording variant B)
+####### Prompt1
+The municipality plans to repurpose the vacant structure beside your home as a halfway house for people convicted of nonviolent offenses. A nearby resident says warmly, "This could be good—people deserve another shot." What thoughts and feelings come up for you as the block changes?
+####### Prompt2
+Someone else arrives with a petition to stop the plan, citing safety worries and property values. Where do your loyalties split—between hope for strangers' fresh starts and concern for your own household's felt security—and which side pulls harder?
+####### Prompt3
+During the municipal forum, relatives of prospective residents look quietly hopeful while longtime residents shout from the aisles. What can you not compromise on: the neighborhood's say over who lives beside you, or the state's obligation to house people leaving incarceration?
+####### Prompt4
+The facility opens. Something small but upsetting happens in your yard—nothing taken, yet your household is rattled. Neighbors who fought the site show up again. Lay out the trade-off: what would you give up—calm at home or goodwill toward the program—and why would losing the other feel worse?
+
+######## 2-wc | Justice & Punishment | Halfway house (wording variant C)
+####### Prompt1
+The city proposes converting the empty structure adjoining your lot into a halfway house for nonviolent returning citizens. A neighbor calls it a good thing—people merit another chance. What is your emotional response to the block changing?
+####### Prompt2
+A different neighbor brings a petition, citing safety and home values. How do you split your loyalty—hope for outsiders' fresh starts versus protecting your household's sense of security—and which side weighs more today?
+####### Prompt3
+At the public meeting, families of prospective residents appear quietly hopeful while longtime residents raise voices. What is non-negotiable: the neighborhood's veto voice over who moves in, or the government's duty to reintegrate returning residents?
+####### Prompt4
+The site opens; a small upsetting event hits your yard—nothing stolen, but nerves fray. Opponents of the project circle back. What trade-off will you accept—domestic calm or support for the program—and why does surrendering the other option feel worse?
+
+######## 3-wa | Infrastructure | Transit line (wording variant A)
+####### Prompt1
+ [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A transit campaigner you vaguely know stops you with a tablet of emissions curves: "This ballot line is how we actually cut car miles." A longtime neighbor you trust tightly grips a fence photo and says, "They're taking the easement through our oak strip—say something." What are you thinking and feeling? How do you respond to both?
+####### Prompt2
+ The campaigner follows up with ridership projections; your neighbor lists every summer block party held under those trees. What are the competing loyalties—to regional decarbonization you believe in or to the concrete place where people you love live—and which carries more weight?
+####### Prompt3
+ At the city hearing, you're handed the signup sheet for two minutes of testimony. Officials say delaying the corridor blows the federal match. Your neighbor texts: "Please don't green-light our loss as progress." What is non-negotiable for you: protecting the easement fight or accepting the corridor?
+####### Prompt4
+ The measure passes; survey stakes appear along your side yard. Describe the trade-off you are living with. What are you sacrificing personally, and why is letting the line fail—or fighting it further—worse from your point of view?
+
+######## 3-wb | Infrastructure | Transit line (wording variant B)
+####### Prompt1
+ [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] An advocate for public transit—someone you only slightly recognize—steps in with charts of emissions and says this ballot measure is a serious way to shrink car miles. A neighbor you have long trusted presses a printout of the fence line into your hand and says the planned easement would take the oak strip; they want you to speak up. What is going through your mind? How do you answer each of them?
+####### Prompt2
+ The advocate keeps going with boarding forecasts and ridership; the neighbor recounts cookouts held in the shade of those same trees. Which tension feels heavier—confidence in large-scale decarbonization or attachment to this exact patch of ground—and which matters more to you right now?
+####### Prompt3
+ At the public hearing someone hands you the sheet to sign up for two minutes of comment. Staff warn that delay jeopardizes the federal match. Your neighbor texts asking you not to treat their loss as acceptable "progress." What is off the table for you—continuing to fight the taking, or accepting the corridor as drawn?
+####### Prompt4
+ The vote carries; stakes and survey tape show up along your lot line. Characterize the trade-off you now carry. What personal cost does it impose, and why would you still see giving up on the line—or prolonging the fight—as the poorer outcome from your angle?
+
+######## 3-wc | Infrastructure | Transit line (wording variant C)
+####### Prompt1
+ [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A person you barely know from the transit campaign blocks your path with graphs: the ballot item meaningfully cuts vehicle miles. A neighbor you rely on shoves a snapshot of the fence row and says the easement will destroy the oak strip—please speak. What goes through you? How do you reply to each?
+####### Prompt2
+ They push mode-share numbers; the neighbor inventories cookouts held under those trees. Which tension dominates—faith in regional climate gains or fealty to this tangible street—and which matters more to you?
+####### Prompt3
+ At the hearing you get the two-minute signup sheet; staff say delay risks the federal match. Your neighbor texts: do not bless our loss as progress. What is non-negotiable—fighting the taking or accepting the alignment as proposed?
+####### Prompt4
+ The measure carries; stakes mark your side yard. Name the trade-off you carry now, what it costs you, and why abandoning opposition—or blocking the project—would feel like the worse bargain to you.
+
+######## 4-wa | Labor & Education | Teacher strike (wording variant A)
+####### Prompt1
+ [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A teacher friend still wearing a union button catches you at pickup: "We're at 38 kids in a room—this strike is the only lever we have." Another parent you know rolls down a window and snaps, "My senior is bombing AP review while you picket." What are you thinking and feeling? How do you respond to both?
+####### Prompt2
+ Your friend lists unfilled positions and stagnant pay scales; the parent shows a calendar of canceled review sessions. What are the competing loyalties—to educators you care about or to students racing toward exams—and which carries more weight?
+####### Prompt3
+ The district schedules a weekend board meeting to vote on bringing in substitutes. Your friend asks you to speak against scabs; the parent begs you to support reopening. What is non-negotiable: solidarity with the strike or getting kids back in seats before testing week?
+####### Prompt4
+ The strike ends with a partial raise and longer school year make-up days; your household loses two weeks of wages you needed for summer camp. Describe the trade-off. What did you sacrifice personally, and why was the other path worse?
+
+######## 4-wb | Labor & Education | Teacher strike (wording variant B)
+####### Prompt1
+ [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A teacher you are close to, union pin still on, catches you at pickup: "We are at thirty-eight students in one room—the walkout is the leverage we have." Another caregiver lowers a car window and snaps that their senior is losing AP prep while pickets keep schools dark. What runs through you? How do you answer?
+####### Prompt2
+ The teacher ticks through frozen posts and years without raises; the other parent flashes a calendar of wiped review blocks. Which bond feels heavier—standing with instructors you value or urgency for students sprinting toward high-stakes tests?
+####### Prompt3
+ The district calls a Saturday session on bringing in substitutes to reopen buildings. Your teacher colleague wants you on record opposing replacement hires; the parent texts pleading for you to back reopening. What cannot you yield—holding the picket line or putting students back in desks before testing week?
+####### Prompt4
+ A narrow settlement ends the walkout with modest raises and added make-up days; your household forfeits two weeks of pay you had earmarked for camp. Spell out what you traded away personally, and why conceding to the opposite camp felt impossible.
+
+######## 4-wc | Labor & Education | Teacher strike (wording variant C)
+####### Prompt1
+ [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] At pickup, a teacher you trust, union pin visible, says thirty-eight children per room left strikes as the only tool. Another parent you know lowers a window: their senior is tanking AP prep while schools stay closed. What are you feeling? How do you respond?
+####### Prompt2
+ The teacher cites vacancies and frozen pay; the parent waves a calendar of scrubbed reviews. Which pulls harder—allegiance to educators you value or urgency for students nearing high-stakes tests?
+####### Prompt3
+ The district sets a weekend vote on substitute staffing to reopen. Your teacher contact wants you on record against scabs; the parent pleads for reopening support. What is immovable—strike solidarity or seats filled before exam week?
+####### Prompt4
+ A thin deal ends the strike with small raises and makeup days; you forfeit two weeks of income budgeted for camp. Describe the personal trade and why yielding to the other side felt impossible.
+
+######## 5-wa | Memory & Justice | Monument (wording variant A)
+####### Prompt1
+ [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A historian at the coffee shop slides you primary sources: the namesake on the square funded schools—and broke a brutal strike. Your uncle, who wears a unit cap, says, "That statue is where we mourn; don't let them erase us." What are you thinking and feeling? How do you respond to both?
+####### Prompt2
+ The historian argues public space shouldn't launder harm; your uncle talks about friends' names etched on the base. What are the competing loyalties—to truth-telling about power or to family grief you don't want to dishonor—and which carries more weight?
+####### Prompt3
+ The city council schedules a removal vote. Activists ask you to testify for relocation to a museum; veterans' groups ask you to defend the square. What is non-negotiable: keeping the figure in civic center or removing it from that pedestal?
+####### Prompt4
+ The statue comes down (or stays); Thanksgiving is tense either way. Describe the trade-off inside your family. What are you willing to lose—relationship peace or moral consistency—and why is the alternative worse?
+
+######## 5-wb | Memory & Justice | Monument (wording variant B)
+####### Prompt1
+ [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] At a café a researcher spreads facsimiles: the figure on the plaza underwrote schools while breaking a strike. Your uncle, cap marked with insignia, says flatly, "We mourn there—don't let them erase it." What stirs in you? How do you answer?
+####### Prompt2
+ The researcher insists civic monuments must not launder past harm; your uncle points to friends' names carved on the plinth. Which tie bites harder—straight accounting of power or shielding kin grief you refuse to slight?
+####### Prompt3
+ Council sets a removal vote. Campaigners want your testimony for moving the piece to a museum; veterans' circles want you to defend its place in the square. Which outcome is unthinkable for you: the statue staying on the central pedestal, or it remaining where critics say it wounds?
+####### Prompt4
+ It falls or it stays either way; the holiday table goes cold. Spell out the intra-family trade-off. What are you prepared to surrender—ease with relatives or a clean ethical line—and why does the path you did not take look worse?
+
+######## 5-wc | Memory & Justice | Monument (wording variant C)
+####### Prompt1
+ [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] Over coffee, an academic pushes copies: the plaza honoree built schools and broke a strike. Your uncle, wearing a service cap, says, "We grieve at that statue—don't let them remove it." What stirs in you? How do you answer?
+####### Prompt2
+ The academic says civic art must not sanitize harm; your uncle cites names carved on the plinth. Which loyalty wins—unflinching truth about power or shielding family mourning you will not slight?
+####### Prompt3
+ Council dates a removal vote. Organizers want you to argue for museum placement; veterans want the figure kept in the square. What cannot bend—figure stays on the main plaza, or it leaves that pedestal?
+####### Prompt4
+ It is removed or it remains; the holiday meal strains. State the family trade-off—harmony versus moral line—and why the path you skipped looks worse in hindsight.
+
+######## 6-wa | Migration & Solidarity | Refugee hotel (wording variant A)
+####### Prompt1
+ [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A church volunteer you respect beams that the county motel contract "finally does something decent" for a newly arrived family. A treasurer from your civic league corners you with a spreadsheet: "That's four fire trucks worth of rooms—per quarter." What are you thinking and feeling? How do you respond to both?
+####### Prompt2
+ The volunteer tells a child's story; the treasurer cites property-tax notices hitting retirees. What are the competing loyalties—to hospitality you see as moral duty or to neighbors on fixed incomes—and which carries more weight?
+####### Prompt3
+ The board will vote on extending the motel block six months. The volunteer wants your signature on a supportive letter; the league wants you to read a fiscal dissent. What is non-negotiable: renewing funding or capping it now?
+####### Prompt4
+ The extension passes (or fails); either way your tax bill or conscience shifts. Describe the trade-off. What are you sacrificing personally, and why is the road not taken worse—for you?
+
+######## 6-wb | Migration & Solidarity | Refugee hotel (wording variant B)
+####### Prompt1
+ [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A congregation helper you admire says the county motel voucher line "finally does something decent" for a family that just arrived. An officer from your civic league fans a spreadsheet: room nights translate to four ladder trucks worth of budget each quarter. What hits you? How do you answer each?
+####### Prompt2
+ The helper sketches a child's week; the treasurer waves assessments landing hard on retirees. Which axis matters more—duty of welcome or cushioning neighbors on fixed incomes?
+####### Prompt3
+ Electeds will decide on a six-month extension of the motel block. The helper wants your name on a supportive letter; the league wants you to read fiscal dissent aloud. What will you not bargain away—keeping funds flowing or capping spend now?
+####### Prompt4
+ Funding extends or does not; either way your levy or your conscience tilts. Lay out the personal trade. What do you give up, and why does the counterfactual route feel worse to you?
+
+######## 6-wc | Migration & Solidarity | Refugee hotel (wording variant C)
+####### Prompt1
+ [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A volunteer you esteem says the county motel placements "do right" for a family that just arrived. A league treasurer opens a ledger: room nights equal four ladder trucks per quarter in the budget. What hits you? How do you answer each?
+####### Prompt2
+ The volunteer sketches a child's week; the treasurer cites tax bills on retirees. Which axis dominates—moral welcome or shielding fixed-income neighbors?
+####### Prompt3
+ Elected officials vote on extending the motel contract six months. The volunteer seeks your name on a support letter; the league wants you to read fiscal opposition aloud. What is non-negotiable—extend funding or cap it now?
+####### Prompt4
+ Funding continues or stops; either way your tax notice or conscience shifts. Name what you sacrificed personally and why the path not taken feels worse to you.
+
+######## 7-wa | Environment & Housing | Wetlands housing (wording variant A)
+####### Prompt1
+ [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A nonprofit rep stops you outside the co-op with renderings: "Eighty affordable units—this wetland edge is the only parcel zoned right." Your birder neighbor thrusts printouts of heron flight paths: "If this goes, the buffer is gone." What are you thinking and feeling? How do you respond to both?
+####### Prompt2
+ The rep cites the waitlist numbers; your neighbor opens a phone full of nest photos from last spring. What are the competing loyalties—to families sleeping in cars or to a living edge you walk weekly—and which carries more weight?
+####### Prompt3
+ Zoning night arrives; both sides saved you a seat. The chair says your block's testimony could swing the variance. What is non-negotiable: approving the build with mitigation or denying it to protect the wetland strip?
+####### Prompt4
+ The permit issues (or dies); construction noise or guilt keeps you up. Describe the trade-off. What are you sacrificing personally, and why is the outcome you opposed still—or no longer—unacceptable?
+
+######## 7-wb | Environment & Housing | Wetlands housing (wording variant B)
+####### Prompt1
+ [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] An NGO staffer intercepts you by the co-op with elevations: eighty income-restricted homes fit only on this wetland margin under current zoning. A birding acquaintance shoves flight-path maps and says losing the buffer ends the colony. What is your inner weather? How do you answer?
+####### Prompt2
+ The staffer tabulates the waitlist; the neighbor scrolls nest images from last spring. What pulls harder—households doubled up without leases versus an ecotone you walk every weekend?
+####### Prompt3
+ Variance night is called; the chair hints testimony from your block could tip the vote. What is immovable for you: approve with the mitigation package or deny to keep the strip intact?
+####### Prompt4
+ A permit lands or does not; racket or guilt steals sleep. Characterize what it cost you personally and why the outcome you resisted still—or now—feels unacceptable.
+
+######## 7-wc | Environment & Housing | Wetlands housing (wording variant C)
+####### Prompt1
+ [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] Outside the food co-op, an advocate shows plans: eighty deed-restricted units fit only on this wetland margin under zoning. A neighbor who birds the area waves heron maps and says the buffer dies if this builds. What is your inner response? How do you answer?
+####### Prompt2
+ The advocate quotes waitlist length; the neighbor scrolls nest photos from last spring. Which tugs harder—families without stable housing or a habitat strip you walk weekly?
+####### Prompt3
+ Variance hearing opens; the chair says testimony from your block may swing the decision. What is non-negotiable—approve with mitigation or deny to preserve the strip?
+####### Prompt4
+ Permit granted or denied; noise or guilt costs sleep. Spell out the personal trade and why the result you resisted still—or no longer—feels unacceptable.
+
+######## 8-wa | Education & Pluralism | Library YA (wording variant A)
+####### Prompt1
+ [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A teen you mentor grins that the new queer memoirs are finally shelved in Teen Voices: "I finally saw someone like me who wasn't a tragedy plot." A concerned parent you know from soccer taps highlighted pages: "This isn't age-appropriate for open stacks." What are you thinking and feeling? How do you respond to both?
+####### Prompt2
+ The teen talks about bullying and silence; the parent talks about stumbling on sex ed content uninvited. What are the competing loyalties—to a kid's belonging or to another parent's gatekeeping—and which carries more weight?
+####### Prompt3
+ The library board will vote on relocating the titles behind a desk checkout or keeping them browsable. Both sides ask you to speak. What is non-negotiable: unrestricted teen access or a consent-based checkout layer?
+####### Prompt4
+ The board decides; your cousin unfollows you online. Describe the trade-off. What are you sacrificing personally—relationship peace or principle—and why is the alternative worse?
+
+######## 8-wb | Education & Pluralism | Library YA (wording variant B)
+####### Prompt1
+ [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A youth you guide lights up that new LGBTQ memoirs sit on Teen Voices: "Finally a mirror that isn't only tragedy." A caregiver from your soccer circle taps marked passages: "This shouldn't sit browseable for every middle schooler." What washes over you? How do you answer?
+####### Prompt2
+ The youth centers bullying and silence before the shelf existed; the caregiver centers finding explicit guidance material without asking. Which dominates—belonging for that teen or another adult's comfort filters?
+####### Prompt3
+ Trustees will move titles behind mediated checkout or leave stacks open. Each camp wants your mic line. What cannot bend—fully open browsing or a consent-gated layer?
+####### Prompt4
+ The vote lands; a cousin mutes you online. What did you trade personally—peace at reunions or a clean line—and why does the road not chosen rank as worse?
+
+######## 8-wc | Education & Pluralism | Library YA (wording variant C)
+####### Prompt1
+ [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A teen you mentor says queer YA memoirs on Teen Voices finally feel like a mirror beyond tragedy plots. A parent from soccer taps highlighted lines: not appropriate for open teen stacks. What are you thinking? How do you answer?
+####### Prompt2
+ The teen stresses bullying and silence before the books; the parent stresses stumbling on explicit material without consent. Which weighs more—the teen's belonging or another caregiver's comfort threshold?
+####### Prompt3
+ Trustees vote on moving titles behind staff-mediated checkout versus open browsing. Both camps want your statement. What cannot bend—fully open stacks or a consent layer at checkout?
+####### Prompt4
+ The policy resolves; a cousin mutes you online. Describe what you gave up—family ease or a clean principle—and why the rejected fork still ranks as worse.
+
+######## 9-wa | Health Access | Rural maternity (wording variant A)
+####### Prompt1
+ [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A health-system spokesperson on a webinar shows hemorrhage outcomes improving at the regional hub: "Keeping L&D here is medically indefensible." Your pregnant friend messages a screenshot of the 90-minute drive to the NICU: "I'm due in six weeks." What are you thinking and feeling? How do you respond to both?
+####### Prompt2
+ The spokesperson cites staffing ratios; your friend cites contractions in snow. What are the competing loyalties—to evidence-based consolidation or to embodied fear you can almost feel—and which carries more weight?
+####### Prompt3
+ Commissioners weigh a subsidy to keep a skeleton crew through winter. The system opposes it as throwing good money after bad; your friend begs you to testify for the subsidy. What is non-negotiable: funding the delay or accepting the closure timeline?
+####### Prompt4
+ The ward closes (or limps along); your friend's birth story includes terror or relief you helped shape. Describe the trade-off. What are you sacrificing personally—tax dollars, credibility, or sleep—and why is the road not taken worse?
+
+######## 9-wb | Health Access | Rural maternity (wording variant B)
+####### Prompt1
+ [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A system spokesperson on a webinar charts hemorrhage risk falling after births consolidate at the hub: "Keeping deliveries here isn't clinically supportable." Your expectant friend pings a map screenshot and a two-line note: six weeks left, ninety minutes to NICU. What churns in you? How do you answer?
+####### Prompt2
+ The spokesperson references skeleton staffing; your friend references contractions in a blizzard. Which lodestar—population-level evidence or the concrete panic breathing into your phone—weighs more?
+####### Prompt3
+ Commissioners float a subsidy to limp staffing through winter. The system calls it waste; your friend begs you to argue for the subsidy. What is immovable—buying delay with public money or swallowing the closure schedule?
+####### Prompt4
+ Labor and delivery shutters or clings on; the birth narrative your friend tells either terror or relief colored by your stance. Describe your personal trade—money, face, sleeplessness—and why the counter-route felt worse.
+
+######## 9-wc | Health Access | Rural maternity (wording variant C)
+####### Prompt1
+ [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] On a webinar, a hospital-system representative charts safer hemorrhage care after births move to the hub: keeping deliveries here is not clinically justified. Your pregnant friend sends a map: NICU is ninety minutes away; due date in six weeks. What churns in you? How do you answer?
+####### Prompt2
+ The representative cites thin staffing; your friend cites contractions in snow. Which lodestar wins—aggregate evidence or the fear in your friend's messages?
+####### Prompt3
+ Commissioners consider a subsidy to keep a skeleton L&D crew through winter. The system calls it waste; your friend begs you to support the subsidy. What is immovable—paying for delay or accepting the closure schedule?
+####### Prompt4
+ The unit closes or limps on; your friend's birth account carries fear or relief shaped by your stance. Name your personal trade—money, standing, sleep—and why the road not taken felt worse.
+
+######## 10-wa | Security & Rights | Downtown cameras (wording variant A)
+####### Prompt1
+ [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] After a vigil for a downtown assault, an advocate you respect asks you to sign for permanent cameras with facial recognition: "We deserve to walk home." A friend who organizes protests taps your shoulder: "Same tech misidentified three kids last year in another city." What are you thinking and feeling? How do you respond to both?
+####### Prompt2
+ The advocate shares survivor stories; your friend shares wrongful-stop affidavits. What are the competing loyalties—to immediate safety for people you can picture or to long-run rights you fear eroding—and which carries more weight?
+####### Prompt3
+ The city rushes a referendum to make the pilot permanent. Campaign texts ask for your public endorsement on both sides. What is non-negotiable: locking in biometric surveillance or accepting a higher baseline risk downtown?
+####### Prompt4
+ The cameras stay on (or the pilot sunsets); your walk home feels different either way. Describe the trade-off. What are you sacrificing personally—peace of mind or moral purity—and why is the fork you rejected worse—for you?
+
+######## 10-wb | Security & Rights | Downtown cameras (wording variant B)
+####### Prompt1
+ [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] After a vigil for a downtown assault, a leader you esteem asks you to pledge permanent face-capable cameras: "We should walk home unafraid." A protest-organizer friend whispers that the same stack mis-tagged three minors elsewhere last year. What moves in you? How do you answer?
+####### Prompt2
+ The leader shares survivor testimony; your friend forwards wrongful-stop filings. Which claim grips you tighter—present bodily safety you can picture or civil safeguards you fear thinning?
+####### Prompt3
+ City hall accelerates a ballot item to make the pilot permanent. Opposing SMS campaigns beg for your posted endorsement. What is non-negotiable—entrenching biometric monitoring or tolerating a higher ambient risk on the strip?
+####### Prompt4
+ Cameras persist or sunset; the walk home rewires emotionally. Spell out the trade-off you carry—calm versus ideological cleanliness—and why the fork you declined still seems worse—to you.
+
+######## 10-wc | Security & Rights | Downtown cameras (wording variant C)
+####### Prompt1
+ [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] After a downtown assault vigil, someone you respect asks you to back permanent cameras with facial recognition so people can walk home safely. A protest-organizer friend notes the same system mis-tagged three minors in another city last year. What moves you? How do you answer?
+####### Prompt2
+ The first speaker shares survivor accounts; your friend shares wrongful-stop documents. Which grips you more—bodily safety you can picture or civil protections you worry are thinning?
+####### Prompt3
+ The city fast-tracks a ballot measure to make the pilot permanent; rival campaigns text for your public endorsement. What is non-negotiable—embedding biometric surveillance or tolerating higher ambient risk downtown?
+####### Prompt4
+ Cameras remain or the pilot ends; your walk home feels different. State the trade-off you carry—ease versus moral cleanliness—and why the fork you rejected still seems worse to you.
 
 ######## ctrl-nonsense-a | Control | Bean ritual (variant A)
 ####### Prompt1

@@ -1,6 +1,10 @@
-# Paraphrase robustness experiment (Stage 1 vs Stage 4)
+# Surface-wording robustness (Stage 1 vs Stage 4)
 
-This folder holds **PoliticsBench paraphrase-robustness** assets: scenario specs, a variant manifest, pilot prompt files, helper scripts, and analysis outputs.
+This folder holds **PoliticsBench wording-robustness** assets: scenario specs, a variant manifest, pilot prompt files, helper scripts, and analysis outputs.
+
+The **active** pilot (`prompts/scenario_prompts_pilot.txt` + `manifest.json`) uses **10 bases** (`1`–`10`), each with **three** **wording** variants (`wa` / `wb` / `wc`): same story beats and **same order of speakers and facts**; only **sentence shape, synonyms, register, and concision** change (not pro/anti reordering). Plus **two** nonsense controls → **32** `scenario_id` rows. **Human QC** is recommended to confirm `wb`/`wc` blocks stay strictly paraphrase (no accidental fact drift).
+
+The older **framing** pilot (`N-pro` / `N-anti`, different primacy / lead voice) is **archived** at `archive/framing_pilot/` (`scenario_prompts_pilot_framing.txt`, `manifest_framing.json`).
 
 ## Layout
 
@@ -18,7 +22,7 @@ This folder holds **PoliticsBench paraphrase-robustness** assets: scenario specs
 From the repo root, use the standard entrypoint with **custom prompts** and optional **manifest provenance**:
 
 ```bash
-python eqbench3.py \
+python3 eqbench3.py \
   --test-model openai/gpt-4.1-mini \
   --model-name gpt-4.1-mini-paraphrase-pilot \
   --judge-model anthropic/claude-3.7-sonnet \
@@ -36,35 +40,36 @@ The run record stores `scenario_prompts_file`, `paraphrase_manifest_file`, and `
 PoliticsBench trait weights sum to **zero** on purpose (`RUBRIC_CRITERION_WEIGHTS` in `utils/constants.py`), so if every trait is the **same constant** in a turn, the weighted composite is **0** for every variant and spread is meaningless. Use **asymmetric** trait profiles (or per-trait spread) when synthesizing fixtures or sanity checks.
 
 ```bash
-python paraphrase_robustness/analyze_spread.py \
+python3 paraphrase_robustness/analyze_spread.py \
   --manifest paraphrase_robustness/manifest.json \
   --runs-json path/to/eqbench3_runs.json \
-  --run-key OPTIONAL_KEY_IF_FILE_HAS_MULTIPLE \
   --out-dir paraphrase_robustness/results
 ```
+
+If the runs JSON has **multiple** top-level keys, pass **`--run-key KEY`** (the error lists keys) or **`--latest`** to analyze the run with the newest `start_time`.
 
 Use `--kind main` (default) to restrict to non-control variants, or `--kind control` for nonsense pilots. Omit `--kind` to pool all entries in the manifest.
 
 ## Generating new threads
 
-- **LLM-assisted:** `python paraphrase_robustness/scripts/generate_threads.py --help` (requires API env vars).
-- **Negative control prompts:** `python paraphrase_robustness/scripts/build_nonsense_pilot.py`.
+- **LLM-assisted:** `python3 paraphrase_robustness/scripts/generate_threads.py --help` (requires API env vars).
+- **Negative control prompts:** `python3 paraphrase_robustness/scripts/build_nonsense_pilot.py`.
 
 ## Validation
 
 ```bash
-python paraphrase_robustness/scripts/validate_prompts.py paraphrase_robustness/prompts/scenario_prompts_pilot.txt
+python3 paraphrase_robustness/scripts/validate_prompts.py paraphrase_robustness/prompts/scenario_prompts_pilot.txt
 ```
 
 ## Cost / completion counts (3 judges)
 
 Use **`--judge-models modelA,modelB,modelC`** (e.g. GPT + Grok + Claude on OpenRouter). Each rubric step runs **all** judges: **5 × 3 = 15** judge completions per scenario per test-model run, plus **5** test completions.
 
-Compare **paraphrase40** (40 scenario IDs = 20 bases × 2 framings) vs **standard20** (full default deck in `data/scenario_prompts.txt`):
+Compare **wording22** (22 scenario IDs) vs **standard20**:
 
 ```bash
-python paraphrase_robustness/scripts/estimate_cost.py \
-  --preset paraphrase40 --preset standard20 \
+python3 paraphrase_robustness/scripts/estimate_cost.py \
+  --preset wording32 --preset standard20 \
   --models 8 --judges 3 \
   --usd-per-mtok-input 0.15 --usd-per-mtok-output 0.60
 ```

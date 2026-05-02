@@ -1,0 +1,24 @@
+base_id: "10"
+title: "Security & Rights | Downtown facial-recognition cameras"
+issue_summary: "City pilot becomes permanent; assault prevention vs surveillance and mis-ID risk."
+
+value_a: "Victim safety and deterrence in a real crime cluster"
+value_b: "Privacy, protest rights, and error-prone biometric policing"
+
+beats:
+  setup: "Survivor-advocate vs civil-liberties friend; same pilot data facts."
+  tension: "Felt safety vs felt surveillance."
+  choice: "Referendum or council decision on making cameras permanent with facial recognition."
+  consequence: "Policy locks in or sunsets; you live with either unease about crime or unease about being watched."
+
+non_negotiable_facts:
+  - "A pilot of networked cameras with facial-recognition capability covers the downtown core."
+  - "Police cite a measurable drop in certain incident types; critics cite misidentification cases elsewhere."
+  - "You personally know both someone who was harassed downtown and someone who distrusts the police tech stack."
+  - "A binding decision on permanence is imminent and you are asked how you will vote or testify."
+
+framing_notes:
+  pro: "Safety / survivor solidarity voice first; civil-liberties caution second."
+  anti: "Privacy / mis-ID critique first; police / deterrence pitch second."
+
+tone_axes: [neutral]

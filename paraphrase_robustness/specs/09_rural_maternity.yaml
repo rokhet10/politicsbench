@@ -1,0 +1,24 @@
+base_id: "9"
+title: "Health Access | Rural maternity ward closure"
+issue_summary: "Hospital merger shutters local labor & delivery; hub efficiency vs 90-mile births."
+
+value_a: "Clinical consolidation and risk metrics at a regional hub"
+value_b: "Geographic access and fear in late pregnancy"
+
+beats:
+  setup: "Administrator vs pregnant friend; same closure timeline."
+  tension: "Spreadsheet outcomes vs embodied fear."
+  choice: "County hearing on subsidy to delay closure or accept merger terms."
+  consequence: "Ward closes or stays on life support; your community pays a concrete cost."
+
+non_negotiable_facts:
+  - "The county's smaller hospital is slated to end labor-and-delivery services after a merger."
+  - "The nearest alternative with a comparable NICU is a long drive under non-trivial traffic."
+  - "A friend or relative is pregnant and directly affected."
+  - "A public funding vote could partially postpone but not eliminate the closure pressure."
+
+framing_notes:
+  pro: "Administrator / quality-at-hub narrative first; scared patient voice second."
+  anti: "Patient/friend panic and access first; administrator rationale second."
+
+tone_axes: [neutral]

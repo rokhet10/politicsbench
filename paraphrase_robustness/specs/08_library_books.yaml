@@ -1,0 +1,24 @@
+base_id: "8"
+title: "Education & Pluralism | Library YA collection challenge"
+issue_summary: "New queer YA memoirs shelved in teen section; inclusion vs parental content concerns."
+
+value_a: "Access and representation for LGBTQ teens"
+value_b: "Parental discretion and perceived age-appropriateness"
+
+beats:
+  setup: "Teen/librarian voice vs concerned parent; same titles and meeting facts."
+  tension: "Safety-in-literature vs belonging-in-literature."
+  choice: "Board vote on moving titles to restricted checkout or keeping open stacks."
+  consequence: "Policy outcome strains a family relationship you care about."
+
+non_negotiable_facts:
+  - "A set of YA titles with LGBTQ themes is newly prominent in the teen open stacks."
+  - "A formal challenge has been filed citing explicit passages."
+  - "A public library board meeting will decide relocation vs unrestricted access."
+  - "People on both sides include someone you are related to or close friends with."
+
+framing_notes:
+  pro: "Teen/librarian inclusion frame first; parental concern second."
+  anti: "Parental concern at mic first; teen/librarian response second."
+
+tone_axes: [neutral]
