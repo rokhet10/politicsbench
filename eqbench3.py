@@ -20,6 +20,8 @@ load_dotenv()
 
 from utils.logging_setup import setup_logging, get_verbosity
 from utils.file_io import load_json_file, update_run_data, save_json_file # save_json_file needed for reset
+# Logging is not configured until main() — imports below can take 15s+ (matplotlib, elo, …).
+print("EQBench3: loading modules (cold start can take a while before logs appear)...", flush=True)
 from core.benchmark import run_eq_bench3 # Import the main benchmark runner
 import utils.constants as C # Import constants for default file paths
 
@@ -533,7 +535,16 @@ def main():
         help="Delete all existing run data and ELO comparisons for the logical model name from the LOCAL files before running.",
     )
     # --- Removed file path arguments (now handled via constants) ---
-    # parser.add_argument("--scenario-prompts-file", ...)
+    parser.add_argument(
+        "--scenario-prompts-file",
+        default=None,
+        help="Path to scenario prompts .txt (default: data/scenario_prompts.txt via constants).",
+    )
+    parser.add_argument(
+        "--paraphrase-manifest",
+        default=None,
+        help="Optional JSON manifest for paraphrase experiments; file SHA-256 is stored on the run.",
+    )
     # parser.add_argument("--debrief-prompt-file", ...)
     # parser.add_argument("--pairwise-prompt-file", ...)
     # parser.add_argument("--rubric-criteria-file", ...)
@@ -628,6 +639,8 @@ def main():
             run_rubric=run_rubric_flag,
             redo_judging=args.redo_rubric_judging,
             truncate_for_rubric=False, # Hardcoded for now, could be arg
+            scenario_prompts_file=args.scenario_prompts_file,
+            paraphrase_manifest_file=args.paraphrase_manifest,
         )
 
         logging.info(f"EQBench3 run completed. Run key: {run_key}")

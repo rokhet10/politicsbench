@@ -7,3 +7,4 @@ __pycache__/
 venv/
 eqbench3_runs.json
 .DS_Store
+*estimate_cost.py

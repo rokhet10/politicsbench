@@ -1,0 +1,4 @@
+results/*.json
+!results/sample_fixture_runs.json
+results/*.png
+!results/.gitkeep

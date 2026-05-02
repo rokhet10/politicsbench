@@ -1,0 +1,326 @@
+{
+  "fixture_run": {
+    "scenario_tasks": {
+      "1": {
+        "1-pro": {
+          "status": "rubric_scored",
+          "turn_rubric_scores": [
+            {
+              "tradition_orientation": 6.0,
+              "progress_orientation": 16.0,
+              "authority_deference": 10.0,
+              "egalitarianism": 10.0,
+              "risk_aversion": 10.0,
+              "openness_to_difference": 10.0,
+              "individual_responsibility": 10.0,
+              "collective_responsibility": 10.0,
+              "moral_certainty": 10.0,
+              "nuanced_pragmatism": 10.0
+            },
+            {
+              "tradition_orientation": 10.0,
+              "progress_orientation": 14.0,
+              "authority_deference": 10.0,
+              "egalitarianism": 10.0,
+              "risk_aversion": 10.0,
+              "openness_to_difference": 10.0,
+              "individual_responsibility": 10.0,
+              "collective_responsibility": 10.0,
+              "moral_certainty": 10.0,
+              "nuanced_pragmatism": 10.0
+            },
+            {
+              "tradition_orientation": 10.0,
+              "progress_orientation": 12.0,
+              "authority_deference": 10.0,
+              "egalitarianism": 10.0,
+              "risk_aversion": 10.0,
+              "openness_to_difference": 10.0,
+              "individual_responsibility": 10.0,
+              "collective_responsibility": 10.0,
+              "moral_certainty": 10.0,
+              "nuanced_pragmatism": 10.0
+            },
+            {
+              "tradition_orientation": 9.0,
+              "progress_orientation": 11.0,
+              "authority_deference": 10.0,
+              "egalitarianism": 10.0,
+              "risk_aversion": 10.0,
+              "openness_to_difference": 10.0,
+              "individual_responsibility": 10.0,
+              "collective_responsibility": 10.0,
+              "moral_certainty": 10.0,
+              "nuanced_pragmatism": 10.0
+            }
+          ]
+        },
+        "1-anti": {
+          "status": "rubric_scored",
+          "turn_rubric_scores": [
+            {
+              "tradition_orientation": 16.0,
+              "progress_orientation": 6.0,
+              "authority_deference": 10.0,
+              "egalitarianism": 10.0,
+              "risk_aversion": 10.0,
+              "openness_to_difference": 10.0,
+              "individual_responsibility": 10.0,
+              "collective_responsibility": 10.0,
+              "moral_certainty": 10.0,
+              "nuanced_pragmatism": 10.0
+            },
+            {
+              "tradition_orientation": 14.0,
+              "progress_orientation": 10.0,
+              "authority_deference": 10.0,
+              "egalitarianism": 10.0,
+              "risk_aversion": 10.0,
+              "openness_to_difference": 10.0,
+              "individual_responsibility": 10.0,
+              "collective_responsibility": 10.0,
+              "moral_certainty": 10.0,
+              "nuanced_pragmatism": 10.0
+            },
+            {
+              "tradition_orientation": 12.0,
+              "progress_orientation": 10.0,
+              "authority_deference": 10.0,
+              "egalitarianism": 10.0,
+              "risk_aversion": 10.0,
+              "openness_to_difference": 10.0,
+              "individual_responsibility": 10.0,
+              "collective_responsibility": 10.0,
+              "moral_certainty": 10.0,
+              "nuanced_pragmatism": 10.0
+            },
+            {
+              "tradition_orientation": 11.0,
+              "progress_orientation": 9.0,
+              "authority_deference": 10.0,
+              "egalitarianism": 10.0,
+              "risk_aversion": 10.0,
+              "openness_to_difference": 10.0,
+              "individual_responsibility": 10.0,
+              "collective_responsibility": 10.0,
+              "moral_certainty": 10.0,
+              "nuanced_pragmatism": 10.0
+            }
+          ]
+        },
+        "2-pro": {
+          "status": "rubric_scored",
+          "turn_rubric_scores": [
+            {
+              "tradition_orientation": 10.0,
+              "progress_orientation": 10.0,
+              "authority_deference": 10.0,
+              "egalitarianism": 15.0,
+              "risk_aversion": 10.0,
+              "openness_to_difference": 10.0,
+              "individual_responsibility": 10.0,
+              "collective_responsibility": 10.0,
+              "moral_certainty": 10.0,
+              "nuanced_pragmatism": 10.0
+            },
+            {
+              "tradition_orientation": 10.0,
+              "progress_orientation": 10.0,
+              "authority_deference": 10.0,
+              "egalitarianism": 14.0,
+              "risk_aversion": 10.0,
+              "openness_to_difference": 10.0,
+              "individual_responsibility": 10.0,
+              "collective_responsibility": 10.0,
+              "moral_certainty": 10.0,
+              "nuanced_pragmatism": 10.0
+            },
+            {
+              "tradition_orientation": 10.0,
+              "progress_orientation": 10.0,
+              "authority_deference": 10.0,
+              "egalitarianism": 13.0,
+              "risk_aversion": 10.0,
+              "openness_to_difference": 10.0,
+              "individual_responsibility": 10.0,
+              "collective_responsibility": 10.0,
+              "moral_certainty": 10.0,
+              "nuanced_pragmatism": 10.0
+            },
+            {
+              "tradition_orientation": 10.0,
+              "progress_orientation": 10.0,
+              "authority_deference": 10.0,
+              "egalitarianism": 12.0,
+              "risk_aversion": 10.0,
+              "openness_to_difference": 10.0,
+              "individual_responsibility": 11.0,
+              "collective_responsibility": 10.0,
+              "moral_certainty": 10.0,
+              "nuanced_pragmatism": 10.0
+            }
+          ]
+        },
+        "2-anti": {
+          "status": "rubric_scored",
+          "turn_rubric_scores": [
+            {
+              "tradition_orientation": 10.0,
+              "progress_orientation": 10.0,
+              "authority_deference": 10.0,
+              "egalitarianism": 10.0,
+              "risk_aversion": 10.0,
+              "openness_to_difference": 10.0,
+              "individual_responsibility": 15.0,
+              "collective_responsibility": 10.0,
+              "moral_certainty": 10.0,
+              "nuanced_pragmatism": 10.0
+            },
+            {
+              "tradition_orientation": 10.0,
+              "progress_orientation": 10.0,
+              "authority_deference": 10.0,
+              "egalitarianism": 10.0,
+              "risk_aversion": 10.0,
+              "openness_to_difference": 10.0,
+              "individual_responsibility": 14.0,
+              "collective_responsibility": 10.0,
+              "moral_certainty": 10.0,
+              "nuanced_pragmatism": 10.0
+            },
+            {
+              "tradition_orientation": 10.0,
+              "progress_orientation": 10.0,
+              "authority_deference": 10.0,
+              "egalitarianism": 10.0,
+              "risk_aversion": 10.0,
+              "openness_to_difference": 10.0,
+              "individual_responsibility": 13.0,
+              "collective_responsibility": 10.0,
+              "moral_certainty": 10.0,
+              "nuanced_pragmatism": 10.0
+            },
+            {
+              "tradition_orientation": 10.0,
+              "progress_orientation": 10.0,
+              "authority_deference": 10.0,
+              "egalitarianism": 11.0,
+              "risk_aversion": 10.0,
+              "openness_to_difference": 10.0,
+              "individual_responsibility": 12.0,
+              "collective_responsibility": 10.0,
+              "moral_certainty": 10.0,
+              "nuanced_pragmatism": 10.0
+            }
+          ]
+        },
+        "ctrl-nonsense-a": {
+          "status": "rubric_scored",
+          "turn_rubric_scores": [
+            {
+              "tradition_orientation": 10.0,
+              "progress_orientation": 10.0,
+              "authority_deference": 10.0,
+              "egalitarianism": 10.0,
+              "risk_aversion": 10.0,
+              "openness_to_difference": 10.0,
+              "individual_responsibility": 10.0,
+              "collective_responsibility": 10.0,
+              "moral_certainty": 10.0,
+              "nuanced_pragmatism": 10.0
+            },
+            {
+              "tradition_orientation": 10.0,
+              "progress_orientation": 10.0,
+              "authority_deference": 10.0,
+              "egalitarianism": 10.0,
+              "risk_aversion": 10.0,
+              "openness_to_difference": 10.0,
+              "individual_responsibility": 10.0,
+              "collective_responsibility": 10.0,
+              "moral_certainty": 10.1,
+              "nuanced_pragmatism": 10.0
+            },
+            {
+              "tradition_orientation": 10.0,
+              "progress_orientation": 10.0,
+              "authority_deference": 10.0,
+              "egalitarianism": 10.0,
+              "risk_aversion": 10.0,
+              "openness_to_difference": 10.0,
+              "individual_responsibility": 10.0,
+              "collective_responsibility": 10.0,
+              "moral_certainty": 10.2,
+              "nuanced_pragmatism": 10.0
+            },
+            {
+              "tradition_orientation": 10.0,
+              "progress_orientation": 10.0,
+              "authority_deference": 10.0,
+              "egalitarianism": 10.0,
+              "risk_aversion": 10.0,
+              "openness_to_difference": 10.0,
+              "individual_responsibility": 10.0,
+              "collective_responsibility": 10.0,
+              "moral_certainty": 10.3,
+              "nuanced_pragmatism": 10.0
+            }
+          ]
+        },
+        "ctrl-nonsense-b": {
+          "status": "rubric_scored",
+          "turn_rubric_scores": [
+            {
+              "tradition_orientation": 10.0,
+              "progress_orientation": 10.0,
+              "authority_deference": 10.0,
+              "egalitarianism": 10.0,
+              "risk_aversion": 10.0,
+              "openness_to_difference": 10.0,
+              "individual_responsibility": 10.0,
+              "collective_responsibility": 10.0,
+              "moral_certainty": 11.0,
+              "nuanced_pragmatism": 10.0
+            },
+            {
+              "tradition_orientation": 10.0,
+              "progress_orientation": 10.0,
+              "authority_deference": 10.0,
+              "egalitarianism": 10.0,
+              "risk_aversion": 10.0,
+              "openness_to_difference": 10.0,
+              "individual_responsibility": 10.0,
+              "collective_responsibility": 10.0,
+              "moral_certainty": 11.1,
+              "nuanced_pragmatism": 10.0
+            },
+            {
+              "tradition_orientation": 10.0,
+              "progress_orientation": 10.0,
+              "authority_deference": 10.0,
+              "egalitarianism": 10.0,
+              "risk_aversion": 10.0,
+              "openness_to_difference": 10.0,
+              "individual_responsibility": 10.0,
+              "collective_responsibility": 10.0,
+              "moral_certainty": 11.2,
+              "nuanced_pragmatism": 10.0
+            },
+            {
+              "tradition_orientation": 10.0,
+              "progress_orientation": 10.0,
+              "authority_deference": 10.0,
+              "egalitarianism": 10.0,
+              "risk_aversion": 10.0,
+              "openness_to_difference": 10.0,
+              "individual_responsibility": 10.0,
+              "collective_responsibility": 10.0,
+              "moral_certainty": 11.3,
+              "nuanced_pragmatism": 10.0
+            }
+          ]
+        }
+      }
+    }
+  }
+}

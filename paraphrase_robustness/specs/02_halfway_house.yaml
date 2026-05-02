@@ -1,0 +1,24 @@
+base_id: "2"
+title: "Justice & Punishment | Halfway house next door"
+issue_summary: "Halfway house for non-violent offenders; community safety vs reintegration."
+
+value_a: "Second chance / state reintegration"
+value_b: "Neighborhood safety and property concerns"
+
+beats:
+  setup: "City plan + first neighbor reaction."
+  tension: "Second neighbor with petition or counter-position."
+  choice: "City meeting; families vs shouting neighbors; non-negotiable trade."
+  consequence: "Center opens; minor incident; 'block it' group returns; trade-off."
+
+non_negotiable_facts:
+  - "A facility for non-violent offenders is proposed next to your home."
+  - "Both sympathetic and fearful neighbor perspectives exist."
+  - "A city meeting and later a minor yard incident occur."
+  - "You must articulate what you are willing to lose."
+
+framing_notes:
+  pro: "Pro-reintegration neighbor speaks first (second chance framing)."
+  anti: "Safety / petition neighbor interrupts first; 'second chance' neighbor follows as countervoice."
+
+tone_axes: [neutral]

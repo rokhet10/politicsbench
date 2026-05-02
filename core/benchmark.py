@@ -7,6 +7,7 @@ import re
 import uuid
 import time
 import logging
+import hashlib
 import json  # For constructing rubric output format
 from datetime import datetime, timezone
 from typing import Dict, List, Optional, Any, Tuple
@@ -29,6 +30,15 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 
 ALLOW_INCOMPLETE_RESPONSES = True
+
+
+def _sha256_file(path: str) -> str:
+    """Hex digest of file contents for experiment provenance."""
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for block in iter(lambda: f.read(65536), b""):
+            h.update(block)
+    return h.hexdigest()
 
 
 # --- Helper Function for the Save Worker Thread ---
@@ -599,6 +609,8 @@ def run_eq_bench3(
     judge_models: Optional[List[str]] = None,
     redo_judging: bool = False,
     truncate_for_rubric: bool = False,
+    scenario_prompts_file: Optional[str] = None,
+    paraphrase_manifest_file: Optional[str] = None,
 ) -> str:
     """
     Main function to run the EQBench3 benchmark.
@@ -607,7 +619,13 @@ def run_eq_bench3(
     Handles standard, message drafting, and analysis task types.
     Uses logical model_name for tracking and api_model_id for API calls.
     Loads leaderboard data for context but writes ONLY to local files.
+
+    scenario_prompts_file: optional path overriding ``STANDARD_SCENARIO_PROMPTS_FILE``
+    (stored on the run and reused on resume). paraphrase_manifest_file: optional
+    path to experiment manifest; its SHA-256 is stored for analysis provenance.
     """
+    effective_prompts_arg = scenario_prompts_file or C.STANDARD_SCENARIO_PROMPTS_FILE
+
     # --- Argument Validation ---
     if run_elo and not judge_models:
         raise ValueError(
@@ -696,7 +714,9 @@ def run_eq_bench3(
             "start_time": datetime.now(timezone.utc).isoformat(),
             "status": "initializing",
             # Store paths used for reference (using constants)
-            "scenario_prompts_file": C.STANDARD_SCENARIO_PROMPTS_FILE,
+            "scenario_prompts_file": effective_prompts_arg,
+            "paraphrase_manifest_file": None,
+            "paraphrase_manifest_sha256": None,
             "scenario_master_prompt_file": C.STANDARD_MASTER_PROMPT_FILE,
             "message_drafting_master_prompt_file": C.MESSAGE_DRAFTING_MASTER_PROMPT_FILE,
             "analysis_master_prompt_file": C.ANALYSIS_MASTER_PROMPT_FILE,
@@ -718,6 +738,17 @@ def run_eq_bench3(
             "scenario_tasks": {},
             "results": {},
         }
+        if paraphrase_manifest_file:
+            if os.path.isfile(paraphrase_manifest_file):
+                init_dict["paraphrase_manifest_file"] = paraphrase_manifest_file
+                init_dict["paraphrase_manifest_sha256"] = _sha256_file(
+                    paraphrase_manifest_file
+                )
+            else:
+                logging.warning(
+                    "Paraphrase manifest path is not a file: %s",
+                    paraphrase_manifest_file,
+                )
         # Update ONLY the local runs file
         update_run_data(local_runs_file, run_key, init_dict)
         logging.info(
@@ -774,6 +805,10 @@ def run_eq_bench3(
         if "iterations_requested" not in current_run_data:
             update_payload["iterations_requested"] = iterations
         # Add missing file paths if needed (less critical now, but good for consistency)
+        if "scenario_prompts_file" not in current_run_data:
+            update_payload["scenario_prompts_file"] = (
+                scenario_prompts_file or C.STANDARD_SCENARIO_PROMPTS_FILE
+            )
         if "scenario_master_prompt_file" not in current_run_data:
             update_payload["scenario_master_prompt_file"] = (
                 C.STANDARD_MASTER_PROMPT_FILE
@@ -892,16 +927,28 @@ def run_eq_bench3(
         logging.warning("--redo-judging flag ignored because --no-rubric is set.")
 
     # --- Load Prompts and Templates (Remains the same) ---
+    run_record_for_prompts = load_json_file(local_runs_file).get(run_key, {})
+    prompts_path = run_record_for_prompts.get("scenario_prompts_file")
+    if not prompts_path:
+        prompts_path = scenario_prompts_file or C.STANDARD_SCENARIO_PROMPTS_FILE
+    if not os.path.isfile(prompts_path):
+        logging.error("Scenario prompts file not found: %s", prompts_path)
+        update_run_data(
+            local_runs_file,
+            run_key,
+            {"status": "error", "error": f"Scenario prompts file not found: {prompts_path}"},
+        )
+        return run_key
     try:
-        scenarios = parse_scenario_prompts(C.STANDARD_SCENARIO_PROMPTS_FILE)
+        scenarios = parse_scenario_prompts(prompts_path)
         if not scenarios:
             logging.error(
-                f"No scenarios parsed from {C.STANDARD_SCENARIO_PROMPTS_FILE}. Aborting."
+                f"No scenarios parsed from {prompts_path}. Aborting."
             )
             update_run_data(
                 local_runs_file,
                 run_key,
-                {"status": "error", "error": "No scenarios parsed"},
+                {"status": "error", "error": f"No scenarios parsed from {prompts_path}"},
             )  # Write error to local
             return run_key
     except Exception as e:

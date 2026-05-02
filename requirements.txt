@@ -1,4 +1,5 @@
 requests
+pyyaml
 python-dotenv
 tqdm
 numpy

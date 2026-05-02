@@ -1,0 +1,31 @@
+# Template for a PoliticsBench paraphrase family (one moral spine, many surface variants).
+# Used for LLM thread generation and human QC.
+
+base_id: "" # e.g. "1" — stable across framing/tone variants
+title: ""
+issue_summary: ""
+
+# Competing values (names only; variants rephrase but should preserve the tension)
+value_a: ""
+value_b: ""
+
+# Four beats — each variant’s Prompt1..4 should instantiate these beats in order
+beats:
+  - setup: ""
+  - tension: ""
+  - choice: ""
+  - consequence: ""
+
+# Facts that must not change across variants in the same family
+non_negotiable_facts: []
+
+# Optional notes for authors / generators
+framing_notes:
+  pro: "How the opening should lean (e.g. which voice speaks first, sympathetic cue)."
+  anti: "Opposite lean while preserving the same harms and policy lever."
+
+tone_axes:
+  - neutral
+  - aggressive
+  - nice
+  # extend as needed

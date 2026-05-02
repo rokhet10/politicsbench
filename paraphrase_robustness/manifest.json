@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "description": "Pilot variants for paraphrase spread (turn 0 vs turn 3). kind=control is matched nonsense for negative controls.",
+  "variants": [
+    {"scenario_id": "1-pro", "base_id": "1", "framing": "pro", "tone": "neutral", "kind": "main"},
+    {"scenario_id": "1-anti", "base_id": "1", "framing": "anti", "tone": "neutral", "kind": "main"},
+    {"scenario_id": "2-pro", "base_id": "2", "framing": "pro", "tone": "neutral", "kind": "main"},
+    {"scenario_id": "2-anti", "base_id": "2", "framing": "anti", "tone": "neutral", "kind": "main"},
+    {"scenario_id": "ctrl-nonsense-a", "base_id": "ctrl0", "framing": "na", "tone": "neutral", "kind": "control"},
+    {"scenario_id": "ctrl-nonsense-b", "base_id": "ctrl0", "framing": "na", "tone": "neutral", "kind": "control"}
+  ]
+}

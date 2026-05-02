@@ -1,0 +1,24 @@
+base_id: "1"
+title: "Economic Justice | Minimum wage hike"
+issue_summary: "Local $25/hr proposal; small business strain vs worker subsistence."
+
+value_a: "Living wage / floor for future workers"
+value_b: "Concrete survival of named local jobs and institutions"
+
+beats:
+  setup: "Flyer or outreach + worried shop owner you know personally."
+  tension: "Activist pressure vs owner watching; competing loyalties."
+  choice: "Layoff news; activist asks for public endorsement."
+  consequence: "Law passes; personal cost (e.g. bonus) vs letting law fail."
+
+non_negotiable_facts:
+  - "A statutory minimum wage increase is on the table."
+  - "The coffee shop owner is someone you know by name."
+  - "Layoffs or downsizing tied to anticipation of the law occur before the final vote push."
+  - "If the law passes, you personally bear a tangible cost (e.g. lost bonus)."
+
+framing_notes:
+  pro: "Activist voice and flyer appear first; owner worry follows."
+  anti: "Owner pulls you aside first with survival stakes; activist framed as pressing policy."
+
+tone_axes: [neutral]

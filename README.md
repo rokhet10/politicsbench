@@ -138,10 +138,12 @@ Entry point: [`eqbench3.py`](./eqbench3.py). It orchestrates scenario execution,
 | `--ignore-canonical` | Do not load default canonical leaderboard files (local-only ELO context). |
 | `--redo-rubric-judging` | Force rubric re-scoring for completed tasks. |
 | `--reset-model` | Remove local runs and ELO entries for the logical `--model-name` before starting. |
+| `--scenario-prompts-file` | Override the scenario prompts `.txt` path (default: `data/scenario_prompts.txt` via constants). Stored on the run and reused on resume. |
+| `--paraphrase-manifest` | Optional JSON manifest (e.g. paraphrase experiment); file SHA-256 is recorded on the run for provenance. |
 
 Run `python eqbench3.py --help` for the full list.
 
-Scenario and rubric **file paths** are wired through [`utils/constants.py`](./utils/constants.py) (e.g. `data/scenario_prompts.txt`, `data/rubric_scoring_prompt.txt`). To try alternate prompt sets, swap or symlink the files under `data/` consistently with those constants, or extend the code to accept overrides if you add that feature.
+Scenario and rubric **file paths** default through [`utils/constants.py`](./utils/constants.py) (e.g. `data/scenario_prompts.txt`, `data/rubric_scoring_prompt.txt`). For ad-hoc prompt sets, pass `--scenario-prompts-file` instead of editing `data/` in place. Paraphrase-robustness assets and scripts live under [`paraphrase_robustness/`](./paraphrase_robustness/README.md).
 
 ---
 
@@ -167,6 +169,7 @@ You may run **either or both**.
 ## Analysis and viewer
 
 - Optional Python utilities under [`analysis/`](./analysis/) (e.g. stats, plots).  
+- [`paraphrase_robustness/`](./paraphrase_robustness/README.md) — paraphrase pilot prompts, manifest, validation, spread analysis (Stage 1 vs Stage 4), and negative-control helpers.  
 - [`viewer.html`](./viewer.html) — local HTML viewer for exploring run JSON (open in a browser; may require a local static server depending on browser file policies).  
 - Paper-style tables or exports may live at the repo root (e.g. `table5_trait_scores.md`).
 
@@ -182,6 +185,7 @@ You may run **either or both**.
 | `data/` | Scenario text, master prompts, rubric templates, optional canonical archives. |
 | `merge_results_to_canonical.py` | Upstream helper to merge local runs into canonical leaderboard files (EQ-Bench workflow). |
 | `analysis/` | Supplementary analysis scripts. |
+| `paraphrase_robustness/` | Paraphrase robustness experiment (specs, pilot prompts, `analyze_spread.py`, QC checklist). |
 
 ---
 
