@@ -2,9 +2,11 @@
 
 This folder holds **PoliticsBench wording-robustness** assets: scenario specs, a variant manifest, pilot prompt files, helper scripts, and analysis outputs.
 
-The **active** pilot (`prompts/scenario_prompts_pilot.txt` + `manifest.json`) uses **10 bases** (`1`–`10`), each with **three** **wording** variants (`wa` / `wb` / `wc`): same story beats and **same order of speakers and facts**; only **sentence shape, synonyms, register, and concision** change (not pro/anti reordering). Plus **two** nonsense controls → **32** `scenario_id` rows. **Human QC** is recommended to confirm `wb`/`wc` blocks stay strictly paraphrase (no accidental fact drift).
+The **active** pilot (`prompts/scenario_prompts_pilot.txt` + `manifest.json`) uses **10 bases** (`1`–`10`), each with **three** arms: verbatim **`N-og`** (from `data/scenario_prompts.txt`) plus surface wordings **`N-wa`** / **`N-wb`** → **30** `scenario_id` rows. **Human QC** is recommended so `wa`/`wb` stay strict paraphrases (no fact drift).
 
 The older **framing** pilot (`N-pro` / `N-anti`, different primacy / lead voice) is **archived** at `archive/framing_pilot/` (`scenario_prompts_pilot_framing.txt`, `manifest_framing.json`).
+
+The **first wording snapshot** (`wa`/`wb`/`wc` pilot + manifest version frozen there) is **archived** at `archive/wording_1/`.
 
 ## Layout
 
@@ -53,6 +55,7 @@ Use `--kind main` (default) to restrict to non-control variants, or `--kind cont
 ## Generating new threads
 
 - **LLM-assisted:** `python3 paraphrase_robustness/scripts/generate_threads.py --help` (requires API env vars).
+- **Surface paraphrases via GPT (one call per prompt):** `python3 paraphrase_robustness/scripts/generate_wordings.py --help` (logs JSONL + optional bundle JSON).
 - **Negative control prompts:** `python3 paraphrase_robustness/scripts/build_nonsense_pilot.py`.
 
 ## Validation
@@ -65,7 +68,7 @@ python3 paraphrase_robustness/scripts/validate_prompts.py paraphrase_robustness/
 
 Use **`--judge-models modelA,modelB,modelC`** (e.g. GPT + Grok + Claude on OpenRouter). Each rubric step runs **all** judges: **5 × 3 = 15** judge completions per scenario per test-model run, plus **5** test completions.
 
-Compare **wording22** (22 scenario IDs) vs **standard20**:
+Compare **wording32** (32 scenario IDs) vs **standard20**:
 
 ```bash
 python3 paraphrase_robustness/scripts/estimate_cost.py \

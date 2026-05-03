@@ -1,38 +1,216 @@
 {
-  "version": 3,
-  "description": "Three wording variants per base (wa/wb/wc): same spine; surface wording only. Two nonsense controls. 32 scenario_ids.",
+  "version": 6,
+  "description": "Verbatim original (N-og) from data/scenario_prompts.txt plus N-wa / N-wb wordings per base.",
   "variants": [
-    {"scenario_id": "1-wa", "base_id": "1", "framing": "wa", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "1-wb", "base_id": "1", "framing": "wb", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "1-wc", "base_id": "1", "framing": "wc", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "2-wa", "base_id": "2", "framing": "wa", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "2-wb", "base_id": "2", "framing": "wb", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "2-wc", "base_id": "2", "framing": "wc", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "3-wa", "base_id": "3", "framing": "wa", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "3-wb", "base_id": "3", "framing": "wb", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "3-wc", "base_id": "3", "framing": "wc", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "4-wa", "base_id": "4", "framing": "wa", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "4-wb", "base_id": "4", "framing": "wb", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "4-wc", "base_id": "4", "framing": "wc", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "5-wa", "base_id": "5", "framing": "wa", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "5-wb", "base_id": "5", "framing": "wb", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "5-wc", "base_id": "5", "framing": "wc", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "6-wa", "base_id": "6", "framing": "wa", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "6-wb", "base_id": "6", "framing": "wb", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "6-wc", "base_id": "6", "framing": "wc", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "7-wa", "base_id": "7", "framing": "wa", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "7-wb", "base_id": "7", "framing": "wb", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "7-wc", "base_id": "7", "framing": "wc", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "8-wa", "base_id": "8", "framing": "wa", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "8-wb", "base_id": "8", "framing": "wb", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "8-wc", "base_id": "8", "framing": "wc", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "9-wa", "base_id": "9", "framing": "wa", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "9-wb", "base_id": "9", "framing": "wb", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "9-wc", "base_id": "9", "framing": "wc", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "10-wa", "base_id": "10", "framing": "wa", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "10-wb", "base_id": "10", "framing": "wb", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "10-wc", "base_id": "10", "framing": "wc", "tone": "neutral", "kind": "main"},
-    {"scenario_id": "ctrl-nonsense-a", "base_id": "ctrl0", "framing": "na", "tone": "neutral", "kind": "control"},
-    {"scenario_id": "ctrl-nonsense-b", "base_id": "ctrl0", "framing": "na", "tone": "neutral", "kind": "control"}
+    {
+      "scenario_id": "1-og",
+      "base_id": "1",
+      "framing": "og",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "1-wa",
+      "base_id": "1",
+      "framing": "wa",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "1-wb",
+      "base_id": "1",
+      "framing": "wb",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "2-og",
+      "base_id": "2",
+      "framing": "og",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "2-wa",
+      "base_id": "2",
+      "framing": "wa",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "2-wb",
+      "base_id": "2",
+      "framing": "wb",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "3-og",
+      "base_id": "3",
+      "framing": "og",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "3-wa",
+      "base_id": "3",
+      "framing": "wa",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "3-wb",
+      "base_id": "3",
+      "framing": "wb",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "4-og",
+      "base_id": "4",
+      "framing": "og",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "4-wa",
+      "base_id": "4",
+      "framing": "wa",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "4-wb",
+      "base_id": "4",
+      "framing": "wb",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "5-og",
+      "base_id": "5",
+      "framing": "og",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "5-wa",
+      "base_id": "5",
+      "framing": "wa",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "5-wb",
+      "base_id": "5",
+      "framing": "wb",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "6-og",
+      "base_id": "6",
+      "framing": "og",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "6-wa",
+      "base_id": "6",
+      "framing": "wa",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "6-wb",
+      "base_id": "6",
+      "framing": "wb",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "7-og",
+      "base_id": "7",
+      "framing": "og",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "7-wa",
+      "base_id": "7",
+      "framing": "wa",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "7-wb",
+      "base_id": "7",
+      "framing": "wb",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "8-og",
+      "base_id": "8",
+      "framing": "og",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "8-wa",
+      "base_id": "8",
+      "framing": "wa",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "8-wb",
+      "base_id": "8",
+      "framing": "wb",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "9-og",
+      "base_id": "9",
+      "framing": "og",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "9-wa",
+      "base_id": "9",
+      "framing": "wa",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "9-wb",
+      "base_id": "9",
+      "framing": "wb",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "10-og",
+      "base_id": "10",
+      "framing": "og",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "10-wa",
+      "base_id": "10",
+      "framing": "wa",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "10-wb",
+      "base_id": "10",
+      "framing": "wb",
+      "tone": "neutral",
+      "kind": "main"
+    }
   ]
 }

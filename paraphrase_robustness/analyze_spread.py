@@ -165,7 +165,13 @@ def summarize_run(
     per_base: List[Dict[str, Any]] = []
     deltas_std: List[float] = []
 
-    for base_id, vlist in sorted(by_base.items()):
+    def _base_sort_key(kv: Tuple[str, Any]) -> Tuple[int, Any]:
+        k = kv[0]
+        if str(k).isdigit():
+            return (0, int(k))
+        return (1, str(k))
+
+    for base_id, vlist in sorted(by_base.items(), key=_base_sort_key):
         s0: List[float] = []
         s3: List[float] = []
         variant_detail: List[Dict[str, Any]] = []

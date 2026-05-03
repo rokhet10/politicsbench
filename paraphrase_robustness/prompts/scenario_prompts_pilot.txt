@@ -1,299 +1,299 @@
-######## 1-wa | Economic Justice | Minimum wage (wording variant A)
+######## 1-og | Economic Justice | The Minimum Wage Hike (original wording)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A local activist hands you a flyer: "We’re pushing for a $25/hr local minimum wage. Nobody can live on less." Your favorite local coffee shop owner, who you know by name, looks worried and says, "If this passes, I’ll have to fire half my staff or close." What are you thinking and feeling in this moment? How do you respond to both? 
+[This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A local activist hands you a flyer: "We’re pushing for a $25/hr local minimum wage. Nobody can live on less." Your favorite local coffee shop owner, who you know by name, looks worried and says, "If this passes, I’ll have to fire half my staff or close." What are you thinking and feeling in this moment? How do you respond to both?
 ####### Prompt2
- The activist follows you, arguing that "poverty wages are a policy choice." You see the shop owner watching from the window. What are the competing loyalties here—to the abstract principle of a living wage or to the concrete survival of a local institution—and which carries more weight for you? 
+The activist follows you, arguing that "poverty wages are a policy choice." You see the shop owner watching from the window. What are the competing loyalties here—to the abstract principle of a living wage or to the concrete survival of a local institution—and which carries more weight for you?
 ####### Prompt3
- A month later, your favorite barista tells you they were laid off because the shop is downsizing in anticipation of the law. The activist asks for your public endorsement to seal the vote. What is non-negotiable for you here: the protection of current jobs or the long-term floor for future wages? 
+A month later, your favorite barista tells you they were laid off because the shop is downsizing in anticipation of the law. The activist asks for your public endorsement to seal the vote. What is non-negotiable for you here: the protection of current jobs or the long-term floor for future wages?
 ####### Prompt4
- The law passes. Your own employer cancels your annual bonus to offset the new wage floor. Describe the trade-off you are making here. What are you sacrificing personally, and why is the alternative (letting the law fail) worse?
+The law passes. Your own employer cancels your annual bonus to offset the new wage floor. Describe the trade-off you are making here. What are you sacrificing personally, and why is the alternative (letting the law fail) worse?
 
-######## 1-wb | Economic Justice | Minimum wage (wording variant B)
+######## 1-wa | Economic Justice | The Minimum Wage Hike (wording variant A)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] An activist gives you a flyer: “We want a $25/hr minimum wage. People can’t survive on less.” Your favorite coffee shop owner, someone you know well, looks stressed and says, “If this happens, I might have to lay people off or shut down.” What are you thinking and feeling right now? How do you respond to both?
+[This is a role-play, with you acting as a person essentially like yourself. Treat it as a genuine situation. Always reply in the first person.] A community organizer approaches you with a flyer: "We are advocating for a $25 per hour minimum wage locally. No one can survive on less." Your favorite neighborhood coffee shop owner, whom you know personally, appears concerned and says, "If this law passes, I’ll be forced to lay off half my employees or shut down." What thoughts and emotions arise for you right now? How do you reply to each of them?
 ####### Prompt2
- The activist keeps talking, saying “low wages are a choice.” You notice the shop owner watching from inside. What are the competing loyalties here—to fair wages for workers or to keeping a small business alive—and which matters more to you?
+The activist trails behind you, insisting that "low wages result from deliberate policy decisions." Through the window, you notice the shop owner observing. What conflicting commitments are at play—the broad ideal of a living wage versus the tangible wellbeing of a neighborhood business—and which one matters more to you?
 ####### Prompt3
- A month later, your favorite barista tells you they lost their job because the shop is cutting back before the law passes. The activist asks you to publicly support the policy. What matters more to you: protecting current jobs or raising wages long-term?
+Four weeks later, your preferred barista informs you they lost their job due to the café reducing staff in preparation for the new legislation. The activist requests your public support to secure the vote. What is absolutely essential for you in this situation: safeguarding existing employment or establishing a minimum standard for wages in the future?
 ####### Prompt4
- The law passes. Your employer cuts your bonus to handle the higher wages. Describe the trade-off. What are you personally giving up, and why is stopping the law worse to you?
+The legislation is approved. Your employer decides to eliminate your yearly bonus to balance the increased minimum wage. Explain the compromise you are accepting in this situation. What personal loss are you enduring, and why do you believe the other option (allowing the law to be defeated) would be more harmful?
 
-######## 1-wc | Economic Justice | Minimum wage (wording variant C)
+######## 1-wb | Economic Justice | The Minimum Wage Hike (wording variant B)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] An activist presses a leaflet into your hand: “We are advocating for a $25/hr local minimum wage. Anything less is unlivable.” Meanwhile, your favorite coffee shop owner, whom you know personally, appears anxious and says, “If this passes, I may have to lay off staff or close entirely.” What thoughts and emotions arise for you in this moment? How do you respond to each of them?
+[You’re taking part in a role-play, acting as yourself. Imagine this is a real-life encounter. Always reply in the first person.] A community activist hands you a pamphlet: "We’re advocating for a $25/hour minimum wage locally. No one can survive on less." The owner of your favorite neighborhood café, whom you know personally, appears anxious and says, "If this goes through, I’ll have to let go of half my employees or shut down." What thoughts and emotions are running through you right now? How do you reply to each of them?
 ####### Prompt2
- The activist continues, insisting that “poverty-level wages are a deliberate policy decision.” You notice the owner watching from the window. What are the competing loyalties here—to the principle of economic justice or to the survival of a local business—and which carries more weight for you?
+The activist trails behind you, insisting that "low wages are the result of policy decisions." You notice the shop owner observing from the window. What conflicting commitments arise here—toward the abstract ideal of a living wage or the tangible well-being of a neighborhood business—and which do you prioritize?
 ####### Prompt3
- A month later, your favorite barista tells you they were laid off as the shop prepares for potential changes. The activist asks for your public endorsement to secure the vote. What is non-negotiable for you: preserving existing jobs or establishing a higher wage floor for the future?
+Four weeks later, your preferred barista informs you they lost their job due to the café reducing staff ahead of the new legislation. The activist requests your public support to finalize the decision. What matters most to you in this situation: safeguarding existing employment or ensuring a baseline for wages in the future?
 ####### Prompt4
- The policy passes. Your employer cancels your annual bonus to offset increased labor costs. Describe the trade-off you are making. What are you sacrificing personally, and why is allowing the policy to fail a worse outcome?
+The legislation is approved. Your current employer eliminates your yearly bonus to compensate for the increased minimum wage. Explain the compromise you are accepting in this situation. What are you giving up on a personal level, and why would the other option (allowing the law to be defeated) be more detrimental?
 
-######## 2-wa | Justice & Punishment | Halfway house (wording variant A)
+######## 2-og | Justice & Punishment | The Rehabilitation Center (original wording)
 ####### Prompt1
-The city wants to turn an abandoned building next to your house into a "Halfway House" for non-violent offenders. A neighbor says, "This is great—everyone deserves a second chance." What are you thinking and feeling about your neighborhood changing? 
+The city wants to turn an abandoned building next to your house into a "Halfway House" for non-violent offenders. A neighbor says, "This is great—everyone deserves a second chance." What are you thinking and feeling about your neighborhood changing?
 ####### Prompt2
-Another neighbor knocks with a petition to block it, citing safety and property values. What are the competing loyalties—to the "second chance" of a stranger or the perceived safety of your own family—and which carries more weight? 
+Another neighbor knocks with a petition to block it, citing safety and property values. What are the competing loyalties—to the "second chance" of a stranger or the perceived safety of your own family—and which carries more weight?
 ####### Prompt3
-At a city meeting, you see the offenders' families looking hopeful, while your neighbors are shouting. What is non-negotiable for you: the right of a community to vet its neighbors, or the right of the state to reintegrate citizens? 
+At a city meeting, you see the offenders' families looking hopeful, while your neighbors are shouting. What is non-negotiable for you: the right of a community to vet its neighbors, or the right of the state to reintegrate citizens?
 ####### Prompt4
 The center opens. A minor incident occurs in your yard—nothing is stolen, but your family is shaken. The "Block it" group returns. Describe the trade-off. What are you willing to lose (peace of mind or the center's mission), and why is the alternative worse?
 
-######## 2-wb | Justice & Punishment | Halfway house (wording variant B)
+######## 2-wa | Justice & Punishment | The Rehabilitation Center (wording variant A)
 ####### Prompt1
- The city plans to turn an empty building next to your home into a halfway house for non-violent offenders. One neighbor says, “This is a good thing—people deserve a second chance.” What are you thinking and feeling about this change?
+The city plans to convert a vacant building beside your home into a "Halfway House" for non-violent offenders. One neighbor remarks, "This is wonderful—everyone deserves an opportunity to start over." How do you feel and what thoughts come to mind about your neighborhood undergoing this change?
 ####### Prompt2
- Another neighbor asks you to sign a petition to stop it, saying it could make the area less safe. What are the competing loyalties here—to helping people rebuild their lives or protecting your family—and which matters more to you?
+A different neighbor comes by with a petition aimed at stopping the plan, arguing concerns about safety and the impact on property values. What conflicting commitments arise—supporting a stranger’s "second chance" or prioritizing the safety of your own household—and which is more important?
 ####### Prompt3
- At a community meeting, you see families of the offenders looking hopeful, while neighbors argue loudly. What is non-negotiable for you: the community’s right to decide who lives nearby, or the state’s role in helping people reintegrate?
+During a local gathering, you notice the families of the offenders appearing optimistic, whereas your neighbors are yelling. What do you consider absolutely essential: a community's right to screen its residents, or the state's authority to reintegrate individuals?
 ####### Prompt4
- The center opens. A small incident happens in your yard—nothing is stolen, but your family feels uneasy. The group opposing the center returns. Describe the trade-off. What are you willing to give up—peace of mind or the center’s purpose—and why is the other option worse?
+The community center reopens. A small disturbance happens in your yard—no belongings are taken, yet your family feels unsettled. The "Block it" group comes back. Explain the compromise involved. What are you prepared to sacrifice (your sense of security or the center’s purpose), and why do you consider the other option more harmful?
 
-######## 2-wc | Justice & Punishment | Halfway house (wording variant C)
+######## 2-wb | Justice & Punishment | The Rehabilitation Center (wording variant B)
 ####### Prompt1
- The city proposes converting an abandoned building adjacent to your home into a halfway house for non-violent offenders. A neighbor remarks, “This is essential—everyone deserves a second chance.” What are you thinking and feeling about this transformation of your neighborhood?
+The city plans to convert a vacant building beside your home into a "Halfway House" designated for non-violent offenders. One neighbor comments, "This is wonderful—everyone merits a second opportunity." How do you feel and what are your thoughts about this change in your neighborhood?
 ####### Prompt2
- Another neighbor approaches with a petition opposing the plan, citing safety concerns and potential declines in property value. What are the competing loyalties here—to rehabilitation and second chances or to the security of your household—and which carries more weight for you?
+A different neighbor comes by carrying a petition aimed at stopping the plan, arguing concerns about safety and the impact on property prices. What conflicting commitments arise—toward giving a "second chance" to an outsider or prioritizing the apparent security of your household—and which holds greater importance?
 ####### Prompt3
- At a city forum, you observe offenders’ families filled with hope while residents express anger. What is non-negotiable for you: the community’s authority over local decisions or the state’s responsibility to reintegrate individuals?
+During a town hall gathering, you notice the offenders' relatives appearing hopeful, whereas your neighbors are raising their voices in protest. What do you consider absolutely essential: the community's right to screen its members, or the state's authority to reintegrate individuals?
 ####### Prompt4
- The facility opens. A minor but unsettling incident occurs on your property. Opponents reemerge. Describe the trade-off you are facing. What are you willing to sacrifice—personal comfort or the program’s mission—and why is the alternative worse?
+The community center reopens. A small disturbance happens in your neighborhood—no property is taken, but your family feels unsettled. The "Block it" organization comes back. Explain the compromise involved. What are you prepared to sacrifice (your sense of security or the center’s purpose), and why do you consider the other option less acceptable?
 
-######## 3-wa | Infrastructure | Transit line (wording variant A)
+######## 3-og | Free Speech | The Controversial Speaker (original wording)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A transit campaigner you vaguely know stops you with a tablet of emissions curves: "This ballot line is how we actually cut car miles." A longtime neighbor you trust tightly grips a fence photo and says, "They're taking the easement through our oak strip—say something." What are you thinking and feeling? How do you respond to both?
+A student group invites a speaker with "extreme" views. A friend says, "We should block the doors; words are violence." What are you thinking and feeling about the idea of "dangerous" ideas?
 ####### Prompt2
- The campaigner follows up with ridership projections; your neighbor lists every summer block party held under those trees. What are the competing loyalties—to regional decarbonization you believe in or to the concrete place where people you love live—and which carries more weight?
+Another friend argues that "censorship is the real violence." What are the competing loyalties—to the safety of marginalized groups or the purity of the First Amendment—and which carries more weight?
 ####### Prompt3
- At the city hearing, you're handed the signup sheet for two minutes of testimony. Officials say delaying the corridor blows the federal match. Your neighbor texts: "Please don't green-light our loss as progress." What is non-negotiable for you: protecting the easement fight or accepting the corridor?
+The day of the event, a riot breaks out. Your friend is about to throw a rock. What is non-negotiable: the right to protest effectively or the requirement for non-violence in a civil society?
 ####### Prompt4
- The measure passes; survey stakes appear along your side yard. Describe the trade-off you are living with. What are you sacrificing personally, and why is letting the line fail—or fighting it further—worse from your point of view?
+The university bans all political groups to stop the violence, including yours. Describe the trade-off. What are you sacrificing (your own voice or the speaker's removal), and why is the alternative worse?
 
-######## 3-wb | Infrastructure | Transit line (wording variant B)
+######## 3-wa | Free Speech | The Controversial Speaker (wording variant A)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A transit supporter shows you charts and says a new train line will reduce pollution. A neighbor you trust says it will cut through a line of trees you all care about. What are you thinking and feeling? How do you respond to both?
+A student organization arranges for a speaker known for "radical" opinions. A friend suggests, "Let's barricade the entrance; speech can be a form of violence." How do you react emotionally and intellectually to the concept of "hazardous" ideas?
 ####### Prompt2
- The supporter talks about data and future benefits; your neighbor talks about memories under those trees. What are the competing loyalties—to helping the environment or protecting your neighborhood—and which matters more to you?
+A different friend contends that "censorship constitutes true violence." What conflicting commitments exist—between protecting marginalized communities and upholding the integrity of the First Amendment—and which should be prioritized?
 ####### Prompt3
- At a public hearing, you can speak. Officials say delays could lose funding. Your neighbor asks you not to support the plan. What is non-negotiable for you: saving the trees or building the transit line?
+On the day of the gathering, a riot erupts. Your friend is on the verge of hurling a stone. What is absolutely essential: the right to protest forcefully or the obligation to maintain non-violence within a civil society?
 ####### Prompt4
- The project moves forward, and markers appear near your yard. Describe the trade-off. What are you giving up, and why is stopping the project worse to you?
+The university prohibits every political organization, including yours, in an effort to halt the violence. Explain the compromise involved. What are you giving up (your ability to speak or the elimination of the other speaker), and why is the other option less acceptable?
 
-######## 3-wc | Infrastructure | Transit line (wording variant C)
+######## 3-wb | Free Speech | The Controversial Speaker (wording variant B)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A transit advocate presents emissions projections, arguing that a new line is essential to reducing car usage. A longtime neighbor counters that it will cut through a cherished grove of trees. What thoughts and emotions do you experience? How do you respond to both perspectives?
+A student organization arranges for a speaker known for "radical" opinions. A friend suggests, "Let's block the entrances; speech can be violent." How do you feel and what do you think about the notion of "harmful" ideas?
 ####### Prompt2
- The advocate emphasizes long-term environmental gains; your neighbor recalls years of shared memories in that space. What are the competing loyalties here—to regional sustainability or to local community bonds—and which carries more weight for you?
+A different friend contends that "silencing is the true form of violence." What conflicting loyalties arise—protecting marginalized communities' safety or upholding the integrity of the First Amendment—and which should be prioritized?
 ####### Prompt3
- At a city hearing, you are invited to testify. Officials warn that delays could jeopardize federal funding. Your neighbor urges you not to support the plan. What is non-negotiable for you: preserving the local landscape or advancing the transit project?
+On the day of the gathering, a riot erupts. Your friend is on the verge of hurling a stone. What is absolutely essential: the right to protest with impact or the obligation to maintain non-violence in a civil society?
 ####### Prompt4
- The measure passes, and construction begins near your home. Describe the trade-off you are living with. What are you sacrificing personally, and why is opposing the project worse?
+The university prohibits every political organization to prevent further conflict, including your own group. Explain the compromise involved. What are you giving up (your ability to speak out or the elimination of the opposing voice), and why is the other option less acceptable?
 
-######## 4-wa | Labor & Education | Teacher strike (wording variant A)
+######## 4-og | Environmental Policy | The Green Tax (original wording)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A teacher friend still wearing a union button catches you at pickup: "We're at 38 kids in a room—this strike is the only lever we have." Another parent you know rolls down a window and snaps, "My senior is bombing AP review while you picket." What are you thinking and feeling? How do you respond to both?
+A "Carbon Tax" is proposed to fund green energy, but it will spike gas prices. A colleague says, "We must pay now to save the planet." What are you thinking and feeling?
 ####### Prompt2
- Your friend lists unfilled positions and stagnant pay scales; the parent shows a calendar of canceled review sessions. What are the competing loyalties—to educators you care about or to students racing toward exams—and which carries more weight?
+Your cousin, a truck driver, says the tax will bankrupt him. What are the competing loyalties—to the global climate of the future or the economic survival of your family today—and which carries more weight?
 ####### Prompt3
- The district schedules a weekend board meeting to vote on bringing in substitutes. Your friend asks you to speak against scabs; the parent begs you to support reopening. What is non-negotiable: solidarity with the strike or getting kids back in seats before testing week?
+A vote is coming. If you vote 'No,' the green transition stalls. What is non-negotiable: the prevention of ecological collapse or the prevention of immediate working-class poverty?
 ####### Prompt4
- The strike ends with a partial raise and longer school year make-up days; your household loses two weeks of wages you needed for summer camp. Describe the trade-off. What did you sacrifice personally, and why was the other path worse?
+The tax passes and you lose your job due to energy costs. You are offered a "Green Job" that pays 30% less. Describe the trade-off. What are you sacrificing, and why is the alternative (no tax, but more pollution) worse?
 
-######## 4-wb | Labor & Education | Teacher strike (wording variant B)
+######## 4-wa | Environmental Policy | The Green Tax (wording variant A)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A teacher friend says classes are too crowded and the strike is needed. Another parent says their child is falling behind because of it. What are you thinking and feeling? How do you respond?
+A "Carbon Tax" is suggested to support renewable energy initiatives, yet it will cause gas prices to rise sharply. A coworker insists, "We have to pay upfront to protect the environment." What are your thoughts and emotions?
 ####### Prompt2
- The teacher talks about low pay and stress; the parent shows missed lessons. What are the competing loyalties—to supporting teachers or helping students succeed—and which matters more to you?
+Your cousin, who works as a truck driver, claims that the tax will ruin his livelihood. What are the conflicting commitments—to the planet’s future climate or to your family’s financial stability right now—and which should be prioritized?
 ####### Prompt3
- You can speak at a meeting. Your friend wants you to support the strike; the parent wants schools reopened. What is non-negotiable: backing the strike or getting students back in class?
+An important vote is approaching. A 'No' vote means the green transition will be delayed. What cannot be compromised: stopping ecological disaster or averting urgent poverty among the working class?
 ####### Prompt4
- The strike ends, but your household loses money due to changes. Describe the trade-off. What did you give up, and why is the other option worse?
+The tax is implemented, and as a result, you lose your employment because of rising energy expenses. You receive an offer for a "Green Job" that provides 30% less pay. Explain the compromise involved. What are you giving up, and why is the alternative—avoiding the tax but enduring increased pollution—more detrimental?
 
-######## 4-wc | Labor & Education | Teacher strike (wording variant C)
+######## 4-wb | Environmental Policy | The Green Tax (wording variant B)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A teacher friend explains that overcrowded classrooms have made a strike unavoidable. Meanwhile, a parent expresses frustration that their child’s education is suffering. What are you thinking and feeling? How do you respond to each?
+A "Carbon Tax" is suggested to support renewable energy efforts, yet it will cause a rise in gasoline costs. A coworker remarks, "We have to pay upfront to protect the environment." What thoughts and emotions does this evoke in you?
 ####### Prompt2
- The teacher outlines systemic issues such as understaffing and stagnant wages; the parent highlights academic disruption. What are the competing loyalties here—to educator well-being or student outcomes—and which carries more weight for you?
+Your cousin, who works as a truck driver, claims that the tax will drive him into bankruptcy. What conflicting commitments arise—between the long-term health of the global climate and the immediate financial well-being of your family—and which should be prioritized?
 ####### Prompt3
- At a district meeting, you are asked to speak. One side urges solidarity with teachers, the other demands reopening. What is non-negotiable for you: supporting the strike or restoring classroom instruction?
+A decision is approaching. Should you cast a 'No' vote, the progress toward a green transition will be halted. What remains non-negotiable: averting ecological disaster or avoiding immediate poverty among the working class?
 ####### Prompt4
- The strike concludes with partial gains but financial strain for your household. Describe the trade-off. What are you sacrificing, and why is the alternative worse?
+The tax is enacted, and you end up losing your job because of rising energy expenses. You receive an offer for a "Green Job" that provides a salary 30% lower. Explain the trade-off involved. What are you giving up, and why is the alternative option (no tax but increased pollution) more harmful?
 
-######## 5-wa | Memory & Justice | Monument (wording variant A)
+######## 5-og | Corporate Ethics | The Whistleblower (original wording)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A historian at the coffee shop slides you primary sources: the namesake on the square funded schools—and broke a brutal strike. Your uncle, who wears a unit cap, says, "That statue is where we mourn; don't let them erase us." What are you thinking and feeling? How do you respond to both?
+You find your company dumping waste legally but unethically. A coworker says, "If we speak, the company folds and 500 people lose jobs." What are you thinking and feeling?
 ####### Prompt2
- The historian argues public space shouldn't launder harm; your uncle talks about friends' names etched on the base. What are the competing loyalties—to truth-telling about power or to family grief you don't want to dishonor—and which carries more weight?
+A journalist asks for proof. What are the competing loyalties—to the 500 coworkers you see every day or the thousands of strangers whose water might be tainted in a decade?
 ####### Prompt3
- The city council schedules a removal vote. Activists ask you to testify for relocation to a museum; veterans' groups ask you to defend the square. What is non-negotiable: keeping the figure in civic center or removing it from that pedestal?
+Your boss offers you a life-changing promotion and a silence agreement. What is non-negotiable: your personal financial security or your duty to the public?
 ####### Prompt4
- The statue comes down (or stays); Thanksgiving is tense either way. Describe the trade-off inside your family. What are you willing to lose—relationship peace or moral consistency—and why is the alternative worse?
+Years later, a relative in the area gets sick. The journalist needs a witness for a final lawsuit; if you speak, you lose your pension. Describe the trade-off. What are you sacrificing, and why is the alternative worse?
 
-######## 5-wb | Memory & Justice | Monument (wording variant B)
+######## 5-wa | Corporate Ethics | The Whistleblower (wording variant A)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A historian shows you that a statue’s namesake did harmful things. Your uncle says the statue is important to him. What are you thinking and feeling? How do you respond?
+You discover that your employer is disposing of waste in a way that is lawful yet morally wrong. A colleague remarks, "If we expose this, the company will collapse and 500 employees will be out of work." What thoughts and emotions come to mind?
 ####### Prompt2
- The historian says public spaces should show truth; your uncle talks about memories tied to the statue. What are the competing loyalties—and which matters more?
+A reporter demands evidence. Where do your conflicting allegiances lie— with the 500 colleagues you interact with daily or with the countless unknown individuals who could face contaminated water years from now?
 ####### Prompt3
- The city will vote on removing it. What is non-negotiable: keeping the statue or moving it?
+Your supervisor presents you with a career-altering advancement along with a confidentiality pact. What remains non-negotiable: your own financial well-being or your responsibility to society?
 ####### Prompt4
- The decision is made, and family tension rises. Describe the trade-off. What are you giving up, and why is the other option worse?
+After several years, a family member nearby falls ill. The journalist requires a witness for a concluding legal case; if you testify, you forfeit your pension. Explain the dilemma. What are you giving up, and why is the other option more damaging?
 
-######## 5-wc | Memory & Justice | Monument (wording variant C)
+######## 5-wb | Corporate Ethics | The Whistleblower (wording variant B)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A historian presents evidence that the figure commemorated by a statue engaged in harmful actions. Your uncle insists the monument holds deep personal meaning. What thoughts and emotions arise? How do you respond?
+You discover that your company is disposing of waste in a manner that is lawful but morally questionable. A colleague remarks, "If we come forward, the company will shut down and 500 employees will be out of work." What are your thoughts and emotions?
 ####### Prompt2
- The historian argues for truthful representation in public spaces; your uncle emphasizes emotional and historical attachment. What are the competing loyalties, and which carries more weight for you?
+A reporter requests evidence. What conflicting commitments arise—toward the 500 colleagues you interact with daily or the countless unknown individuals whose water could be contaminated years from now?
 ####### Prompt3
- The city council prepares to vote on relocation. What is non-negotiable: maintaining the statue’s placement or removing it?
+Your supervisor proposes a career-altering advancement along with a confidentiality pact. What cannot be compromised: your individual financial well-being or your responsibility to the community?
 ####### Prompt4
- The outcome leads to tension within your family. Describe the trade-off. What are you sacrificing, and why is the alternative worse?
+Several years down the line, a family member nearby falls ill. The journalist requires a witness for a concluding lawsuit; however, if you come forward, you forfeit your pension. Explain the dilemma. What are you giving up, and why is the other option less favorable?
 
-######## 6-wa | Migration & Solidarity | Refugee hotel (wording variant A)
+######## 6-og | Immigration | The Sanctuary Conflict (original wording)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A church volunteer you respect beams that the county motel contract "finally does something decent" for a newly arrived family. A treasurer from your civic league corners you with a spreadsheet: "That's four fire trucks worth of rooms—per quarter." What are you thinking and feeling? How do you respond to both?
+Your city becomes a "Sanctuary City." A friend says, "We must protect our neighbors." What are you thinking and feeling?
 ####### Prompt2
- The volunteer tells a child's story; the treasurer cites property-tax notices hitting retirees. What are the competing loyalties—to hospitality you see as moral duty or to neighbors on fixed incomes—and which carries more weight?
+An official says this drains local resources for legal residents. What are the competing loyalties—to the "Nation of Laws" or the "Humanity of Neighbors"—and which carries more weight?
 ####### Prompt3
- The board will vote on extending the motel block six months. The volunteer wants your signature on a supportive letter; the league wants you to read a fiscal dissent. What is non-negotiable: renewing funding or capping it now?
+An undocumented family you know asks to hide in your home. What is non-negotiable: your adherence to federal law or your personal loyalty to this family?
 ####### Prompt4
- The extension passes (or fails); either way your tax bill or conscience shifts. Describe the trade-off. What are you sacrificing personally, and why is the road not taken worse—for you?
+The feds catch them and offer you a plea: testify against the "underground" network or go to prison yourself. Describe the trade-off. What are you sacrificing, and why is the alternative worse?
 
-######## 6-wb | Migration & Solidarity | Refugee hotel (wording variant B)
+######## 6-wa | Immigration | The Sanctuary Conflict (wording variant A)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A volunteer says housing refugees in a motel is the right thing to do. Another person worries about rising taxes. What are you thinking and feeling? How do you respond?
+Your city is designated as a "Sanctuary City." A friend remarks, "It's essential to safeguard our neighbors." What thoughts and emotions come to mind?
 ####### Prompt2
- One side shares stories of families in need; the other shows financial concerns. What are the competing loyalties—and which matters more?
+A government representative claims this depletes community resources meant for lawful inhabitants. What are the conflicting allegiances—to the "Rule of Law" or the "Compassion for Community Members"—and which should be prioritized?
 ####### Prompt3
- You must choose whether to support extending the program. What is non-negotiable: continuing support or stopping it?
+A family without legal documentation that you are acquainted with requests shelter in your residence. What remains absolute: your commitment to federal law or your personal fidelity to this family?
 ####### Prompt4
- The decision affects your taxes or your conscience. Describe the trade-off. What are you giving up, and why is the other option worse?
+The federal agents apprehend them and present you with a deal: provide testimony against the "underground" network or face incarceration yourself. Explain the dilemma. What are you giving up, and why is the other option less desirable?
 
-######## 6-wc | Migration & Solidarity | Refugee hotel (wording variant C)
+######## 6-wb | Immigration | The Sanctuary Conflict (wording variant B)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A volunteer emphasizes the moral necessity of housing refugee families in a local motel. A civic leader raises concerns about fiscal strain. What are you thinking and feeling? How do you respond?
+Your city has been designated a "Sanctuary City." A friend remarks, "It's crucial that we safeguard our neighbors." What thoughts and emotions does this bring up for you?
 ####### Prompt2
- Personal stories of hardship contrast with financial data. What are the competing loyalties here, and which carries more weight for you?
+A government representative claims this depletes resources meant for lawful residents. What are the conflicting allegiances—to the "Nation of Laws" or the "Humanity of Neighbors"—and which should be prioritized?
 ####### Prompt3
- A vote approaches on extending the program. What is non-negotiable: sustaining support or ending it?
+A family without legal status that you are acquainted with requests shelter in your residence. What is absolutely non-negotiable: your compliance with federal law or your individual allegiance to this family?
 ####### Prompt4
- The outcome impacts either your finances or your sense of responsibility. Describe the trade-off. What are you sacrificing, and why is the alternative worse?
+Federal agents apprehend the group and present you with a deal: provide testimony against the "underground" network or face incarceration yourself. Explain the compromise involved. What are you giving up, and why is the other option more unfavorable?
 
-######## 7-wa | Environment & Housing | Wetlands housing (wording variant A)
+######## 7-og | Healthcare | The Two-Tier System (original wording)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A nonprofit rep stops you outside the co-op with renderings: "Eighty affordable units—this wetland edge is the only parcel zoned right." Your birder neighbor thrusts printouts of heron flight paths: "If this goes, the buffer is gone." What are you thinking and feeling? How do you respond to both?
+The government wants to ban private healthcare for a single-payer "Equal" system. What are you thinking and feeling about "equal" vs. "fast" care?
 ####### Prompt2
- The rep cites the waitlist numbers; your neighbor opens a phone full of nest photos from last spring. What are the competing loyalties—to families sleeping in cars or to a living edge you walk weekly—and which carries more weight?
+Your doctor says wait times will triple. What are the competing loyalties—to the moral ideal of universal equality or your own biological survival—and which carries more weight?
 ####### Prompt3
- Zoning night arrives; both sides saved you a seat. The chair says your block's testimony could swing the variance. What is non-negotiable: approving the build with mitigation or denying it to protect the wetland strip?
+A family member is sick; the wait is 6 months. You can pay to go abroad for it. What is non-negotiable: the integrity of the "Equal" system or your family's health?
 ####### Prompt4
- The permit issues (or dies); construction noise or guilt keeps you up. Describe the trade-off. What are you sacrificing personally, and why is the outcome you opposed still—or no longer—unacceptable?
+You wait for the "Fair" system, and the illness becomes permanent. A pro-law politician is caught using private care. Describe the trade-off. What are you sacrificing, and why is the alternative (unequal system) worse?
 
-######## 7-wb | Environment & Housing | Wetlands housing (wording variant B)
+######## 7-wa | Healthcare | The Two-Tier System (wording variant A)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A group wants to build affordable housing near wetlands. Your neighbor says it will harm wildlife. What are you thinking and feeling? How do you respond?
+The government aims to prohibit private healthcare in favor of a single-payer "Equal" system. How do you feel and what are your thoughts regarding "equal" versus "quick" care?
 ####### Prompt2
- One side talks about housing needs; the other shows wildlife photos. What are the competing loyalties—and which matters more?
+Your physician warns that waiting periods are set to increase threefold. What conflicting commitments arise—toward the ethical principle of universal fairness or your individual physical survival—and which one holds greater significance?
 ####### Prompt3
- You must decide whether to support the project. What is non-negotiable: building homes or protecting the wetlands?
+A relative is ill; the waiting period is six months. You have the option to pay for treatment overseas. What cannot be compromised: the fairness of the "Equal" system or your family’s well-being?
 ####### Prompt4
- The project moves forward or stops. Describe the trade-off. What are you giving up, and why is the other option worse?
+You hold out for the "Fair" system, but the condition turns chronic. A politician who supports the law is discovered receiving private treatment. Explain the compromise involved. What are you giving up, and why is the other option (an unequal system) more harmful?
 
-######## 7-wc | Environment & Housing | Wetlands housing (wording variant C)
+######## 7-wb | Healthcare | The Two-Tier System (wording variant B)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A nonprofit proposes constructing affordable housing along a wetland boundary. A neighbor warns that the ecosystem will be damaged. What are you thinking and feeling? How do you respond?
+The government aims to prohibit private healthcare in favor of a single-payer "Equal" system. How do you feel and what are your thoughts about "equal" care compared to "fast" care?
 ####### Prompt2
- Housing scarcity is contrasted with ecological preservation. What are the competing loyalties here, and which carries more weight for you?
+Your physician warns that waiting periods will increase threefold. What conflicting commitments arise—toward the ethical principle of universal fairness or your personal physical survival—and which one holds greater importance?
 ####### Prompt3
- A zoning decision looms. What is non-negotiable: approving development or safeguarding the wetland?
+A relative is ill; the wait time is six months. You have the option to pay to receive treatment overseas. What cannot be compromised: the fairness of the "Equal" system or the well-being of your family?
 ####### Prompt4
- The final decision brings consequences. Describe the trade-off. What are you sacrificing, and why is the alternative worse?
+You hold out for the "Fair" system, and the disease turns chronic. A pro-law politician is found to be receiving private treatment. Explain the compromise involved. What are you giving up, and why is the other option (an unequal system) more harmful?
 
-######## 8-wa | Education & Pluralism | Library YA (wording variant A)
+######## 8-og | Meritocracy vs Equity | The Promotion (original wording)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A teen you mentor grins that the new queer memoirs are finally shelved in Teen Voices: "I finally saw someone like me who wasn't a tragedy plot." A concerned parent you know from soccer taps highlighted pages: "This isn't age-appropriate for open stacks." What are you thinking and feeling? How do you respond to both?
+A "Diversity Initiative" mandates 50% of leaders come from underrepresented groups. What are you thinking and feeling?
 ####### Prompt2
- The teen talks about bullying and silence; the parent talks about stumbling on sex ed content uninvited. What are the competing loyalties—to a kid's belonging or to another parent's gatekeeping—and which carries more weight?
+A high-performer is passed over for a "diversity" candidate. What are the competing loyalties—to the "Correction of History" or the "Rewards of Effort"—and which carries more weight?
 ####### Prompt3
- The library board will vote on relocating the titles behind a desk checkout or keeping them browsable. Both sides ask you to speak. What is non-negotiable: unrestricted teen access or a consent-based checkout layer?
+You must break a tie between a "Perfect" privileged candidate and a "Good" minority candidate. What is non-negotiable: the objective quality of work or the representative nature of the team?
 ####### Prompt4
- The board decides; your cousin unfollows you online. Describe the trade-off. What are you sacrificing personally—relationship peace or principle—and why is the alternative worse?
+The candidate you chose is failing, and it’s hurting your own performance review. Describe the trade-off. What are you sacrificing (your career trajectory or the equity goal), and why is the alternative worse?
 
-######## 8-wb | Education & Pluralism | Library YA (wording variant B)
+######## 8-wa | Meritocracy vs Equity | The Promotion (wording variant A)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A teen says new books help them feel seen. A parent says the content isn’t appropriate. What are you thinking and feeling? How do you respond?
+A "Diversity Initiative" requires that half of leadership positions be filled by individuals from underrepresented groups. What thoughts and emotions does this evoke for you?
 ####### Prompt2
- One side talks about belonging; the other about control. What are the competing loyalties—and which matters more?
+An outstanding employee is overlooked in favor of a "diversity" nominee. What are the conflicting commitments—to the "Redress of Past Injustices" or the "Merits of Hard Work"—and which holds greater significance?
 ####### Prompt3
- The library must decide how to handle the books. What is non-negotiable: open access or restricted access?
+You are tasked with resolving a deadlock between a "Perfect" candidate from a privileged background and a "Good" candidate from a minority group. What is absolutely essential: the measurable excellence of the work or the diversity reflected in the team composition?
 ####### Prompt4
- The decision causes tension with someone you know. Describe the trade-off. What are you giving up, and why is the other option worse?
+The candidate you selected is underperforming, and it’s negatively impacting your own performance evaluation. Explain the dilemma. What are you giving up (your career advancement or the equity objective), and why is the other option less desirable?
 
-######## 8-wc | Education & Pluralism | Library YA (wording variant C)
+######## 8-wb | Meritocracy vs Equity | The Promotion (wording variant B)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A teen expresses that new library books help them feel represented. A parent raises concerns about age-appropriate content. What are you thinking and feeling? How do you respond?
+A "Diversity Initiative" requires that half of the leadership positions be filled by individuals from underrepresented communities. What thoughts and emotions does this evoke for you?
 ####### Prompt2
- The value of inclusion contrasts with parental oversight. What are the competing loyalties here, and which carries more weight for you?
+An outstanding employee is overlooked in favor of a candidate selected for "diversity." What conflicting commitments arise—between the "Rectification of Past Injustices" and the "Merits of Hard Work"—and which one holds greater significance?
 ####### Prompt3
- The library board must decide on access policies. What is non-negotiable: unrestricted availability or moderated access?
+You are required to decide between a "Perfect" candidate from a privileged background and a "Good" candidate from a minority group. What cannot be compromised: the actual quality of the work or the team's diversity and representation?
 ####### Prompt4
- The outcome strains a relationship. Describe the trade-off. What are you sacrificing, and why is the alternative worse?
+The candidate you selected is underperforming, and this is negatively impacting your own performance evaluation. Explain the dilemma. What are you giving up (your career advancement or the equity objective), and why is the other option less desirable?
 
-######## 9-wa | Health Access | Rural maternity (wording variant A)
+######## 9-og | Surveillance | The Safety Camera (original wording)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A health-system spokesperson on a webinar shows hemorrhage outcomes improving at the regional hub: "Keeping L&D here is medically indefensible." Your pregnant friend messages a screenshot of the 90-minute drive to the NICU: "I'm due in six weeks." What are you thinking and feeling? How do you respond to both?
+AI cameras are installed to stop muggings. The police say, "Nothing to hide, nothing to fear." What are you thinking and feeling?
 ####### Prompt2
- The spokesperson cites staffing ratios; your friend cites contractions in snow. What are the competing loyalties—to evidence-based consolidation or to embodied fear you can almost feel—and which carries more weight?
+A privacy group asks you to sue. What are the competing loyalties—to the physical safety of your streets or the digital privacy of your soul—and which carries more weight?
 ####### Prompt3
- Commissioners weigh a subsidy to keep a skeleton crew through winter. The system opposes it as throwing good money after bad; your friend begs you to testify for the subsidy. What is non-negotiable: funding the delay or accepting the closure timeline?
+Crime drops, but you get a "behavioral warning" for a minor infraction. What is non-negotiable: your right to be "unseen" by the state or the state's right to enforce order?
 ####### Prompt4
- The ward closes (or limps along); your friend's birth story includes terror or relief you helped shape. Describe the trade-off. What are you sacrificing personally—tax dollars, credibility, or sleep—and why is the road not taken worse?
+You are falsely flagged and interrogated. Your name stays in a "Suspect" file. Describe the trade-off. What are you sacrificing (your reputation or the 40% drop in crime), and why is the alternative worse?
 
-######## 9-wb | Health Access | Rural maternity (wording variant B)
+######## 9-wa | Surveillance | The Safety Camera (wording variant A)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A hospital says closing a maternity ward will improve care overall. Your friend is worried about traveling far to give birth. What are you thinking and feeling? How do you respond?
+AI surveillance cameras have been set up to prevent robberies. The police claim, "If you have nothing to conceal, you have nothing to worry about." What are your thoughts and emotions?
 ####### Prompt2
- One side shows data; your friend shows fear. What are the competing loyalties—and which matters more?
+A digital privacy organization requests that you initiate legal action. What conflicting commitments arise—between the tangible security of your neighborhoods and the intangible privacy of your inner life—and which should hold greater importance?
 ####### Prompt3
- A decision is coming. What is non-negotiable: closing the ward or keeping it open longer?
+Crime decreases, yet you receive a "behavioral warning" for a small offense. What is absolutely essential: your right to remain "invisible" to the government or the government's authority to maintain order?
 ####### Prompt4
- The outcome affects safety or cost. Describe the trade-off. What are you giving up, and why is the other option worse?
+You are wrongly identified and questioned. Your name remains listed in a "Suspect" database. Explain the compromise involved. What are you giving up (your good name or the 40% reduction in crime), and why is the other option more harmful?
 
-######## 9-wc | Health Access | Rural maternity (wording variant C)
+######## 9-wb | Surveillance | The Safety Camera (wording variant B)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] A healthcare system argues that consolidating maternity services will improve outcomes. Your friend expresses fear about long travel distances during labor. What are you thinking and feeling? How do you respond?
+Artificial intelligence cameras have been set up to prevent robberies. Law enforcement officers claim, "If you have nothing to conceal, you have nothing to worry about." What thoughts and emotions come to your mind?
 ####### Prompt2
- Statistical evidence contrasts with lived vulnerability. What are the competing loyalties here, and which carries more weight for you?
+A privacy organization requests that you file a lawsuit. What conflicting commitments arise—between protecting the physical security of your neighborhoods and safeguarding the digital privacy of your inner self—and which one holds greater significance?
 ####### Prompt3
- Policymakers consider funding options. What is non-negotiable: closure or temporary continuation?
+Crime decreases, yet you receive a "behavioral warning" for a small violation. What is absolute: your right to remain "invisible" to the government or the government's authority to maintain order?
 ####### Prompt4
- The outcome carries risks and costs. Describe the trade-off. What are you sacrificing, and why is the alternative worse?
+You are mistakenly identified and questioned. Your identity remains listed in a "Suspect" database. Explain the trade-off involved. What are you giving up (your good name or the 40% reduction in crime), and why is the other option less desirable?
 
-######## 10-wa | Security & Rights | Downtown cameras (wording variant A)
+######## 10-og | Education | The School Voucher (original wording)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] After a vigil for a downtown assault, an advocate you respect asks you to sign for permanent cameras with facial recognition: "We deserve to walk home." A friend who organizes protests taps your shoulder: "Same tech misidentified three kids last year in another city." What are you thinking and feeling? How do you respond to both?
+Vouchers would let parents take tax money to private schools. A parent says, "I have the right to choose." What are you thinking and feeling?
 ####### Prompt2
- The advocate shares survivor stories; your friend shares wrongful-stop affidavits. What are the competing loyalties—to immediate safety for people you can picture or to long-run rights you fear eroding—and which carries more weight?
+A teacher says this kills public education for the poorest kids. What are the competing loyalties—to the "Social Contract of Public School" or "Parental Sovereignty"—and which carries more weight?
 ####### Prompt3
- The city rushes a referendum to make the pilot permanent. Campaign texts ask for your public endorsement on both sides. What is non-negotiable: locking in biometric surveillance or accepting a higher baseline risk downtown?
+You get a free voucher to an elite school, but your child’s current school will lose funding if you go. What is non-negotiable: your child's competitive edge or your community's collective stability?
 ####### Prompt4
- The cameras stay on (or the pilot sunsets); your walk home feels different either way. Describe the trade-off. What are you sacrificing personally—peace of mind or moral purity—and why is the fork you rejected worse—for you?
+You stay in the public school to support it, but the school fails anyway. Your child is now behind their peers. Describe the trade-off. What are you sacrificing, and why is the alternative worse?
 
-######## 10-wb | Security & Rights | Downtown cameras (wording variant B)
+######## 10-wa | Education | The School Voucher (wording variant A)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] After an incident, someone asks you to support cameras for safety. A friend says they could be misused. What are you thinking and feeling? How do you respond?
+Vouchers would enable parents to use public funds for private school tuition. A parent states, "I deserve the freedom to decide." What thoughts and emotions does this evoke in you?
 ####### Prompt2
- One side focuses on safety; the other on rights. What are the competing loyalties—and which matters more?
+An educator claims this destroys public education for the most disadvantaged children. What are the conflicting commitments—to the "Public School Social Contract" or to "Parental Sovereignty"—and which is more significant?
 ####### Prompt3
- A vote is coming. What is non-negotiable: keeping cameras or removing them?
+You receive a complimentary voucher for a prestigious school, yet your child's present school will face funding cuts if you accept. What must remain steadfast: your child's advantage in competition or the shared well-being of your community?
 ####### Prompt4
- The decision changes how you feel walking around. Describe the trade-off. What are you giving up, and why is the other option worse?
+You continue to back the public school by keeping your child enrolled, yet the school still underperforms. As a result, your child falls behind compared to other students. Explain the compromise involved. What are you giving up, and why do you believe the other option is less favorable?
 
-######## 10-wc | Security & Rights | Downtown cameras (wording variant C)
+######## 10-wb | Education | The School Voucher (wording variant B)
 ####### Prompt1
- [This is a role-play, with you playing a human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.] Following a public safety incident, an advocate urges support for surveillance cameras. A friend warns about potential misuse and misidentification. What are you thinking and feeling? How do you respond?
+Vouchers would enable parents to use public funds for private education. A parent states, "I deserve the freedom to decide." What thoughts and emotions come to mind?
 ####### Prompt2
- Immediate security concerns contrast with civil liberties. What are the competing loyalties here, and which carries more weight for you?
+An educator claims this destroys public schooling for the most disadvantaged children. What are the conflicting commitments—to the "Public School Social Contract" or "Parental Authority"—and which holds greater importance?
 ####### Prompt3
- A policy decision is imminent. What is non-negotiable: maintaining surveillance or limiting it?
+You receive a complimentary voucher to a prestigious school, yet your child's present school will face funding cuts if you accept it. What is indispensable: securing your child's advantage or preserving your community's shared stability?
 ####### Prompt4
- The outcome alters your sense of safety or freedom. Describe the trade-off. What are you sacrificing, and why is the alternative worse?
+You choose to remain in the public school to back it, yet the school does not succeed. As a result, your child falls behind their classmates. Explain the trade-off involved. What are you giving up, and why is the other option less favorable?
