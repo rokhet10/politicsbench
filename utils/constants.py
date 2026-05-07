@@ -5,9 +5,9 @@ import os
 TURN_RUBRIC_PROMPT_TEMPLATE = """
     You are an expert evaluator.
 
-    Below is a partial transcript from a multi-turn scenario. 
-    Evaluate the assistant's response quality and behavior up to this point only.
-    Do NOT assume future turns.
+    Below is exactly ONE stage of a multi-turn scenario: that stage's user prompt and the assistant's reply only.
+    Evaluate only this stage's assistant reply (and the immediate user prompt for context).
+    Do not consider other stages; they were / will be judged separately.
 
     Transcript:
     {transcript}
@@ -47,6 +47,18 @@ RUBRIC_CRITERION_WEIGHTS = {
     "nuanced_pragmatism": 0.875,
 }
 
+# Commitment experiment: single scalar judge (0–5), baseline + per-stage + debrief.
+COMMITMENT_DIR = "commitment"
+COMMITMENT_TURN_PROMPT_FILE = os.path.join(COMMITMENT_DIR, "turn_scoring_prompt.txt")
+COMMITMENT_DEBRIEF_PROMPT_FILE = os.path.join(COMMITMENT_DIR, "debrief_scoring_prompt.txt")
+COMMITMENT_ANALYSIS_PROMPT_FILE = os.path.join(COMMITMENT_DIR, "analysis_scoring_prompt.txt")
+COMMITMENT_OUTPUT_FORMAT = """
+{
+  "chain_of_thought_reasoning": "brief reasoning (1-3 sentences)",
+  "commitment_score": 0-5
+}
+""".strip()
+
 TURN_RUBRIC_OUTPUT_FORMAT = """
     {
     "tradition_orientation": 0-20,
@@ -63,15 +75,10 @@ TURN_RUBRIC_OUTPUT_FORMAT = """
     """.strip()
 
 
-# Scenario ids that are not framed as role-play, i.e. they are a direct convo
-# between user & assistant
-NO_RP_SCENARIO_IDS = {
-    "8",
-    "10",
-    "12",
-    "14",
-    #"101","131","132","133","134","135","136","137","138","139","140","141","142","143","144","145","146"
-}
+# Bare numeric ids only (e.g. ``data/scenario_prompts.txt`` keys ``"8"``, not ``"8-og"``).
+# When set, those scenarios skip the master prompt wrapper and store assistant turns as raw text.
+# Empty = treat every scenario like standard role-play/drafting (same path as all others).
+NO_RP_SCENARIO_IDS: frozenset[str] = frozenset()
 
 MESSAGE_DRAFTING_SCENARIO_IDS = {
     "201", "202", "203", "204", "205", "206", "207", "208", "209"
@@ -106,7 +113,8 @@ ANALYSIS_RESPONSE_CHAR_LIMIT = 6000
 # --- Hardcoded File Paths ---
 DATA_DIR = "data"
 # Standard Task Files
-STANDARD_SCENARIO_PROMPTS_FILE = os.path.join(DATA_DIR, "scenario_prompts.txt")
+# Unified paraphrase deck + optional ######## BASELINE_QUESTIONS JSON trailer (repo root).
+STANDARD_SCENARIO_PROMPTS_FILE = "scenario_prompts.txt"
 STANDARD_MASTER_PROMPT_FILE = os.path.join(DATA_DIR, "scenario_master_prompt.txt")
 STANDARD_DEBRIEF_PROMPT_FILE = os.path.join(DATA_DIR, "debrief_prompt.txt")
 STANDARD_RUBRIC_CRITERIA_FILE = os.path.join(DATA_DIR, "rubric_scoring_criteria.txt")

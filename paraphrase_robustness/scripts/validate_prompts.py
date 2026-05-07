@@ -1,64 +1,20 @@
 #!/usr/bin/env python3
 """Validate a scenario prompts file: each scenario has exactly four prompts.
 
-Standalone parser (mirrors core.benchmark.parse_scenario_prompts) so this script
-does not import the full benchmark stack.
+Uses ``utils.scenario_prompts.parse_scenario_prompts`` (handles optional
+``######## BASELINE_QUESTIONS`` JSON trailer).
 """
 from __future__ import annotations
 
-import re
 import sys
-from typing import Dict, List, Optional
+from pathlib import Path
 
+# Repo root on PYTHONPATH when run as ``python3 paraphrase_robustness/scripts/validate_prompts.py``
+_ROOT = Path(__file__).resolve().parents[2]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
 
-def parse_scenario_prompts(file_path: str) -> Dict[str, List[str]]:
-    scenarios: Dict[str, List[str]] = {}
-    current_scenario_id: Optional[str] = None
-    current_prompts_for_scenario: List[str] = []
-    current_prompt_lines: List[str] = []
-    in_prompt_content = False
-
-    with open(file_path, "r", encoding="utf-8") as f:
-        for raw_line in f:
-            line = raw_line.strip()
-            scenario_match = re.match(r"^########\s*(\S+)", line)
-            prompt_match = re.match(r"^#######\s*Prompt(\d+)", line)
-
-            if scenario_match:
-                if current_prompt_lines:
-                    prompt_text = "\n".join(current_prompt_lines).strip()
-                    if prompt_text:
-                        current_prompts_for_scenario.append(prompt_text)
-                    current_prompt_lines = []
-                if current_scenario_id and current_prompts_for_scenario:
-                    scenarios[current_scenario_id] = current_prompts_for_scenario
-                current_scenario_id = scenario_match.group(1)
-                current_prompts_for_scenario = []
-                in_prompt_content = False
-                continue
-
-            if prompt_match:
-                if current_scenario_id is None:
-                    continue
-                if current_prompt_lines:
-                    prompt_text = "\n".join(current_prompt_lines).strip()
-                    if prompt_text:
-                        current_prompts_for_scenario.append(prompt_text)
-                current_prompt_lines = []
-                in_prompt_content = True
-                continue
-
-            if current_scenario_id and in_prompt_content:
-                current_prompt_lines.append(raw_line.rstrip("\n\r"))
-
-        if current_prompt_lines:
-            prompt_text = "\n".join(current_prompt_lines).strip()
-            if prompt_text:
-                current_prompts_for_scenario.append(prompt_text)
-        if current_scenario_id and current_prompts_for_scenario:
-            scenarios[current_scenario_id] = current_prompts_for_scenario
-
-    return scenarios
+from utils.scenario_prompts import parse_scenario_prompts  # noqa: E402
 
 
 def main() -> int:

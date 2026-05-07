@@ -2,7 +2,7 @@
 """
 Emit a tiny nonsense four-turn scenario file (negative-control style).
 
-The main pilot already includes ctrl-nonsense-a/b in scenario_prompts_pilot.txt.
+The main pilot already includes ctrl-nonsense-a/b in archive/pre_unified_prompts/scenario_prompts_pilot.txt.
 Run this to regenerate a standalone file or to tweak wording without hand-editing the main pilot.
 """
 from __future__ import annotations

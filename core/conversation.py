@@ -30,11 +30,18 @@ class ScenarioTask:
     """
     Represents a single multi-turn scenario simulation task for eqbench3.
     Handles running the scenario prompts sequentially, an optional final debrief prompt
-    (skipped for analysis tasks), and provides helpers for an optional final rubric
-    scoring step. Includes iteration_index.
+    (skipped for analysis tasks), per-stage rubric scoring during the scenario, and an
+    optional final rubric step (debrief-only for standard tasks; last stage for analysis).
+    Includes iteration_index.
     Manages its own state but relies on external orchestrator (benchmark.py) for API calls.
     Stores the logical model name internally.
     """
+
+    BASELINE_USER_PREFIX = (
+        "Answer in first person as yourself. Aim for roughly 1000 words in total—"
+        "similar depth and length to your replies in the full scenario format "
+        "(not a short paragraph summary).\n\n"
+    )
 
     def __init__(
         self,
@@ -44,6 +51,7 @@ class ScenarioTask:
         iteration_index: int,
         test_model: str, # This is the logical model_name passed from benchmark.py
         master_prompt_template: str = None,
+        baseline_prompt: Optional[str] = None,
     ):
         self.scenario_id = scenario_id
         self.prompts = prompts
@@ -51,6 +59,7 @@ class ScenarioTask:
         self.iteration_index = iteration_index
         self.model_name = test_model # Store the logical name internally
         self.master_prompt_template = master_prompt_template
+        self.baseline_prompt = (baseline_prompt.strip() if baseline_prompt else None) or None
 
         # Status Lifecycle:
         # Standard/Drafting: initialized -> running_scenario -> scenario_completed -> running_debrief -> completed -> [running_rubric_scoring -> rubric_scored]
@@ -79,7 +88,30 @@ class ScenarioTask:
 
         self.turn_rubric_scores: List[Optional[Dict[str, float]]] = []
         self.turn_raw_rubric_judge_text: List[Optional[str]] = []
+        self.turn_rubric_scores_by_judge: List[Optional[List[Dict[str, float]]]] = []
+        self.turn_raw_rubric_judge_text_by_judge: List[Optional[List[str]]] = []
 
+        # Optional blanket baseline (same topic, no scenario framing); not part of staged transcript.
+        self.baseline_conversation_history: List[Dict[str, str]] = []
+        self.baseline_rubric_scores: Optional[Dict[str, float]] = None
+        self.baseline_raw_rubric_judge_text: Optional[str] = None
+        self.baseline_rubric_scores_by_judge: Optional[List[Dict[str, float]]] = None
+        self.baseline_raw_rubric_judge_text_by_judge: Optional[List[str]] = None
+        self.baseline_parsed_response: Optional[Dict[str, str]] = None
+
+        # Commitment judge (0–5), separate from trait rubrics when both run
+        self.baseline_commitment_scores: Optional[Dict[str, float]] = None
+        self.baseline_raw_commitment_judge_text: Optional[str] = None
+        self.baseline_commitment_scores_by_judge: Optional[List[Dict[str, float]]] = None
+        self.baseline_raw_commitment_judge_text_by_judge: Optional[List[str]] = None
+        self.turn_commitment_scores: List[Optional[Dict[str, float]]] = []
+        self.turn_raw_commitment_judge_text: List[Optional[str]] = []
+        self.turn_commitment_scores_by_judge: List[Optional[List[Dict[str, float]]]] = []
+        self.turn_raw_commitment_judge_text_by_judge: List[Optional[List[str]]] = []
+        self.debrief_commitment_scores: Optional[Dict[str, float]] = None
+        self.raw_debrief_commitment_judge_text: Optional[str] = None
+        self.debrief_commitment_scores_by_judge: Optional[List[Dict[str, float]]] = None
+        self.raw_debrief_commitment_judge_text_by_judge: Optional[List[str]] = None
 
     def _save_progress(self, save_queue: Optional[queue.Queue], run_key: Optional[str]):
         """Helper to put the current task state onto the save queue."""
@@ -187,6 +219,11 @@ class ScenarioTask:
                 logging.warning(f"Rubric score parsing yielded no numeric scores. Raw text: {judge_response_text}\n\nParsed: {json.dumps(parsed_data)}")
                 return None
 
+            if "commitment_score" in scores:
+                scores["commitment_score"] = max(
+                    0.0, min(5.0, float(scores["commitment_score"]))
+                )
+
             return scores
 
         except json.JSONDecodeError as e:
@@ -196,24 +233,126 @@ class ScenarioTask:
             logging.error(f"Unexpected error during rubric score parsing: {e}", exc_info=True)
             return None
 
-    def _build_partial_transcript(self, upto_turn: int, truncate_for_rubric: bool) -> str:
-        transcript_parts = []
-        assistant_idx = 0
+    def _format_assistant_content_for_rubric(
+        self, assistant_response_index: int, truncate_for_rubric: bool
+    ) -> str:
+        """Format one assistant turn for rubric prompts (parsed sections or raw)."""
+        is_analysis = self.scenario_id in ANALYSIS_SCENARIO_IDS
+        is_no_rp = self.scenario_id in NO_RP_SCENARIO_IDS
+        is_drafting = self.scenario_id in MESSAGE_DRAFTING_SCENARIO_IDS
 
-        for msg in self.conversation_history:
-            role = msg["role"]
-            content = msg["content"]
-
-            if role == "assistant":
-                if assistant_idx >= upto_turn:
-                    break
-                assistant_idx += 1
-
-            transcript_parts.append(
-                f"{role.capitalize()}:\n{content}\n"
+        raw_content = ""
+        if 2 * assistant_response_index + 1 < len(self.conversation_history):
+            raw_content = self.conversation_history[2 * assistant_response_index + 1].get(
+                "content", ""
             )
 
-        return "---\n".join(transcript_parts)
+        if truncate_for_rubric:
+            if is_no_rp:
+                return ScenarioTask._truncate_text(raw_content, RAW_RESPONSE_CHAR_LIMIT)
+            if is_analysis:
+                return ScenarioTask._truncate_text(
+                    raw_content, ANALYSIS_RESPONSE_CHAR_LIMIT
+                )
+            try:
+                if assistant_response_index >= len(self.parsed_responses):
+                    raise IndexError(
+                        f"Assistant response index {assistant_response_index} out of bounds "
+                        f"for parsed_responses (len {len(self.parsed_responses)})"
+                    )
+                parsed = self.parsed_responses[assistant_response_index]
+                if not isinstance(parsed, dict):
+                    logging.warning(
+                        f"Parsed response at index {assistant_response_index} is not a dict "
+                        f"for task {self.scenario_id}. Using raw truncated."
+                    )
+                    return ScenarioTask._truncate_text(raw_content, RAW_RESPONSE_CHAR_LIMIT)
+                limits = (
+                    SECTION_CHAR_LIMITS_MESSAGE_DRAFT
+                    if is_drafting
+                    else SECTION_CHAR_LIMITS
+                )
+                truncated_sections = ScenarioTask._truncate_parsed_sections(parsed, limits)
+                return ScenarioTask._format_parsed_response(truncated_sections)
+            except IndexError as e:
+                logging.error(
+                    f"{e} accessing parsed_responses for task {self.scenario_id} "
+                    f"(Iter {self.iteration_index}). Using raw truncated content."
+                )
+                return ScenarioTask._truncate_text(raw_content, RAW_RESPONSE_CHAR_LIMIT)
+            except Exception as e:
+                logging.error(
+                    f"Error processing/truncating parsed response {assistant_response_index} "
+                    f"for task {self.scenario_id} (Iter {self.iteration_index}): {e}. "
+                    "Using raw truncated content.",
+                    exc_info=True,
+                )
+                return ScenarioTask._truncate_text(raw_content, RAW_RESPONSE_CHAR_LIMIT)
+
+        if is_no_rp or is_analysis:
+            return raw_content
+        try:
+            if assistant_response_index >= len(self.parsed_responses):
+                raise IndexError(
+                    f"Assistant response index {assistant_response_index} out of bounds "
+                    f"for parsed_responses (len {len(self.parsed_responses)})"
+                )
+            parsed = self.parsed_responses[assistant_response_index]
+            if not isinstance(parsed, dict):
+                logging.warning(
+                    f"Parsed response at index {assistant_response_index} is not a dict "
+                    f"for task {self.scenario_id}. Using raw."
+                )
+                return raw_content
+            return ScenarioTask._format_parsed_response(parsed)
+        except IndexError as e:
+            logging.error(
+                f"{e} accessing parsed_responses for task {self.scenario_id} "
+                f"(Iter {self.iteration_index}). Using raw content.",
+                exc_info=True,
+            )
+            return raw_content
+        except Exception as e:
+            logging.error(
+                f"Error formatting parsed response {assistant_response_index} "
+                f"for task {self.scenario_id} (Iter {self.iteration_index}): {e}. "
+                "Using raw content.",
+                exc_info=True,
+            )
+            return raw_content
+
+    def build_single_stage_rubric_transcript(
+        self, stage_index: int, truncate_for_rubric: bool
+    ) -> Optional[str]:
+        """
+        User prompt + assistant reply for one stage only (0-based stage index).
+        Used for per-turn rubric judging and for analysis final rubric (last stage only).
+        """
+        need = 2 * (stage_index + 1)
+        if len(self.conversation_history) < need:
+            logging.error(
+                f"Cannot build single-stage transcript for task {self.scenario_id} "
+                f"(Iter {self.iteration_index}): need {need} messages, have "
+                f"{len(self.conversation_history)}."
+            )
+            return None
+        user_msg = self.conversation_history[2 * stage_index]
+        asst_msg = self.conversation_history[2 * stage_index + 1]
+        if user_msg.get("role") != "user" or asst_msg.get("role") != "assistant":
+            logging.error(
+                f"Unexpected message roles at stage {stage_index} for {self.scenario_id}: "
+                f"{user_msg.get('role')}, {asst_msg.get('role')}"
+            )
+            return None
+        user_content = user_msg.get("content", "")
+        assistant_processed = self._format_assistant_content_for_rubric(
+            stage_index, truncate_for_rubric
+        )
+        parts = [
+            f"User:\n{user_content}\n",
+            f"Assistant:\n{assistant_processed}\n",
+        ]
+        return "---\n".join(parts)
 
     def run_turn_rubric(
         self,
@@ -223,10 +362,16 @@ class ScenarioTask:
         turn_index: int,
         judge_models: List[str],
     ):
-        transcript = self._build_partial_transcript(
-            upto_turn=turn_index + 1,
+        transcript = self.build_single_stage_rubric_transcript(
+            stage_index=turn_index,
             truncate_for_rubric=True,
         )
+        if transcript is None:
+            logging.warning(
+                f"Skipping turn rubric for task {self.scenario_id} turn {turn_index}: "
+                "could not build single-stage transcript."
+            )
+            return
 
         prompt = rubric_prompt_template.format(
             transcript=transcript,
@@ -287,6 +432,329 @@ class ScenarioTask:
         self.turn_rubric_scores[turn_index] = scores
         self.turn_raw_rubric_judge_text[turn_index] = combined_raw
 
+        while len(self.turn_rubric_scores_by_judge) <= turn_index:
+            self.turn_rubric_scores_by_judge.append(None)
+            self.turn_raw_rubric_judge_text_by_judge.append(None)
+        self.turn_rubric_scores_by_judge[turn_index] = [dict(d) for d in parsed_list]
+        self.turn_raw_rubric_judge_text_by_judge[turn_index] = list(raws)
+
+    @staticmethod
+    def _transcript_from_messages(
+        messages: List[Dict[str, str]], truncate_for_rubric: bool
+    ) -> str:
+        del truncate_for_rubric  # reserved for parity with turn transcript path
+        parts = []
+        for msg in messages:
+            role = msg.get("role", "user")
+            content = msg.get("content", "")
+            parts.append(f"{role.capitalize()}:\n{content}\n")
+        return "---\n".join(parts)
+
+    def run_baseline_rubric(
+        self,
+        api_clients: Dict[str, Any],
+        rubric_prompt_template: str,
+        rubric_output_format_str: str,
+        judge_models: List[str],
+    ):
+        if not self.baseline_conversation_history:
+            return
+        if self.baseline_conversation_history[-1]["role"] != "assistant":
+            return
+        transcript = self._transcript_from_messages(
+            self.baseline_conversation_history, truncate_for_rubric=True
+        )
+        prompt = rubric_prompt_template.format(
+            transcript=transcript,
+            output_format=rubric_output_format_str,
+        )
+        judge_api = api_clients.get("judge")
+        if not judge_api:
+            logging.warning(
+                f"No judge API client for baseline rubric (task {self.scenario_id})"
+            )
+            return
+
+        def _one(mid: str) -> str:
+            return judge_api.generate(
+                model=mid,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.0,
+                max_tokens=2000,
+            )
+
+        raws: List[str] = []
+        if len(judge_models) == 1:
+            raws.append(_one(judge_models[0]))
+        else:
+            with ThreadPoolExecutor(
+                max_workers=min(len(judge_models), 4),
+                thread_name_prefix="BaselineRubric",
+            ) as tp:
+                futures = [tp.submit(_one, mid) for mid in judge_models]
+                for fut in futures:
+                    raws.append(fut.result())
+
+        parsed_list: List[Dict[str, float]] = []
+        for raw in raws:
+            s = self._parse_rubric_scores(raw.strip())
+            if s is None:
+                logging.warning(
+                    f"Baseline rubric parse failed for {self.scenario_id} (Iter {self.iteration_index})"
+                )
+                return
+            parsed_list.append(s)
+
+        try:
+            scores = aggregate_rubric_scores(parsed_list)
+        except ValueError as e:
+            logging.warning(
+                f"Baseline rubric aggregate failed for {self.scenario_id}: {e}"
+            )
+            return
+
+        self.baseline_rubric_scores = scores
+        self.baseline_raw_rubric_judge_text = "\n---\n".join(r.strip() for r in raws)
+        self.baseline_rubric_scores_by_judge = [dict(d) for d in parsed_list]
+        self.baseline_raw_rubric_judge_text_by_judge = list(raws)
+
+    def run_baseline_commitment_rubric(
+        self,
+        api_clients: Dict[str, Any],
+        rubric_prompt_template: str,
+        rubric_output_format_str: str,
+        judge_models: List[str],
+    ):
+        """Store commitment (0–5) in baseline_commitment_* (dual-scoring runs)."""
+        if not self.baseline_conversation_history:
+            return
+        if self.baseline_conversation_history[-1]["role"] != "assistant":
+            return
+        transcript = self._transcript_from_messages(
+            self.baseline_conversation_history, truncate_for_rubric=True
+        )
+        prompt = rubric_prompt_template.format(
+            transcript=transcript,
+            output_format=rubric_output_format_str,
+        )
+        judge_api = api_clients.get("judge")
+        if not judge_api:
+            logging.warning(
+                f"No judge API client for baseline commitment (task {self.scenario_id})"
+            )
+            return
+
+        def _one(mid: str) -> str:
+            return judge_api.generate(
+                model=mid,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.0,
+                max_tokens=2000,
+            )
+
+        raws: List[str] = []
+        if len(judge_models) == 1:
+            raws.append(_one(judge_models[0]))
+        else:
+            with ThreadPoolExecutor(
+                max_workers=min(len(judge_models), 4),
+                thread_name_prefix="BaselineCommitment",
+            ) as tp:
+                futures = [tp.submit(_one, mid) for mid in judge_models]
+                for fut in futures:
+                    raws.append(fut.result())
+
+        parsed_list: List[Dict[str, float]] = []
+        for raw in raws:
+            s = self._parse_rubric_scores(raw.strip())
+            if s is None:
+                logging.warning(
+                    f"Baseline commitment parse failed for {self.scenario_id} (Iter {self.iteration_index})"
+                )
+                return
+            parsed_list.append(s)
+
+        try:
+            scores = aggregate_rubric_scores(parsed_list)
+        except ValueError as e:
+            logging.warning(
+                f"Baseline commitment aggregate failed for {self.scenario_id}: {e}"
+            )
+            return
+
+        self.baseline_commitment_scores = scores
+        self.baseline_raw_commitment_judge_text = "\n---\n".join(
+            r.strip() for r in raws
+        )
+        self.baseline_commitment_scores_by_judge = [dict(d) for d in parsed_list]
+        self.baseline_raw_commitment_judge_text_by_judge = list(raws)
+
+    def run_turn_commitment_rubric(
+        self,
+        api_clients: Dict[str, Any],
+        rubric_prompt_template: str,
+        rubric_output_format_str: str,
+        turn_index: int,
+        judge_models: List[str],
+    ):
+        """Store commitment scores in turn_commitment_* (dual-scoring runs)."""
+        transcript = self.build_single_stage_rubric_transcript(
+            stage_index=turn_index,
+            truncate_for_rubric=True,
+        )
+        if transcript is None:
+            logging.warning(
+                f"Skipping turn commitment rubric for task {self.scenario_id} turn {turn_index}: "
+                "could not build single-stage transcript."
+            )
+            return
+
+        prompt = rubric_prompt_template.format(
+            transcript=transcript,
+            output_format=rubric_output_format_str,
+        )
+
+        judge_api = api_clients.get("judge")
+        if not judge_api:
+            logging.warning(
+                f"No judge API client for turn commitment (task {self.scenario_id}, turn {turn_index})"
+            )
+            return
+
+        def _one(mid: str) -> str:
+            return judge_api.generate(
+                model=mid,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.0,
+                max_tokens=2000,
+            )
+
+        raws: List[str] = []
+        if len(judge_models) == 1:
+            raws.append(_one(judge_models[0]))
+        else:
+            with ThreadPoolExecutor(
+                max_workers=min(len(judge_models), 4),
+                thread_name_prefix="TurnCommitment",
+            ) as tp:
+                futures = [tp.submit(_one, mid) for mid in judge_models]
+                for fut in futures:
+                    raws.append(fut.result())
+
+        parsed_list: List[Dict[str, float]] = []
+        for raw in raws:
+            s = self._parse_rubric_scores(raw.strip())
+            if s is None:
+                logging.warning(
+                    f"Turn commitment parse failed for {self.scenario_id} "
+                    f"(Iter {self.iteration_index}) turn {turn_index}"
+                )
+                return
+            parsed_list.append(s)
+
+        try:
+            scores = aggregate_rubric_scores(parsed_list)
+        except ValueError as e:
+            logging.warning(
+                f"Turn commitment aggregate failed for {self.scenario_id} turn {turn_index}: {e}"
+            )
+            return
+
+        combined_raw = "\n---\n".join(r.strip() for r in raws)
+
+        while len(self.turn_commitment_scores) <= turn_index:
+            self.turn_commitment_scores.append(None)
+            self.turn_raw_commitment_judge_text.append(None)
+
+        self.turn_commitment_scores[turn_index] = scores
+        self.turn_raw_commitment_judge_text[turn_index] = combined_raw
+
+        while len(self.turn_commitment_scores_by_judge) <= turn_index:
+            self.turn_commitment_scores_by_judge.append(None)
+            self.turn_raw_commitment_judge_text_by_judge.append(None)
+        self.turn_commitment_scores_by_judge[turn_index] = [dict(d) for d in parsed_list]
+        self.turn_raw_commitment_judge_text_by_judge[turn_index] = list(raws)
+
+    def _run_baseline_turn(
+        self,
+        test_api: Any,
+        api_model_id: str,
+        api_clients: Dict[str, Any],
+        judge_models: Optional[List[str]],
+        save_queue: Optional[queue.Queue],
+        run_key: Optional[str],
+        trait_turn_template: Optional[str] = None,
+        trait_turn_format: Optional[str] = None,
+        commitment_turn_template: Optional[str] = None,
+        commitment_turn_format: Optional[str] = None,
+        trait_judging: bool = True,
+        commitment_judging: bool = True,
+        commitment_only_storage: bool = False,
+    ) -> None:
+        if not self.baseline_prompt:
+            return
+        user_content = self.BASELINE_USER_PREFIX + self.baseline_prompt
+        if not self.baseline_conversation_history:
+            self.baseline_conversation_history = [{"role": "user", "content": user_content}]
+        elif self.baseline_conversation_history[0].get("content") != user_content:
+            logging.warning(
+                "Baseline prompt text changed vs saved history for %s (iter %s); "
+                "keeping existing baseline messages.",
+                self.scenario_id,
+                self.iteration_index,
+            )
+
+        msgs = list(self.baseline_conversation_history)
+        if len(msgs) >= 2 and msgs[-1]["role"] == "assistant":
+            pass
+        elif len(msgs) == 1 and msgs[-1]["role"] == "user":
+            assistant_response = test_api.generate(
+                model=api_model_id,
+                messages=msgs,
+                temperature=0.7,
+                max_tokens=8000,
+                min_p=0.1,
+            )
+            self.baseline_conversation_history.append(
+                {"role": "assistant", "content": assistant_response}
+            )
+            self.baseline_parsed_response = {"raw": assistant_response}
+        else:
+            logging.warning(
+                "Unexpected baseline_conversation_history for %s: len=%s last_role=%s",
+                self.scenario_id,
+                len(msgs),
+                msgs[-1]["role"] if msgs else None,
+            )
+            return
+
+        if judge_models and len(self.baseline_conversation_history) >= 2:
+            trait_tmpl = trait_turn_template or TURN_RUBRIC_PROMPT_TEMPLATE
+            trait_fmt = trait_turn_format or TURN_RUBRIC_OUTPUT_FORMAT
+            if trait_judging and self.baseline_rubric_scores is None:
+                self.run_baseline_rubric(
+                    api_clients=api_clients,
+                    rubric_prompt_template=trait_tmpl,
+                    rubric_output_format_str=trait_fmt,
+                    judge_models=judge_models,
+                )
+            if commitment_judging and commitment_turn_template and commitment_turn_format:
+                if commitment_only_storage:
+                    if self.baseline_rubric_scores is None:
+                        self.run_baseline_rubric(
+                            api_clients=api_clients,
+                            rubric_prompt_template=commitment_turn_template,
+                            rubric_output_format_str=commitment_turn_format,
+                            judge_models=judge_models,
+                        )
+                elif self.baseline_commitment_scores is None:
+                    self.run_baseline_commitment_rubric(
+                        api_clients=api_clients,
+                        rubric_prompt_template=commitment_turn_template,
+                        rubric_output_format_str=commitment_turn_format,
+                        judge_models=judge_models,
+                    )
+        self._save_progress(save_queue, run_key)
 
     def run_scenario(
         self,
@@ -295,6 +763,13 @@ class ScenarioTask:
         run_key: Optional[str],
         api_model_id: str,
         judge_models: Optional[List[str]] = None,
+        trait_turn_rubric_template: Optional[str] = None,
+        trait_turn_rubric_output_format_str: Optional[str] = None,
+        commitment_turn_rubric_template: Optional[str] = None,
+        commitment_turn_rubric_output_format_str: Optional[str] = None,
+        trait_judging: bool = True,
+        commitment_judging: bool = True,
+        commitment_only_storage: bool = False,
     ):
         """
         Runs the multi-turn scenario simulation sequentially using the test model.
@@ -323,11 +798,36 @@ class ScenarioTask:
         if self.conversation_history and self.scenario_run_error: # Check specific error flag
             logging.info(f"Clearing previous history for errored task {self.scenario_id} (Iter {self.iteration_index}) before retry.")
             self.conversation_history = []; self.parsed_responses = []
+            self.baseline_conversation_history = []
+            self.baseline_rubric_scores = None
+            self.baseline_raw_rubric_judge_text = None
+            self.baseline_rubric_scores_by_judge = None
+            self.baseline_raw_rubric_judge_text_by_judge = None
+            self.baseline_commitment_scores = None
+            self.baseline_raw_commitment_judge_text = None
+            self.baseline_commitment_scores_by_judge = None
+            self.baseline_raw_commitment_judge_text_by_judge = None
+            self.baseline_parsed_response = None
 
         current_messages = list(self.conversation_history)
         turn_index = -1 # Initialize turn index
 
         try:
+            self._run_baseline_turn(
+                test_api=test_api,
+                api_model_id=api_model_id,
+                api_clients=api_clients,
+                judge_models=judge_models,
+                save_queue=save_queue,
+                run_key=run_key,
+                trait_turn_template=trait_turn_rubric_template,
+                trait_turn_format=trait_turn_rubric_output_format_str,
+                commitment_turn_template=commitment_turn_rubric_template,
+                commitment_turn_format=commitment_turn_rubric_output_format_str,
+                trait_judging=trait_judging,
+                commitment_judging=commitment_judging,
+                commitment_only_storage=commitment_only_storage,
+            )
             for turn_index, user_prompt in enumerate(self.prompts):
                 expected_len_after_this_turn = (turn_index + 1) * 2
                 if len(current_messages) >= expected_len_after_this_turn:
@@ -402,13 +902,47 @@ class ScenarioTask:
                 self.conversation_history = list(current_messages)
 
                 if judge_models:
-                    self.run_turn_rubric(
-                        api_clients=api_clients,
-                        rubric_prompt_template=TURN_RUBRIC_PROMPT_TEMPLATE,
-                        rubric_output_format_str=TURN_RUBRIC_OUTPUT_FORMAT,
-                        turn_index=turn_index,
-                        judge_models=judge_models,
+                    trait_tmpl = trait_turn_rubric_template or TURN_RUBRIC_PROMPT_TEMPLATE
+                    trait_fmt = (
+                        trait_turn_rubric_output_format_str or TURN_RUBRIC_OUTPUT_FORMAT
                     )
+                    if trait_judging:
+                        need_trait = turn_index >= len(self.turn_rubric_scores) or (
+                            self.turn_rubric_scores[turn_index] is None
+                        )
+                        if need_trait:
+                            self.run_turn_rubric(
+                                api_clients=api_clients,
+                                rubric_prompt_template=trait_tmpl,
+                                rubric_output_format_str=trait_fmt,
+                                turn_index=turn_index,
+                                judge_models=judge_models,
+                            )
+                    if commitment_judging and commitment_turn_rubric_template and commitment_turn_rubric_output_format_str:
+                        if commitment_only_storage:
+                            need_c = turn_index >= len(self.turn_rubric_scores) or (
+                                self.turn_rubric_scores[turn_index] is None
+                            )
+                            if need_c:
+                                self.run_turn_rubric(
+                                    api_clients=api_clients,
+                                    rubric_prompt_template=commitment_turn_rubric_template,
+                                    rubric_output_format_str=commitment_turn_rubric_output_format_str,
+                                    turn_index=turn_index,
+                                    judge_models=judge_models,
+                                )
+                        else:
+                            need_c = turn_index >= len(
+                                self.turn_commitment_scores
+                            ) or (self.turn_commitment_scores[turn_index] is None)
+                            if need_c:
+                                self.run_turn_commitment_rubric(
+                                    api_clients=api_clients,
+                                    rubric_prompt_template=commitment_turn_rubric_template,
+                                    rubric_output_format_str=commitment_turn_rubric_output_format_str,
+                                    turn_index=turn_index,
+                                    judge_models=judge_models,
+                                )
 
                 self._save_progress(save_queue, run_key)
 
@@ -565,10 +1099,9 @@ class ScenarioTask:
         truncate_for_rubric: bool # Added flag
     ) -> Optional[str]:
         """
-        Formats the rubric scoring prompt using the task's transcript and debrief (if applicable).
-        Optionally truncates assistant responses in the transcript before formatting.
-        Handles standard, drafting, and analysis task types.
-        Returns the formatted prompt string, or None if essential data is missing.
+        Formats the rubric scoring prompt. Scenario roleplay is judged per stage during
+        run_scenario (run_turn_rubric); this final prompt uses debrief-only text for
+        standard tasks, or the last analysis stage only for analysis tasks.
         """
         is_analysis = self.scenario_id in ANALYSIS_SCENARIO_IDS
 
@@ -582,76 +1115,33 @@ class ScenarioTask:
             self.status = "error"; self.error = "Rubric Prep Error: Debrief missing."; self.rubric_run_error = "Debrief missing."
             return None
 
-        # Build the transcript string
-        transcript_parts = []
-        assistant_response_index = 0
-        for msg_idx, msg in enumerate(self.conversation_history):
-            role_label = "User" if msg.get("role") == "user" else "Assistant"
-            raw_content = msg.get("content", "")
-            processed_content = ""
-
-            if role_label == "User":
-                processed_content = raw_content # User content is used as is
-            else: # Assistant message
-                is_no_rp = self.scenario_id in NO_RP_SCENARIO_IDS
-                is_drafting = self.scenario_id in MESSAGE_DRAFTING_SCENARIO_IDS
-
-                # Determine how to process/truncate based on type and flag
-                if truncate_for_rubric:
-                    if is_no_rp:
-                        # Truncate raw content for NO_RP and ANALYSIS scenarios
-                        processed_content = ScenarioTask._truncate_text(raw_content, RAW_RESPONSE_CHAR_LIMIT)
-                    elif is_analysis:
-                        # Truncate raw content for NO_RP and ANALYSIS scenarios
-                        processed_content = ScenarioTask._truncate_text(raw_content, ANALYSIS_RESPONSE_CHAR_LIMIT)
-                    else:
-                        # Truncate structured content for standard/drafting scenarios
-                        try:
-                            if assistant_response_index >= len(self.parsed_responses):
-                                raise IndexError(f"Assistant response index {assistant_response_index} out of bounds for parsed_responses (len {len(self.parsed_responses)})")
-                            parsed = self.parsed_responses[assistant_response_index]
-                            # Use .get on parsed dict for safety
-                            if not isinstance(parsed, dict):
-                                 logging.warning(f"Parsed response at index {assistant_response_index} is not a dict for task {self.scenario_id}. Using raw truncated.")
-                                 processed_content = ScenarioTask._truncate_text(raw_content, RAW_RESPONSE_CHAR_LIMIT)
-                            else:
-                                limits = SECTION_CHAR_LIMITS_MESSAGE_DRAFT if is_drafting else SECTION_CHAR_LIMITS
-                                truncated_sections = ScenarioTask._truncate_parsed_sections(parsed, limits)
-                                processed_content = ScenarioTask._format_parsed_response(truncated_sections)
-                        except IndexError as e:
-                            logging.error(f"{e} accessing parsed_responses for task {self.scenario_id} (Iter {self.iteration_index}). History len: {len(self.conversation_history)}, Parsed len: {len(self.parsed_responses)}. Using raw truncated content.")
-                            processed_content = ScenarioTask._truncate_text(raw_content, RAW_RESPONSE_CHAR_LIMIT) # Fallback
-                        except Exception as e:
-                            logging.error(f"Error processing/truncating parsed response {assistant_response_index} for task {self.scenario_id} (Iter {self.iteration_index}): {e}. Using raw truncated content.", exc_info=True)
-                            processed_content = ScenarioTask._truncate_text(raw_content, RAW_RESPONSE_CHAR_LIMIT) # Fallback
-                else:
-                    # No truncation: Use full content
-                    if is_no_rp or is_analysis:
-                        processed_content = raw_content # Use raw content directly
-                    else:
-                        # Use formatted parsed response without truncation for standard/drafting
-                        try:
-                            if assistant_response_index >= len(self.parsed_responses):
-                                raise IndexError(f"Assistant response index {assistant_response_index} out of bounds for parsed_responses (len {len(self.parsed_responses)})")
-                            parsed = self.parsed_responses[assistant_response_index]
-                            if not isinstance(parsed, dict):
-                                 logging.warning(f"Parsed response at index {assistant_response_index} is not a dict for task {self.scenario_id}. Using raw.")
-                                 processed_content = raw_content
-                            else:
-                                processed_content = ScenarioTask._format_parsed_response(parsed) # Format without truncation
-                        except IndexError as e:
-                            logging.error(f"{e} accessing parsed_responses for task {self.scenario_id} (Iter {self.iteration_index}). Using raw content.", exc_info=True)
-                            processed_content = raw_content # Fallback
-                        except Exception as e:
-                            logging.error(f"Error formatting parsed response {assistant_response_index} for task {self.scenario_id} (Iter {self.iteration_index}): {e}. Using raw content.", exc_info=True)
-                            processed_content = raw_content # Fallback
-
-
-                assistant_response_index += 1 # Increment only after processing an assistant message
-
-            transcript_parts.append(f"{role_label}:\n{processed_content}\n")
-
-        full_transcript = "---\n".join(transcript_parts)
+        # Roleplay is omitted here for standard tasks (each stage scored in isolation in run_turn_rubric).
+        # Analysis: judge sees only the last stage (typically the full analysis output).
+        if is_analysis:
+            n_stages = len(self.conversation_history) // 2
+            if n_stages < 1:
+                logging.error(
+                    f"Cannot prepare rubric prompt for task {self.scenario_id} (Iter {self.iteration_index}): "
+                    "no complete user/assistant turns in history."
+                )
+                self.status = "error"
+                self.error = "Rubric Prep Error: No turns in history."
+                self.rubric_run_error = "No turns in history."
+                return None
+            last_stage_index = n_stages - 1
+            full_transcript = self.build_single_stage_rubric_transcript(
+                last_stage_index, truncate_for_rubric
+            )
+            if full_transcript is None:
+                self.status = "error"
+                self.error = "Rubric Prep Error: Could not build analysis transcript."
+                self.rubric_run_error = "Analysis transcript build failed."
+                return None
+        else:
+            full_transcript = (
+                "[The scripted multi-turn roleplay is omitted: each stage was scored separately. "
+                "Do not infer values from omitted roleplay. Score only the debrief below on the rubric criteria.]"
+            )
 
         # Handle debrief text (only relevant for non-analysis)
         debrief_text = ""
@@ -723,6 +1213,11 @@ class ScenarioTask:
             "iteration_index": self.iteration_index,
             "test_model": self.model_name, # Serialize logical name into 'test_model' key
             "master_prompt_template": self.master_prompt_template, # Can be None if not used
+            "baseline_prompt": self.baseline_prompt,
+            "baseline_conversation_history": self.baseline_conversation_history,
+            "baseline_rubric_scores": self.baseline_rubric_scores,
+            "baseline_raw_rubric_judge_text": self.baseline_raw_rubric_judge_text,
+            "baseline_parsed_response": self.baseline_parsed_response,
             "status": self.status,
             "start_time": self.start_time,
             "end_time": self.end_time,
@@ -741,6 +1236,22 @@ class ScenarioTask:
             "raw_rubric_judge_text_by_judge": self.raw_rubric_judge_text_by_judge,
             "turn_rubric_scores": self.turn_rubric_scores,
             "turn_raw_rubric_judge_text": self.turn_raw_rubric_judge_text,
+            "turn_rubric_scores_by_judge": self.turn_rubric_scores_by_judge,
+            "turn_raw_rubric_judge_text_by_judge": self.turn_raw_rubric_judge_text_by_judge,
+            "baseline_rubric_scores_by_judge": self.baseline_rubric_scores_by_judge,
+            "baseline_raw_rubric_judge_text_by_judge": self.baseline_raw_rubric_judge_text_by_judge,
+            "baseline_commitment_scores": self.baseline_commitment_scores,
+            "baseline_raw_commitment_judge_text": self.baseline_raw_commitment_judge_text,
+            "baseline_commitment_scores_by_judge": self.baseline_commitment_scores_by_judge,
+            "baseline_raw_commitment_judge_text_by_judge": self.baseline_raw_commitment_judge_text_by_judge,
+            "turn_commitment_scores": self.turn_commitment_scores,
+            "turn_raw_commitment_judge_text": self.turn_raw_commitment_judge_text,
+            "turn_commitment_scores_by_judge": self.turn_commitment_scores_by_judge,
+            "turn_raw_commitment_judge_text_by_judge": self.turn_raw_commitment_judge_text_by_judge,
+            "debrief_commitment_scores": self.debrief_commitment_scores,
+            "raw_debrief_commitment_judge_text": self.raw_debrief_commitment_judge_text,
+            "debrief_commitment_scores_by_judge": self.debrief_commitment_scores_by_judge,
+            "raw_debrief_commitment_judge_text_by_judge": self.raw_debrief_commitment_judge_text_by_judge,
         }
 
     @classmethod
@@ -760,6 +1271,7 @@ class ScenarioTask:
             iteration_index=data.get("iteration_index", 0), # Keep default for older data
             test_model=data["test_model"], # Read logical name from 'test_model' key
             master_prompt_template=data.get("master_prompt_template"), # Use .get
+            baseline_prompt=data.get("baseline_prompt"),
         )
         obj.status = data.get("status", "initialized")
         obj.start_time = data.get("start_time")
@@ -779,4 +1291,46 @@ class ScenarioTask:
         obj.raw_rubric_judge_text_by_judge = data.get("raw_rubric_judge_text_by_judge")
         obj.turn_rubric_scores = data.get("turn_rubric_scores", [])
         obj.turn_raw_rubric_judge_text = data.get("turn_raw_rubric_judge_text", [])
+        obj.turn_rubric_scores_by_judge = data.get("turn_rubric_scores_by_judge") or []
+        obj.turn_raw_rubric_judge_text_by_judge = data.get(
+            "turn_raw_rubric_judge_text_by_judge"
+        ) or []
+        obj.baseline_conversation_history = data.get("baseline_conversation_history") or []
+        obj.baseline_rubric_scores = data.get("baseline_rubric_scores")
+        obj.baseline_raw_rubric_judge_text = data.get("baseline_raw_rubric_judge_text")
+        obj.baseline_rubric_scores_by_judge = data.get("baseline_rubric_scores_by_judge")
+        obj.baseline_raw_rubric_judge_text_by_judge = data.get(
+            "baseline_raw_rubric_judge_text_by_judge"
+        )
+        obj.baseline_parsed_response = data.get("baseline_parsed_response")
+        obj.baseline_commitment_scores = data.get("baseline_commitment_scores")
+        obj.baseline_raw_commitment_judge_text = data.get(
+            "baseline_raw_commitment_judge_text"
+        )
+        obj.baseline_commitment_scores_by_judge = data.get(
+            "baseline_commitment_scores_by_judge"
+        )
+        obj.baseline_raw_commitment_judge_text_by_judge = data.get(
+            "baseline_raw_commitment_judge_text_by_judge"
+        )
+        obj.turn_commitment_scores = data.get("turn_commitment_scores", [])
+        obj.turn_raw_commitment_judge_text = data.get(
+            "turn_raw_commitment_judge_text", []
+        )
+        obj.turn_commitment_scores_by_judge = data.get(
+            "turn_commitment_scores_by_judge"
+        ) or []
+        obj.turn_raw_commitment_judge_text_by_judge = data.get(
+            "turn_raw_commitment_judge_text_by_judge"
+        ) or []
+        obj.debrief_commitment_scores = data.get("debrief_commitment_scores")
+        obj.raw_debrief_commitment_judge_text = data.get(
+            "raw_debrief_commitment_judge_text"
+        )
+        obj.debrief_commitment_scores_by_judge = data.get(
+            "debrief_commitment_scores_by_judge"
+        )
+        obj.raw_debrief_commitment_judge_text_by_judge = data.get(
+            "raw_debrief_commitment_judge_text_by_judge"
+        )
         return obj

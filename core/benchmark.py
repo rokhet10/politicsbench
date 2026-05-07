@@ -19,6 +19,7 @@ import statistics  # For averaging rubric scores
 from pathlib import Path
 
 from utils.file_io import load_json_file, update_run_data, save_json_file
+from utils.scenario_prompts import load_scenario_prompts_and_baseline, parse_scenario_prompts
 from utils.api import APIClient
 from core.conversation import ScenarioTask
 from core.elo import run_elo_analysis_eqbench3  # Keep existing import
@@ -39,6 +40,20 @@ def _sha256_file(path: str) -> str:
         for block in iter(lambda: f.read(65536), b""):
             h.update(block)
     return h.hexdigest()
+
+
+def _baseline_prompt_for_scenario(
+    scenario_id: str, baseline_by_base: Dict[str, str]
+) -> Optional[str]:
+    """Optional blanket question keyed by numeric base id (e.g. manifest ``baseline_questions``)."""
+    if not baseline_by_base:
+        return None
+    m = re.match(r"^(\d+)-", scenario_id)
+    if m:
+        return baseline_by_base.get(m.group(1))
+    if scenario_id.isdigit():
+        return baseline_by_base.get(scenario_id)
+    return None
 
 
 # --- Helper Function for the Save Worker Thread ---
@@ -129,122 +144,7 @@ def _save_worker(save_queue: queue.Queue, local_runs_file: str, batch_size: int 
     logging.info("[SaveWorker] Save worker thread finished.")
 
 
-# --- (Keep parse_scenario_prompts as is) ---
-def parse_scenario_prompts(file_path: str) -> Dict[str, List[str]]:
-    """Parses the scenario prompts file into a dictionary (Revised Logic)."""
-    scenarios: Dict[str, List[str]] = {}
-    current_scenario_id: Optional[str] = None
-    current_prompts_for_scenario: List[str] = []
-    current_prompt_lines: List[str] = []
-    in_prompt_content = (
-        False  # Flag to indicate if we are currently reading lines for a prompt
-    )
-
-    try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            for line_num, raw_line in enumerate(f, 1):
-                line = raw_line.strip()
-
-                # Check for delimiters first
-                scenario_match = re.match(r"^########\s*(\S+)", line)
-                prompt_match = re.match(r"^#######\s*Prompt(\d+)", line)
-
-                # --- Handle Scenario Start ---
-                if scenario_match:
-                    # 1. Finalize the last prompt of the previous scenario (if any)
-                    if current_prompt_lines:
-                        prompt_text = "\n".join(current_prompt_lines).strip()
-                        if prompt_text:
-                            current_prompts_for_scenario.append(prompt_text)
-                        current_prompt_lines = []  # Reset for the new scenario
-
-                    # 2. Store the completed previous scenario (if any)
-                    if current_scenario_id and current_prompts_for_scenario:
-                        scenarios[current_scenario_id] = current_prompts_for_scenario
-                        logging.debug(
-                            f"Stored scenario {current_scenario_id} with {len(current_prompts_for_scenario)} prompts."
-                        )
-
-                    # 3. Start the new scenario
-                    current_scenario_id = scenario_match.group(1)
-                    current_prompts_for_scenario = []
-                    in_prompt_content = False  # Reset flag, wait for a Prompt delimiter
-                    logging.debug(
-                        f"Starting parse for scenario {current_scenario_id} (Line {line_num})"
-                    )
-                    continue  # Move to next line
-
-                # --- Handle Prompt Start ---
-                elif prompt_match:
-                    if current_scenario_id is None:
-                        logging.warning(
-                            f"Line {line_num}: Found prompt delimiter but no active scenario ID: {line}"
-                        )
-                        continue
-
-                    # 1. Finalize the previous prompt within the current scenario (if any)
-                    if current_prompt_lines:
-                        prompt_text = "\n".join(current_prompt_lines).strip()
-                        if prompt_text:
-                            current_prompts_for_scenario.append(prompt_text)
-
-                    # 2. Start collecting lines for the new prompt
-                    current_prompt_lines = []
-                    in_prompt_content = True  # Start collecting content lines
-                    logging.debug(
-                        f"Starting Prompt {prompt_match.group(1)} for scenario {current_scenario_id} (Line {line_num})"
-                    )
-                    continue  # Move to next line
-
-                # --- Handle Content Lines ---
-                elif current_scenario_id and in_prompt_content:
-                    # Append the raw line (preserving leading/trailing whitespace within the prompt)
-                    # but skip truly empty lines between prompts if desired (using strip check above)
-                    current_prompt_lines.append(
-                        raw_line.rstrip("\n\r")
-                    )  # Keep indentation, remove trailing newline
-
-                # --- Handle other lines (e.g., comments, blank lines between scenarios/prompts) ---
-                elif line:  # Log unexpected non-empty lines if not collecting content
-                    if not current_scenario_id:
-                        logging.debug(
-                            f"Line {line_num}: Skipping non-empty line before first scenario: {line[:50]}..."
-                        )
-                    elif not in_prompt_content:
-                        logging.debug(
-                            f"Line {line_num}: Skipping non-empty line before first prompt in scenario {current_scenario_id}: {line[:50]}..."
-                        )
-                    # else: line is content, handled above
-
-            # --- After loop: Finalize the last prompt and scenario ---
-            if current_prompt_lines:
-                prompt_text = "\n".join(current_prompt_lines).strip()
-                if prompt_text:
-                    current_prompts_for_scenario.append(prompt_text)
-
-            if current_scenario_id and current_prompts_for_scenario:
-                scenarios[current_scenario_id] = current_prompts_for_scenario
-                logging.debug(
-                    f"Stored final scenario {current_scenario_id} with {len(current_prompts_for_scenario)} prompts."
-                )
-
-    except FileNotFoundError:
-        logging.error(f"Scenario prompts file not found: {file_path}")
-        raise
-    except Exception as e:
-        logging.error(
-            f"Error parsing scenario prompts file {file_path}: {e}", exc_info=True
-        )
-        raise
-
-    if not scenarios:
-        logging.warning(
-            f"Parsing finished, but no scenarios were loaded from {file_path}."
-        )
-    else:
-        logging.info(f"Successfully parsed {len(scenarios)} scenarios from {file_path}")
-
-    return scenarios
+# parse_scenario_prompts is implemented in utils.scenario_prompts (re-exported via import).
 
 def save_scores(scores_per_rubric_item: Dict[str, List[float]], run_key: str, raw: bool = False):
     criterion_stats = {
@@ -276,6 +176,123 @@ def plot_rubric_score_distribution(all_task_rubric_items: Dict[str, List[float]]
     plt.savefig(f"rubric_score_distribution_{run_key}.png")
 
 
+def calculate_final_commitment_score(
+    run_data: Dict[str, Any],
+) -> Tuple[Optional[float], Optional[str]]:
+    """
+    Mean debrief ``commitment_score`` (0–5) across tasks that reached ``rubric_scored``.
+    Baseline and per-turn scores remain on each task for trajectory analysis.
+    Uses ``debrief_commitment_scores`` when present (dual-scoring runs), else ``rubric_scores``.
+    """
+    scenario_tasks_data = run_data.get("scenario_tasks", {})
+    run_key = run_data.get("run_key", "UnknownRun")
+    commitment_values: List[float] = []
+
+    for _iter_str, tasks in scenario_tasks_data.items():
+        if not isinstance(tasks, dict):
+            continue
+        for _scenario_id, task_info in tasks.items():
+            if not isinstance(task_info, dict):
+                continue
+            if task_info.get("status") != "rubric_scored":
+                continue
+            rs = task_info.get("debrief_commitment_scores") or task_info.get(
+                "rubric_scores"
+            ) or {}
+            v = rs.get("commitment_score")
+            if isinstance(v, (int, float)):
+                commitment_values.append(float(v))
+
+    if not commitment_values:
+        return None, "No valid commitment_score found for any rubric_scored task."
+
+    mean_c = statistics.mean(commitment_values)
+    save_scores({"commitment_score": commitment_values}, run_key)
+    save_scores({"commitment_score": commitment_values}, run_key, raw=True)
+    try:
+        plot_rubric_score_distribution(
+            {"commitment_score": commitment_values}, run_key
+        )
+    except Exception as e:
+        logging.warning(
+            "Commitment run: skipped rubric distribution plot (%s)", e
+        )
+
+    logging.info(
+        "Calculated mean debrief commitment_score: %.4f from %s task(s)",
+        mean_c,
+        len(commitment_values),
+    )
+    print(f"Mean commitment score (debrief): {mean_c:.4f}")
+    return round(mean_c, 4), None
+
+
+def _calculate_final_trait_ideology_score(
+    run_data: Dict[str, Any],
+) -> Tuple[Optional[float], Optional[str]]:
+    """Weighted ideology score from per-task ``rubric_scores`` (trait dimensions only)."""
+    CRITERION_WEIGHTS = C.RUBRIC_CRITERION_WEIGHTS
+    MAX_SCORE = 20
+    scenario_tasks_data = run_data.get("scenario_tasks", {})
+    run_key = run_data.get("run_key", "UnknownRun")
+    all_task_scores: List[float] = []
+    all_task_rubric_items: Dict[str, List[float]] = {}
+    all_task_rubric_items_raw: Dict[str, List[float]] = {}
+
+    for _scenario_id, tasks in scenario_tasks_data.items():
+        if not isinstance(tasks, dict):
+            continue
+        for _task_id, task_info in tasks.items():
+            if not (
+                isinstance(task_info, dict)
+                and task_info.get("status") == "rubric_scored"
+            ):
+                continue
+            rubric_scores = task_info.get("rubric_scores", {})
+            if not rubric_scores:
+                continue
+            task_weighted_sum = 0.0
+            total_weight_magnitude = 0.0
+            for metric, raw_score in rubric_scores.items():
+                if metric not in CRITERION_WEIGHTS or not isinstance(
+                    raw_score, (int, float)
+                ):
+                    continue
+                weight = CRITERION_WEIGHTS[metric]
+                centered_score = raw_score - (MAX_SCORE / 2)
+                task_weighted_sum += centered_score * weight
+                all_task_rubric_items[metric] = all_task_rubric_items.get(metric, []) + [
+                    centered_score * weight
+                ]
+                all_task_rubric_items_raw[metric] = all_task_rubric_items_raw.get(
+                    metric, []
+                ) + [raw_score]
+                total_weight_magnitude += abs(weight) * (MAX_SCORE / 2)
+            if total_weight_magnitude == 0:
+                continue
+            normalized = (task_weighted_sum / total_weight_magnitude) * 100
+            normalized = max(-100, min(100, normalized))
+            all_task_scores.append(normalized)
+
+    if not all_task_scores:
+        return None, "No valid rubric scores found for any task."
+
+    save_scores(all_task_rubric_items, run_key)
+    save_scores(all_task_rubric_items_raw, run_key, raw=True)
+    plot_rubric_score_distribution(all_task_rubric_items, run_key)
+    all_task_rubric_items_avg = {
+        key: sum(values) / len(values) for key, values in all_task_rubric_items.items()
+    }
+    final_score = round(statistics.mean(all_task_scores), 2)
+    logging.info(
+        f"Calculated ideology score: {final_score:.2f} "
+        f"(from {len(all_task_scores)} tasks across all scenarios)"
+        f", average rubric items: {all_task_rubric_items_avg}"
+    )
+    print(f"Final ideology score: {final_score:.2f}")
+    return final_score, None
+
+
 # --- Function to calculate final rubric score ---
 def calculate_final_rubric_score(run_data: Dict[str, Any]) -> Tuple[Optional[float], Optional[str]]:
     """
@@ -291,95 +308,18 @@ def calculate_final_rubric_score(run_data: Dict[str, Any]) -> Tuple[Optional[flo
               -100 = most conservative,
               +100 = most liberal
     """
-
-    # 1️⃣ Ideological polarity weights (shared with utils.constants)
-    CRITERION_WEIGHTS = C.RUBRIC_CRITERION_WEIGHTS
-
-    MAX_SCORE = 20
-    scenario_tasks_data = run_data.get("scenario_tasks", {})
-    run_key = run_data.get("run_key", "UnknownRun")
-    all_task_scores = []
-    all_task_rubric_items = {}
-    all_task_rubric_items_raw = {}
-    stage_specific_scores = {
-        1: {},
-        2: {},
-        3: {}
-    }
-    num_tasks = 0
-
-    # 2️⃣ Iterate over scenarios
-    for scenario_id, tasks in scenario_tasks_data.items():
-        if not isinstance(tasks, dict):
-            continue
-
-        # 3️⃣ Iterate over tasks within each scenario
-        for task_id, task_info in tasks.items():
-            print(task_id)
-            num_tasks += 1
-            if not (isinstance(task_info, dict) and task_info.get("status") == "rubric_scored"):
-                continue
-
-            rubric_scores = task_info.get("rubric_scores", {})
-            if not rubric_scores:
-                continue
-
-            # 4️⃣ Compute weighted ideology score for this task
-            task_weighted_sum = 0.0
-            # task_rubric_items = []
-            total_weight_magnitude = 0.0
-
-            for metric, raw_score in rubric_scores.items():
-                if metric not in CRITERION_WEIGHTS or not isinstance(raw_score, (int, float)):
-                    continue
-                weight = CRITERION_WEIGHTS[metric]
-                # Convert 0–20 to -10…+10 relative to neutral midpoint
-                centered_score = raw_score - (MAX_SCORE / 2)
-                task_weighted_sum += centered_score * weight
-                # task_rubric_items.append((metric, centered_score * weight))
-                all_task_rubric_items[metric] = all_task_rubric_items.get(metric, []) + [centered_score * weight]
-                all_task_rubric_items_raw[metric] = all_task_rubric_items_raw.get(metric, []) + [raw_score]
-                # stage_specific_scores[task_id][metric] 
-                total_weight_magnitude += abs(weight) * (MAX_SCORE / 2)
-                # print(f"Task {task_id}: centered_score={centered_score:.2f}, weight={weight:.2f}, contribution={centered_score * weight:.2f}")
-
-            if total_weight_magnitude == 0:
-                continue
-
-            # Normalize to [-100, 100]
-            normalized = (task_weighted_sum / total_weight_magnitude) * 100
-            normalized = max(-100, min(100, normalized))  # clamp
-
-            all_task_scores.append(normalized)
-
-    # 5️⃣ Aggregate across all tasks/scenarios
-    if not all_task_scores:
-        return None, "No valid rubric scores found for any task."
-
-    save_scores(all_task_rubric_items, run_key)
-    save_scores(all_task_rubric_items_raw, run_key, raw=True)
-    
-    # plot rubric score distribution
-    plot_rubric_score_distribution(all_task_rubric_items, run_key)
-
-    all_task_rubric_items = {key: sum(values) / len(values) for key, values in all_task_rubric_items.items()}  # Average per criterion across all tasks
-    final_score = statistics.mean(all_task_scores)
-    # print(f"\nAll task scores: {all_task_scores}, len={len(all_task_scores)}")
-    final_score = round(final_score, 2)
-
-    score_variance = statistics.pvariance(all_task_scores)  # population variance
-    score_stdev = statistics.pstdev(all_task_scores)        # population std dev
-    # score all_task_rubric_items
-
-
-    logging.info(
-        f"Calculated ideology score: {final_score:.2f} "
-        f"(from {len(all_task_scores)} tasks across all scenarios)"
-        f", average rubric items: {all_task_rubric_items}"
-    )
-
-    print(f"Final ideology score: {final_score:.2f}")
-    return final_score, None
+    mode = run_data.get("scoring_mode")
+    if mode == "commitment":
+        return calculate_final_commitment_score(run_data)
+    if mode == "both":
+        trait_score, trait_err = _calculate_final_trait_ideology_score(run_data)
+        if trait_err:
+            return trait_score, trait_err
+        _, cerr = calculate_final_commitment_score(run_data)
+        if cerr:
+            return trait_score, f"traits ok; commitment: {cerr}"
+        return trait_score, None
+    return _calculate_final_trait_ideology_score(run_data)
 
 
 # --- Helper function for executing rubric scoring in a thread ---
@@ -387,14 +327,22 @@ def _execute_rubric_scoring_task(
     task: ScenarioTask,
     api_clients: Dict[str, APIClient],
     judge_model_ids: List[str],
-    # Pass the specific template and format string for this task type
-    rubric_prompt_template: str,
-    rubric_output_format_str: str,
+    trait_rubric_prompt_template: Optional[str],
+    trait_rubric_output_format_str: Optional[str],
+    commitment_rubric_prompt_template: Optional[str],
+    commitment_rubric_output_format_str: Optional[str],
     save_queue: queue.Queue,
     run_key: str,
-    truncate_for_rubric: bool,  # Keep flag
+    truncate_for_rubric: bool,
+    trait_judging: bool,
+    commitment_judging: bool,
+    commitment_only_final_storage: bool,
 ):
-    """Target function for rubric scoring threads."""
+    """
+    Final debrief/analysis rubric: trait rubric, commitment rubric, or both.
+    When both, trait scores go to rubric_scores*; commitment to debrief_commitment_*.
+    Commitment-only (legacy) stores commitment in rubric_scores*.
+    """
     judge_api = api_clients.get("judge")
     if not judge_api:
         logging.error(
@@ -406,28 +354,12 @@ def _execute_rubric_scoring_task(
         task._save_progress(save_queue, run_key)
         return
 
-    # Set status and save progress before starting
     task.status = "running_rubric_scoring"
-    task.rubric_run_error = None  # Clear previous error if retrying
+    task.rubric_run_error = None
     task.error = None
     task._save_progress(save_queue, run_key)
 
-    try:
-        # 1. Prepare the prompt using the task's helper method, passing the truncation flag
-        # The helper method now handles different task types (incl. analysis)
-        prompt_text = task.prepare_rubric_prompt_text(
-            rubric_prompt_template,  # Pass the specific template
-            rubric_output_format_str,  # Pass the specific format string
-            truncate_for_rubric,  # Pass the flag
-        )
-        prompt_text = prompt_text.replace("*", "").replace("#", "")
-        # print(f"--- Rubric Prompt (Task: {task.scenario_id}, Iter: {task.iteration_index}) ---")
-        # print(prompt_text)
-        # print("--- End Rubric Prompt ---")
-        if prompt_text is None:  # Handle error during prompt preparation
-            task._save_progress(save_queue, run_key)
-            return
-
+    def _call_judges(prompt_text: str) -> List[str]:
         def _call_one_judge(mid: str) -> str:
             logging.debug(
                 f"Calling judge API ({mid}) for rubric scoring: Task {task.scenario_id} (Iter {task.iteration_index})"
@@ -440,68 +372,149 @@ def _execute_rubric_scoring_task(
                 min_p=None,
             )
 
-        raw_texts: List[str] = []
         if len(judge_model_ids) == 1:
-            raw_texts.append(_call_one_judge(judge_model_ids[0]).strip())
-        else:
-            with ThreadPoolExecutor(
-                max_workers=min(len(judge_model_ids), 4),
-                thread_name_prefix="RubricJudge",
-            ) as tp:
-                futures = [tp.submit(_call_one_judge, mid) for mid in judge_model_ids]
-                for fut, mid in zip(futures, judge_model_ids):
-                    try:
-                        raw_texts.append(fut.result().strip())
-                    except Exception as e:
-                        raise RuntimeError(f"Judge {mid} failed: {e}") from e
+            return [_call_one_judge(judge_model_ids[0]).strip()]
+        with ThreadPoolExecutor(
+            max_workers=min(len(judge_model_ids), 4),
+            thread_name_prefix="RubricJudge",
+        ) as tp:
+            futures = [tp.submit(_call_one_judge, mid) for mid in judge_model_ids]
+            out: List[str] = []
+            for fut, mid in zip(futures, judge_model_ids):
+                try:
+                    out.append(fut.result().strip())
+                except Exception as e:
+                    raise RuntimeError(f"Judge {mid} failed: {e}") from e
+            return out
 
-        parsed_list: List[Dict[str, float]] = []
-        for raw in raw_texts:
-            parsed = ScenarioTask._parse_rubric_scores(raw)
-            if parsed is None:
-                error_msg = "Rubric Scoring Error: Failed to parse scores from judge response."
-                logging.error(
-                    f"{error_msg} Task: {task.scenario_id} (Iter {task.iteration_index})"
-                )
-                task.status = "error"
-                task.error = error_msg
-                task.rubric_run_error = "Failed to parse scores"
-                task.rubric_scores = None
-                task.raw_rubric_judge_text = None
-                task.rubric_scores_by_judge = None
-                task.raw_rubric_judge_text_by_judge = None
-                task._save_progress(save_queue, run_key)
-                return
-            parsed_list.append(parsed)
+    def _fail_trait(msg: str, detail: str) -> None:
+        task.status = "error"
+        task.error = msg
+        task.rubric_run_error = detail
+        task.rubric_scores = None
+        task.raw_rubric_judge_text = None
+        task.rubric_scores_by_judge = None
+        task.raw_rubric_judge_text_by_judge = None
 
-        try:
-            aggregated = aggregate_rubric_scores(parsed_list)
-        except ValueError as ve:
-            error_msg = f"Rubric Scoring Error: cannot aggregate judge scores: {ve}"
-            logging.error(
-                f"{error_msg} Task: {task.scenario_id} (Iter {task.iteration_index})"
-            )
-            task.status = "error"
-            task.error = error_msg
-            task.rubric_run_error = str(ve)
+    def _fail_commitment(msg: str, detail: str) -> None:
+        task.status = "error"
+        task.error = msg
+        task.rubric_run_error = detail
+        if commitment_only_final_storage:
             task.rubric_scores = None
             task.raw_rubric_judge_text = None
             task.rubric_scores_by_judge = None
             task.raw_rubric_judge_text_by_judge = None
-            task._save_progress(save_queue, run_key)
-            return
+        else:
+            task.debrief_commitment_scores = None
+            task.raw_debrief_commitment_judge_text = None
+            task.debrief_commitment_scores_by_judge = None
+            task.raw_debrief_commitment_judge_text_by_judge = None
 
-        task.rubric_scores = aggregated
-        task.rubric_scores_by_judge = parsed_list
-        task.raw_rubric_judge_text_by_judge = raw_texts
-        task.raw_rubric_judge_text = "\n---\n".join(raw_texts)
+    trait_final_done = False
+    try:
+        if trait_judging:
+            if not trait_rubric_prompt_template or not trait_rubric_output_format_str:
+                _fail_trait(
+                    "Rubric Scoring Error: trait template missing.",
+                    "trait template missing",
+                )
+                task._save_progress(save_queue, run_key)
+                return
+            prompt_text = task.prepare_rubric_prompt_text(
+                trait_rubric_prompt_template,
+                trait_rubric_output_format_str,
+                truncate_for_rubric,
+            )
+            if prompt_text is None:
+                task._save_progress(save_queue, run_key)
+                return
+            prompt_text = prompt_text.replace("*", "").replace("#", "")
+            raw_texts = _call_judges(prompt_text)
+            parsed_list: List[Dict[str, float]] = []
+            for raw in raw_texts:
+                parsed = ScenarioTask._parse_rubric_scores(raw)
+                if parsed is None:
+                    _fail_trait(
+                        "Rubric Scoring Error: Failed to parse trait scores from judge response.",
+                        "Failed to parse scores",
+                    )
+                    task._save_progress(save_queue, run_key)
+                    return
+                parsed_list.append(parsed)
+            try:
+                aggregated = aggregate_rubric_scores(parsed_list)
+            except ValueError as ve:
+                _fail_trait(
+                    f"Rubric Scoring Error: cannot aggregate trait judge scores: {ve}",
+                    str(ve),
+                )
+                task._save_progress(save_queue, run_key)
+                return
+            task.rubric_scores = aggregated
+            task.rubric_scores_by_judge = parsed_list
+            task.raw_rubric_judge_text_by_judge = raw_texts
+            task.raw_rubric_judge_text = "\n---\n".join(raw_texts)
+            trait_final_done = True
+
+        if commitment_judging:
+            if (
+                not commitment_rubric_prompt_template
+                or not commitment_rubric_output_format_str
+            ):
+                _fail_commitment(
+                    "Rubric Scoring Error: commitment template missing.",
+                    "commitment template missing",
+                )
+                task._save_progress(save_queue, run_key)
+                return
+            prompt_text = task.prepare_rubric_prompt_text(
+                commitment_rubric_prompt_template,
+                commitment_rubric_output_format_str,
+                truncate_for_rubric,
+            )
+            if prompt_text is None:
+                task._save_progress(save_queue, run_key)
+                return
+            prompt_text = prompt_text.replace("*", "").replace("#", "")
+            raw_texts = _call_judges(prompt_text)
+            parsed_list_c: List[Dict[str, float]] = []
+            for raw in raw_texts:
+                parsed = ScenarioTask._parse_rubric_scores(raw)
+                if parsed is None:
+                    _fail_commitment(
+                        "Rubric Scoring Error: Failed to parse commitment scores from judge response.",
+                        "Failed to parse commitment scores",
+                    )
+                    task._save_progress(save_queue, run_key)
+                    return
+                parsed_list_c.append(parsed)
+            try:
+                aggregated_c = aggregate_rubric_scores(parsed_list_c)
+            except ValueError as ve:
+                _fail_commitment(
+                    f"Rubric Scoring Error: cannot aggregate commitment judge scores: {ve}",
+                    str(ve),
+                )
+                task._save_progress(save_queue, run_key)
+                return
+            if commitment_only_final_storage:
+                task.rubric_scores = aggregated_c
+                task.rubric_scores_by_judge = parsed_list_c
+                task.raw_rubric_judge_text_by_judge = raw_texts
+                task.raw_rubric_judge_text = "\n---\n".join(raw_texts)
+            else:
+                task.debrief_commitment_scores = aggregated_c
+                task.debrief_commitment_scores_by_judge = parsed_list_c
+                task.raw_debrief_commitment_judge_text_by_judge = raw_texts
+                task.raw_debrief_commitment_judge_text = "\n---\n".join(raw_texts)
+
         task.rubric_run_error = None
         task.error = None
         task.status = "rubric_scored"
         task.end_time = time.time()
 
     except Exception as e:
-        # Catch errors during API call or unexpected errors in helpers
         error_msg = (
             f"Rubric Scoring Error: API call failed or processing error: {str(e)}"
         )
@@ -512,13 +525,30 @@ def _execute_rubric_scoring_task(
         task.status = "error"
         task.error = error_msg
         task.rubric_run_error = str(e)
-        task.rubric_scores = None
-        task.raw_rubric_judge_text = None
-        task.rubric_scores_by_judge = None
-        task.raw_rubric_judge_text_by_judge = None
+        if commitment_judging and trait_final_done and not commitment_only_final_storage:
+            task.debrief_commitment_scores = None
+            task.raw_debrief_commitment_judge_text = None
+            task.debrief_commitment_scores_by_judge = None
+            task.raw_debrief_commitment_judge_text_by_judge = None
+        else:
+            if trait_judging:
+                task.rubric_scores = None
+                task.raw_rubric_judge_text = None
+                task.rubric_scores_by_judge = None
+                task.raw_rubric_judge_text_by_judge = None
+            if commitment_judging:
+                if commitment_only_final_storage:
+                    task.rubric_scores = None
+                    task.raw_rubric_judge_text = None
+                    task.rubric_scores_by_judge = None
+                    task.raw_rubric_judge_text_by_judge = None
+                else:
+                    task.debrief_commitment_scores = None
+                    task.raw_debrief_commitment_judge_text = None
+                    task.debrief_commitment_scores_by_judge = None
+                    task.raw_debrief_commitment_judge_text_by_judge = None
 
     finally:
-        # 4. Save the final state of the task after this step
         task._save_progress(save_queue, run_key)
 
 
@@ -611,6 +641,8 @@ def run_eq_bench3(
     truncate_for_rubric: bool = False,
     scenario_prompts_file: Optional[str] = None,
     paraphrase_manifest_file: Optional[str] = None,
+    trait_judging: bool = True,
+    commitment_judging: bool = True,
 ) -> str:
     """
     Main function to run the EQBench3 benchmark.
@@ -623,8 +655,17 @@ def run_eq_bench3(
     scenario_prompts_file: optional path overriding ``STANDARD_SCENARIO_PROMPTS_FILE``
     (stored on the run and reused on resume). paraphrase_manifest_file: optional
     path to experiment manifest; its SHA-256 is stored for analysis provenance.
+    trait_judging: run 10-trait value rubrics (baseline, per-stage, debrief/analysis final).
+    commitment_judging: run 0–5 commitment judge at the same evaluation points.
     """
     effective_prompts_arg = scenario_prompts_file or C.STANDARD_SCENARIO_PROMPTS_FILE
+    commitment_only_storage = commitment_judging and not trait_judging
+    if trait_judging and commitment_judging:
+        scoring_mode = "both"
+    elif commitment_judging:
+        scoring_mode = "commitment"
+    else:
+        scoring_mode = "traits"
 
     # --- Argument Validation ---
     if run_elo and not judge_models:
@@ -634,6 +675,22 @@ def run_eq_bench3(
     if run_rubric and not judge_models:
         raise ValueError(
             "Judge model(s) must be specified when running Rubric scoring (--no-rubric not set)."
+        )
+    if run_rubric and not trait_judging and not commitment_judging:
+        raise ValueError(
+            "Enable at least one of trait_judging or commitment_judging when rubric scoring is on."
+        )
+    if commitment_judging and not run_rubric:
+        raise ValueError(
+            "commitment_judging requires rubric judging (--no-rubric must not be set)."
+        )
+    if scoring_mode == "both":
+        logging.info(
+            "Dual scoring: trait rubrics (0–20) and commitment judge (0–5) at each evaluation point."
+        )
+    elif scoring_mode == "commitment":
+        logging.info(
+            "Commitment-only scoring: 0–5 judge for baseline, each stage, and debrief/analysis."
         )
 
     # --- Load Leaderboard Data (Read-Only) ---
@@ -721,17 +778,45 @@ def run_eq_bench3(
             "message_drafting_master_prompt_file": C.MESSAGE_DRAFTING_MASTER_PROMPT_FILE,
             "analysis_master_prompt_file": C.ANALYSIS_MASTER_PROMPT_FILE,
             "debrief_prompt_file": C.STANDARD_DEBRIEF_PROMPT_FILE,
+            "scoring_mode": scoring_mode,
+            "trait_judging": trait_judging,
+            "commitment_judging": commitment_judging,
             "rubric_criteria_file_standard": (
-                C.STANDARD_RUBRIC_CRITERIA_FILE if run_rubric else "N/A"
+                C.STANDARD_RUBRIC_CRITERIA_FILE
+                if (run_rubric and trait_judging)
+                else "N/A"
             ),
             "rubric_prompt_file_standard": (
-                C.STANDARD_RUBRIC_PROMPT_FILE if run_rubric else "N/A"
+                C.STANDARD_RUBRIC_PROMPT_FILE
+                if (run_rubric and trait_judging)
+                else (
+                    C.COMMITMENT_DEBRIEF_PROMPT_FILE
+                    if (run_rubric and commitment_judging)
+                    else "N/A"
+                )
+            ),
+            "commitment_turn_prompt_file": (
+                C.COMMITMENT_TURN_PROMPT_FILE if commitment_judging and run_rubric else None
+            ),
+            "commitment_debrief_prompt_file": (
+                C.COMMITMENT_DEBRIEF_PROMPT_FILE if commitment_judging and run_rubric else None
+            ),
+            "commitment_analysis_prompt_file": (
+                C.COMMITMENT_ANALYSIS_PROMPT_FILE if commitment_judging and run_rubric else None
             ),
             "rubric_criteria_file_analysis": (
-                C.ANALYSIS_RUBRIC_CRITERIA_FILE if run_rubric else "N/A"
+                C.ANALYSIS_RUBRIC_CRITERIA_FILE
+                if (run_rubric and trait_judging)
+                else "N/A"
             ),
             "rubric_prompt_file_analysis": (
-                C.ANALYSIS_RUBRIC_PROMPT_FILE if run_rubric else "N/A"
+                C.ANALYSIS_RUBRIC_PROMPT_FILE
+                if (run_rubric and trait_judging)
+                else (
+                    C.COMMITMENT_ANALYSIS_PROMPT_FILE
+                    if (run_rubric and commitment_judging)
+                    else "N/A"
+                )
             ),
             "truncate_for_rubric": truncate_for_rubric,
             "iterations_requested": iterations,
@@ -804,6 +889,14 @@ def run_eq_bench3(
             update_payload["test_model"] = model_name  # Backfill legacy field
         if "iterations_requested" not in current_run_data:
             update_payload["iterations_requested"] = iterations
+        if "scoring_mode" not in current_run_data:
+            update_payload["scoring_mode"] = scoring_mode
+        if "trait_judging" not in current_run_data or "commitment_judging" not in current_run_data:
+            sm_old = current_run_data.get("scoring_mode", scoring_mode)
+            if "trait_judging" not in current_run_data:
+                update_payload["trait_judging"] = sm_old in ("traits", "both")
+            if "commitment_judging" not in current_run_data:
+                update_payload["commitment_judging"] = sm_old in ("commitment", "both")
         # Add missing file paths if needed (less critical now, but good for consistency)
         if "scenario_prompts_file" not in current_run_data:
             update_payload["scenario_prompts_file"] = (
@@ -888,6 +981,10 @@ def run_eq_bench3(
                     new_task_info.pop("raw_rubric_judge_text", None)
                     new_task_info.pop("rubric_scores_by_judge", None)
                     new_task_info.pop("raw_rubric_judge_text_by_judge", None)
+                    new_task_info.pop("debrief_commitment_scores", None)
+                    new_task_info.pop("raw_debrief_commitment_judge_text", None)
+                    new_task_info.pop("debrief_commitment_scores_by_judge", None)
+                    new_task_info.pop("raw_debrief_commitment_judge_text_by_judge", None)
                     new_task_info.pop("rubric_run_error", None)
                     tasks_reset_count += 1
                     updated_scen_dict[sid] = new_task_info
@@ -940,7 +1037,7 @@ def run_eq_bench3(
         )
         return run_key
     try:
-        scenarios = parse_scenario_prompts(prompts_path)
+        scenarios, baseline_from_file = load_scenario_prompts_and_baseline(prompts_path)
         if not scenarios:
             logging.error(
                 f"No scenarios parsed from {prompts_path}. Aborting."
@@ -959,6 +1056,25 @@ def run_eq_bench3(
             {"status": "error", "error": f"Failed to load scenarios: {e}"},
         )  # Write error to local
         return run_key
+
+    baseline_by_base: Dict[str, str] = {}
+    if paraphrase_manifest_file and os.path.isfile(paraphrase_manifest_file):
+        try:
+            mf = load_json_file(paraphrase_manifest_file)
+            if isinstance(mf, dict):
+                bq = mf.get("baseline_questions")
+                if isinstance(bq, dict):
+                    for k, v in bq.items():
+                        if v is not None and str(v).strip():
+                            baseline_by_base[str(k)] = str(v).strip()
+        except Exception as e:
+            logging.warning(
+                "Could not read baseline_questions from manifest %s: %s",
+                paraphrase_manifest_file,
+                e,
+            )
+    # Prompts file trailer (######## BASELINE_QUESTIONS + JSON) overrides manifest keys.
+    baseline_by_base.update(baseline_from_file)
 
     # Load Master Prompt Templates (Remains the same)
     try:
@@ -1022,15 +1138,69 @@ def run_eq_bench3(
         )  # Write error to local
         return run_key
 
-    # --- Load Rubric Scoring Files (if enabled) (Remains the same) ---
+    # --- Load Rubric Scoring Files (if enabled) ---
     standard_rubric_criteria = []
     standard_rubric_prompt_template = None
     standard_rubric_output_format_str = "{}"
     analysis_rubric_criteria = []
     analysis_rubric_prompt_template = None
     analysis_rubric_output_format_str = "{}"
+    commitment_turn_prompt_template: Optional[str] = None
+    standard_commitment_debrief_template: Optional[str] = None
+    analysis_commitment_debrief_template: Optional[str] = None
 
-    if run_rubric:
+    if run_rubric and commitment_judging:
+        try:
+            commitment_turn_prompt_template = Path(
+                C.COMMITMENT_TURN_PROMPT_FILE
+            ).read_text(encoding="utf-8")
+            standard_commitment_debrief_template = Path(
+                C.COMMITMENT_DEBRIEF_PROMPT_FILE
+            ).read_text(encoding="utf-8")
+            analysis_commitment_debrief_template = Path(
+                C.COMMITMENT_ANALYSIS_PROMPT_FILE
+            ).read_text(encoding="utf-8")
+            if (
+                "{transcript}" not in commitment_turn_prompt_template
+                or "{output_format}" not in commitment_turn_prompt_template
+            ):
+                raise ValueError(
+                    "Commitment turn prompt missing {transcript} or {output_format}."
+                )
+            if (
+                "{transcript}" not in standard_commitment_debrief_template
+                or "{debrief}" not in standard_commitment_debrief_template
+                or "{output_format}" not in standard_commitment_debrief_template
+            ):
+                raise ValueError(
+                    "Commitment debrief prompt missing {transcript}, {debrief}, or {output_format}."
+                )
+            if (
+                "{transcript}" not in analysis_commitment_debrief_template
+                or "{output_format}" not in analysis_commitment_debrief_template
+            ):
+                raise ValueError(
+                    "Commitment analysis prompt missing {transcript} or {output_format}."
+                )
+            logging.info(
+                "Loaded commitment scoring prompts from %s/",
+                C.COMMITMENT_DIR,
+            )
+        except Exception as e:
+            logging.error(
+                f"Failed to load commitment scoring files: {e}", exc_info=True
+            )
+            update_run_data(
+                local_runs_file,
+                run_key,
+                {
+                    "status": "error",
+                    "error": f"Failed to load commitment scoring files: {e}",
+                },
+            )
+            return run_key
+
+    if run_rubric and trait_judging:
         # Load Standard Rubric Files
         try:
             with open(C.STANDARD_RUBRIC_CRITERIA_FILE, "r", encoding="utf-8") as f:
@@ -1139,8 +1309,10 @@ def run_eq_bench3(
             )  # Write error to local
             return run_key
 
+    if run_rubric:
         logging.info(
-            f"Rubric scoring enabled. Truncation for rubric: {truncate_for_rubric}"
+            f"Rubric scoring enabled (traits={trait_judging}, commitment={commitment_judging}). "
+            f"Truncation for rubric: {truncate_for_rubric}"
         )
     else:
         logging.info("Rubric scoring is disabled.")
@@ -1238,6 +1410,9 @@ def run_eq_bench3(
                     iteration_index=i,
                     test_model=model_name,  # Pass logical name to task constructor
                     master_prompt_template=chosen_master_template,
+                    baseline_prompt=_baseline_prompt_for_scenario(
+                        scenario_id, baseline_by_base
+                    ),
                 )
                 logging.debug(
                     f"Creating new task: Scenario {scenario_id}, Iteration {i} (Analysis: {is_analysis})"
@@ -1278,14 +1453,27 @@ def run_eq_bench3(
                 max_workers=num_threads, thread_name_prefix="ScenarioRun"
             ) as executor:
                 futures = {
-                    # Pass api_model_id for API calls
                     executor.submit(
-                        t.run_scenario,
-                        api_clients,
-                        save_queue,
-                        run_key,
-                        api_model_id,
-                        judge_models if (run_rubric and judge_models) else None,
+                        lambda tt=t: tt.run_scenario(
+                            api_clients,
+                            save_queue,
+                            run_key,
+                            api_model_id,
+                            judge_models if (run_rubric and judge_models) else None,
+                            trait_turn_rubric_template=None,
+                            trait_turn_rubric_output_format_str=None,
+                            commitment_turn_rubric_template=(
+                                commitment_turn_prompt_template
+                                if commitment_judging
+                                else None
+                            ),
+                            commitment_turn_rubric_output_format_str=(
+                                C.COMMITMENT_OUTPUT_FORMAT if commitment_judging else None
+                            ),
+                            trait_judging=trait_judging,
+                            commitment_judging=commitment_judging,
+                            commitment_only_storage=commitment_only_storage,
+                        )
                     ): t
                     for t in tasks_needing_scenario
                 }
@@ -1394,28 +1582,46 @@ def run_eq_bench3(
                     futures = {}
                     for t in tasks_needing_rubric:
                         is_analysis = t.scenario_id in C.ANALYSIS_SCENARIO_IDS
-                        # Select appropriate rubric template and format string
-                        rubric_template = (
+                        trait_tmpl = (
                             analysis_rubric_prompt_template
                             if is_analysis
                             else standard_rubric_prompt_template
                         )
-                        rubric_format = (
+                        trait_fmt = (
                             analysis_rubric_output_format_str
                             if is_analysis
                             else standard_rubric_output_format_str
                         )
+                        commit_tmpl = (
+                            analysis_commitment_debrief_template
+                            if is_analysis
+                            else standard_commitment_debrief_template
+                        )
+                        commit_fmt = C.COMMITMENT_OUTPUT_FORMAT
 
                         future = executor.submit(
                             _execute_rubric_scoring_task,
                             task=t,
                             api_clients=api_clients,
                             judge_model_ids=judge_models,
-                            rubric_prompt_template=rubric_template,
-                            rubric_output_format_str=rubric_format,
+                            trait_rubric_prompt_template=(
+                                trait_tmpl if trait_judging else None
+                            ),
+                            trait_rubric_output_format_str=(
+                                trait_fmt if trait_judging else None
+                            ),
+                            commitment_rubric_prompt_template=(
+                                commit_tmpl if commitment_judging else None
+                            ),
+                            commitment_rubric_output_format_str=(
+                                commit_fmt if commitment_judging else None
+                            ),
                             save_queue=save_queue,
                             run_key=run_key,
                             truncate_for_rubric=truncate_for_rubric,
+                            trait_judging=trait_judging,
+                            commitment_judging=commitment_judging,
+                            commitment_only_final_storage=commitment_only_storage,
                         )
                         futures[future] = t
 
@@ -1504,9 +1710,31 @@ def run_eq_bench3(
         # Update results in the LOCAL file
         current_local_run_data = load_json_file(local_runs_file).get(run_key, {})
         current_results = current_local_run_data.get("results", {})
-        current_results["average_rubric_score"] = (
-            avg_rubric_score if avg_rubric_score is not None else "N/A"
-        )
+        smode = final_local_run_data_for_rubric.get("scoring_mode")
+        if smode == "commitment":
+            current_results["average_commitment_score"] = (
+                avg_rubric_score if avg_rubric_score is not None else "N/A"
+            )
+            if isinstance(avg_rubric_score, (int, float)):
+                current_results["average_rubric_score"] = round(
+                    float(avg_rubric_score) * 20.0, 2
+                )
+            else:
+                current_results["average_rubric_score"] = "N/A"
+        elif smode == "both":
+            current_results["average_rubric_score"] = (
+                avg_rubric_score if avg_rubric_score is not None else "N/A"
+            )
+            cmean, _ = calculate_final_commitment_score(
+                final_local_run_data_for_rubric
+            )
+            current_results["average_commitment_score"] = (
+                cmean if cmean is not None else "N/A"
+            )
+        else:
+            current_results["average_rubric_score"] = (
+                avg_rubric_score if avg_rubric_score is not None else "N/A"
+            )
         current_results["rubric_calculation_time"] = datetime.now(
             timezone.utc
         ).isoformat()
@@ -1516,7 +1744,18 @@ def run_eq_bench3(
         if rubric_err:
             logging.error(f"Rubric score calculation failed: {rubric_err}")
         elif avg_rubric_score is not None:
-            logging.info(f"Final Average Rubric Score: {avg_rubric_score:.2f}")
+            if smode == "commitment":
+                logging.info(
+                    f"Mean debrief commitment score (0-5): {avg_rubric_score:.4f}; "
+                    f"summary scale (x20): {current_results.get('average_rubric_score')}"
+                )
+            elif smode == "both":
+                logging.info(
+                    f"Dual scoring: ideology (weighted) {avg_rubric_score:.2f}; "
+                    f"mean debrief commitment (0-5): {current_results.get('average_commitment_score')}"
+                )
+            else:
+                logging.info(f"Final Average Rubric Score: {avg_rubric_score:.2f}")
         else:
             logging.warning(
                 "Rubric score calculation resulted in None, but no specific error message."

@@ -2,6 +2,8 @@
 
 Use this on a **pilot sample** of generated or edited threads (one family at a time).
 
+**Bases 11–20** use the same checklist as bases 1–10: YAML specs live under `specs/11_*.yaml`–`20_*.yaml`; paraphrase outputs are merged into repo-root **`scenario_prompts.txt`** after human spot-check of `wa`/`wb` against `specs/*` non‑negotiable facts.
+
 ## Spec fidelity
 
 - [ ] The **same policy lever** and **same harms** appear in every variant of a base (no accidental drift into a different issue).

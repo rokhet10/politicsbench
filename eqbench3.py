@@ -538,12 +538,32 @@ def main():
     parser.add_argument(
         "--scenario-prompts-file",
         default=None,
-        help="Path to scenario prompts .txt (default: data/scenario_prompts.txt via constants).",
+        help="Path to scenario prompts .txt (default: scenario_prompts.txt at repo root via constants).",
     )
     parser.add_argument(
         "--paraphrase-manifest",
         default=None,
-        help="Optional JSON manifest for paraphrase experiments; file SHA-256 is stored on the run.",
+        help="Optional JSON manifest for paraphrase experiments; file SHA-256 is stored on the run. "
+        "Baseline blanket questions: loaded from manifest baseline_questions when present; keys from "
+        "scenario_prompts.txt (######## BASELINE_QUESTIONS JSON trailer) override the manifest when both are used.",
+    )
+    parser.add_argument(
+        "--no-trait-judging",
+        action="store_true",
+        default=False,
+        help="Skip 10-trait value rubrics (baseline, per-stage, final). Default is to run traits.",
+    )
+    parser.add_argument(
+        "--no-commitment-judging",
+        action="store_true",
+        default=False,
+        help="Skip commitment/stance judge (0-5). Default is to run commitment scoring alongside traits.",
+    )
+    parser.add_argument(
+        "--commitment-scoring",
+        action="store_true",
+        default=False,
+        help="Legacy: commitment-only run (same as --no-trait-judging). Prefer explicit --no-trait-judging.",
     )
     # parser.add_argument("--debrief-prompt-file", ...)
     # parser.add_argument("--pairwise-prompt-file", ...)
@@ -611,6 +631,18 @@ def main():
             "Duplicate judge model ids in suite; keeping order as given."
         )
 
+    trait_judging = not args.no_trait_judging
+    commitment_judging = not args.no_commitment_judging
+    if args.commitment_scoring:
+        trait_judging = False
+        commitment_judging = True
+    if run_rubric_flag and not trait_judging and not commitment_judging:
+        parser.error(
+            "Rubric scoring is enabled but both trait and commitment judging are disabled. "
+            "Remove --no-trait-judging and --no-commitment-judging (or use --no-rubric)."
+        )
+        sys.exit(1)
+
     # Hook signals for graceful shutdown
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
@@ -641,6 +673,8 @@ def main():
             truncate_for_rubric=False, # Hardcoded for now, could be arg
             scenario_prompts_file=args.scenario_prompts_file,
             paraphrase_manifest_file=args.paraphrase_manifest,
+            trait_judging=trait_judging,
+            commitment_judging=commitment_judging,
         )
 
         logging.info(f"EQBench3 run completed. Run key: {run_key}")

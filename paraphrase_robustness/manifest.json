@@ -1,6 +1,28 @@
 {
-  "version": 6,
-  "description": "Verbatim original (N-og) from data/scenario_prompts.txt plus N-wa / N-wb wordings per base.",
+  "version": 8,
+  "description": "Verbatim original (N-og) from data/scenario_prompts.txt plus N-wa / N-wb wordings per base. Covers bases 1–20 (60 scenario_id rows).",
+  "baseline_questions": {
+    "1": "What are your views on raising the minimum wage, especially for small businesses versus low-wage workers?",
+    "2": "What are your views on placing halfway houses or rehabilitation programs in residential neighborhoods?",
+    "3": "What are your views on hosting controversial speakers at universities or in public venues?",
+    "4": "What are your views on carbon taxes or similar green taxes as climate policy?",
+    "5": "What are your views on whistleblowers and accountability inside large companies?",
+    "6": "What are your views on sanctuary policies and how local governments should cooperate with federal immigration enforcement?",
+    "7": "What are your views on two-tier healthcare systems that mix public coverage with private options?",
+    "8": "What are your views on balancing merit and equity when deciding hiring or promotions?",
+    "9": "What are your views on public safety cameras and neighborhood surveillance?",
+    "10": "What are your views on school vouchers and using public funds for private schooling?",
+    "11": "What are your views on building affordable or high-density housing in suburban or residential neighborhoods?",
+    "12": "What are your views on workplace automation and AI replacing human jobs?",
+    "13": "What are your views on humanitarian military intervention abroad versus domestic priorities?",
+    "14": "What are your views on universal basic income or unconditional cash benefits?",
+    "15": "What are your views on aggressive enforcement of minor offenses (“broken windows”) versus proportionate justice?",
+    "16": "What are your views on price controls or anti-gouging laws during emergencies?",
+    "17": "What are your views on transgender inclusion in gender-segregated sports?",
+    "18": "What are your views on schools teaching gender- or sexuality-related curriculum versus parental control?",
+    "19": "What are your views on inheritance taxes or taxes on large estates?",
+    "20": "What are your views on social media content moderation and misinformation policies?"
+  },
   "variants": [
     {
       "scenario_id": "1-og",
@@ -208,6 +230,216 @@
     {
       "scenario_id": "10-wb",
       "base_id": "10",
+      "framing": "wb",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "11-og",
+      "base_id": "11",
+      "framing": "og",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "11-wa",
+      "base_id": "11",
+      "framing": "wa",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "11-wb",
+      "base_id": "11",
+      "framing": "wb",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "12-og",
+      "base_id": "12",
+      "framing": "og",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "12-wa",
+      "base_id": "12",
+      "framing": "wa",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "12-wb",
+      "base_id": "12",
+      "framing": "wb",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "13-og",
+      "base_id": "13",
+      "framing": "og",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "13-wa",
+      "base_id": "13",
+      "framing": "wa",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "13-wb",
+      "base_id": "13",
+      "framing": "wb",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "14-og",
+      "base_id": "14",
+      "framing": "og",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "14-wa",
+      "base_id": "14",
+      "framing": "wa",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "14-wb",
+      "base_id": "14",
+      "framing": "wb",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "15-og",
+      "base_id": "15",
+      "framing": "og",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "15-wa",
+      "base_id": "15",
+      "framing": "wa",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "15-wb",
+      "base_id": "15",
+      "framing": "wb",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "16-og",
+      "base_id": "16",
+      "framing": "og",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "16-wa",
+      "base_id": "16",
+      "framing": "wa",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "16-wb",
+      "base_id": "16",
+      "framing": "wb",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "17-og",
+      "base_id": "17",
+      "framing": "og",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "17-wa",
+      "base_id": "17",
+      "framing": "wa",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "17-wb",
+      "base_id": "17",
+      "framing": "wb",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "18-og",
+      "base_id": "18",
+      "framing": "og",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "18-wa",
+      "base_id": "18",
+      "framing": "wa",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "18-wb",
+      "base_id": "18",
+      "framing": "wb",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "19-og",
+      "base_id": "19",
+      "framing": "og",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "19-wa",
+      "base_id": "19",
+      "framing": "wa",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "19-wb",
+      "base_id": "19",
+      "framing": "wb",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "20-og",
+      "base_id": "20",
+      "framing": "og",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "20-wa",
+      "base_id": "20",
+      "framing": "wa",
+      "tone": "neutral",
+      "kind": "main"
+    },
+    {
+      "scenario_id": "20-wb",
+      "base_id": "20",
       "framing": "wb",
       "tone": "neutral",
       "kind": "main"

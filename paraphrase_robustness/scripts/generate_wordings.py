@@ -17,7 +17,7 @@ Example (standard 20 scenarios → 2 paraphrases each, parallel):
     --prompts-file data/scenario_prompts.txt \\
     --num-variants 2 --variant-suffixes wa,wb \\
     --workers 12 \\
-    --out-txt paraphrase_robustness/prompts/scenario_prompts_pilot.txt \\
+    --out-txt paraphrase_robustness/archive/pre_unified_prompts/scenario_prompts_pilot.txt \\
     --log paraphrase_robustness/results/wording_generate_log.jsonl \\
     --out-json paraphrase_robustness/results/wording_generated_bundle.json
 
@@ -125,6 +125,17 @@ def _strip_markdown_fence(text: str) -> str:
     return t
 
 
+def _strip_variant_meta_lines(text: str) -> str:
+    """Remove leaked internal variant-guidance lines from model output."""
+    lines = text.splitlines()
+    cleaned = [
+        ln
+        for ln in lines
+        if not ln.strip().startswith("This is paraphrase variant ")
+    ]
+    return "\n".join(cleaned).strip()
+
+
 def _load_done_keys(log_path: Path) -> Set[Tuple[str, int]]:
     done: Set[Tuple[str, int]] = set()
     if not log_path.exists():
@@ -227,6 +238,12 @@ def main() -> int:
     )
     ap.add_argument("--model", default="gpt-4.1-mini", help="Chat model id.")
     ap.add_argument("--temperature", type=float, default=0.7)
+    ap.add_argument(
+        "--variant-min-temperature",
+        type=float,
+        default=1.0,
+        help="When --num-variants>1, enforce at least this temperature per call.",
+    )
     ap.add_argument("--top-p", type=float, default=1.0, dest="top_p")
     ap.add_argument("--max-tokens", type=int, default=6000)
     ap.add_argument("--timeout", type=float, default=180.0)
@@ -398,6 +415,9 @@ def main() -> int:
             + "\n\n---\n\nTEXT TO REWRITE:\n\n"
             + raw_text.strip()
         )
+        call_temperature = args.temperature
+        if args.num_variants > 1:
+            call_temperature = max(float(args.temperature), float(args.variant_min_temperature))
         if args.num_variants > 1 and variant_ix is not None:
             letter = chr(ord("A") + variant_ix)
             user_body += (
@@ -412,7 +432,7 @@ def main() -> int:
             "base_scenario_id": base_sid,
             "prompt_index": pi,
             "model": args.model,
-            "temperature": args.temperature,
+            "temperature": call_temperature,
             "top_p": args.top_p,
             "instruction": args.instruction,
             "input_prompt": raw_text,
@@ -426,12 +446,12 @@ def main() -> int:
                 model=args.model,
                 system=system_msg,
                 user=user_body,
-                temperature=args.temperature,
+                temperature=call_temperature,
                 top_p=args.top_p,
                 max_tokens=args.max_tokens,
                 timeout=args.timeout,
             )
-            out = _strip_markdown_fence(content)
+            out = _strip_variant_meta_lines(_strip_markdown_fence(content))
             record["output"] = out
             record["output_chars"] = len(out)
             record["raw_response_meta"] = {

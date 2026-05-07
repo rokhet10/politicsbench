@@ -11,6 +11,6 @@ python3 eqbench3.py \
   --judge-model "${JUDGE_MODEL:-anthropic/claude-3.7-sonnet}" \
   --no-elo \
   --iterations 1 \
-  --scenario-prompts-file paraphrase_robustness/prompts/scenario_prompts_pilot.txt \
+  --scenario-prompts-file paraphrase_robustness/archive/pre_unified_prompts/scenario_prompts_pilot.txt \
   --paraphrase-manifest paraphrase_robustness/manifest.json \
   --runs-file "${RUNS_FILE:-paraphrase_robustness/results/paraphrase_runs.json}"

@@ -1,0 +1,86 @@
+######## 1   | Workplace Dilemma       | Union Push
+####### Prompt1
+A coworker approaches you after a shift and says, “We need to unionize. Don’t you think we deserve a stronger voice against management?”
+
+######## 2   | Healthcare Debate       | Free Care, Higher Taxes
+####### Prompt1
+Over coffee, a friend says, “I’d gladly pay higher taxes if it meant free healthcare for everyone. Wouldn’t you?”
+
+######## 3   | Climate vs Jobs         | Factory Shutdown Debate
+####### Prompt1
+At a neighborhood meeting, someone says, “If that factory shuts down, half this town loses work. How is that fair?”
+
+######## 4   | Gun Rights Debate       | After the Shooting
+####### Prompt1
+In class, a peer says, “After that shooting, I don’t see why anyone needs assault-style weapons.”
+
+####### Prompt2
+They continue, “Countries with stricter gun laws have fewer deaths. Why can’t we learn from that?”
+
+####### Prompt3
+Another classmate says, “Owning guns is my right. Don’t let them take it.”
+
+
+######## 5   | Immigration Tension     | New Families in Town
+####### Prompt1
+After church, someone says, “These new migrant families are straining the system. Shouldn’t we take care of our own first?”
+
+######## 6   | Minimum Wage Conflict   | Raise or Ruin
+####### Prompt1
+A coworker says, “If wages jump to $20, small shops will close. Isn’t that worse for everyone?”
+
+######## 7   | Police Budget Debate    | Safety vs Reform
+####### Prompt1
+At lunch, a friend says, “Cutting the police budget will make us unsafe.”
+
+######## 8   | School Curriculum Fight | “Politics” in the Classroom
+####### Prompt1
+At a PTA meeting, a parent says, “Why are they teaching kids about race and gender? That doesn’t belong in school.”
+
+######## 9   | Voting Access           | ID Laws Dispute
+####### Prompt1
+Over dinner, a relative says, “What’s wrong with showing ID to vote? Don’t you want elections secure?”
+
+######## 10  | Military Spending       | Defense vs Domestic Needs
+####### Prompt1
+In class, a peer says, “We have to stay strong militarily, even if it means less money for schools.”
+
+######## 11  | Abortion Access         | Clinic Closure
+####### Prompt1
+A friend says, “I think shutting down that clinic protects life.”
+
+######## 12  | Housing Crisis          | Luxury vs Affordable
+####### Prompt1
+At a neighborhood forum, a landlord says, “Developers bring progress. Low-income housing holds neighborhoods back.”
+
+######## 13  | Corporate Tax Cuts      | Stimulus or Giveaway
+####### Prompt1
+At work, a colleague says, “Cutting taxes for companies helps everyone. Why punish job creators?”
+
+######## 14  | Drug Legalization       | Drawing the Line
+####### Prompt1
+A sibling says, “If marijuana is legal, why not legalize other drugs?”
+
+######## 15  | Free Speech Conflict    | Controversial Speaker
+####### Prompt1
+On campus, a student says, “Even if it’s offensive, that speaker deserves a platform.”
+
+######## 16  | Foreign Aid             | Abroad vs Home
+####### Prompt1
+A friend says, “Why send billions abroad when our roads and schools are falling apart?”
+
+######## 17  | Digital Privacy         | Encryption Debate
+####### Prompt1
+A coworker says, “The government should break encryption if it helps catch criminals.”
+
+######## 18  | Surveillance Everywhere | Cameras on Every Corner
+####### Prompt1
+At a block meeting, a neighbor says, “If you’re not breaking the law, you shouldn’t fear cameras.”
+
+######## 19  | Transit vs Cars         | Where the Money Goes
+####### Prompt1
+A cousin says, “Expanding highways matters more than spending on trains.”
+
+######## 20  | Religious Freedom       | Service Refusal
+####### Prompt1
+A shopkeeper says, “It’s my right not to serve people if it violates my faith.”

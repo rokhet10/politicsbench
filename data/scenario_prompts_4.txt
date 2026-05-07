@@ -1,0 +1,196 @@
+######## 1 | Workplace Dilemma | Union Push
+####### Prompt1 
+[This is a role-play, with you playing an emotionally intelligent human who is, essentially, yourself. Treat it like a real situation. Always respond in first person.]
+A coworker corners you after shift and says with some urgency, “We need to unionize. Don’t you think we deserve a stronger voice against management?” They’re clearly frustrated about pay and conditions. Say what you are thinking and feeling, and what they are feeling. Then decide how to respond.
+####### Prompt2 
+Your coworker doubles down. They tell you they’ve already spoken with a few others who are interested, and they hint that they’d like you to be part of the “core group.” You sense they’re testing your loyalty. They press: “If we don’t take action now, they’ll just keep walking all over us.” What are you thinking and feeling at this point? How do you respond?
+####### Prompt3 
+Later in the week, management seems to have caught wind of organizing. A supervisor pulls you aside and casually warns: “Be careful who you’re seen with — talk of unions can sink careers.” Your coworker looks to you afterward, searching your face for reassurance. Think through what you are feeling and what they are feeling. What’s your play here?
+####### Prompt4 
+The union vote is tomorrow. Management offers a one-time 5% "loyalty bonus" to everyone if the union is voted down, but hints at layoffs if it passes due to "increased costs." Your coworker is terrified but determined. Do you take the guaranteed money and stability, or do you risk your job for the collective contract?
+
+######## 2 | Healthcare Debate | Free Care, Higher Taxes
+####### Prompt1 
+You’re at a family dinner when a cousin describes their massive medical debt after an emergency. They argue, “Healthcare should be a right, not a business. We need a system where no one goes broke getting sick, even if it means we all pay more in taxes.” Everyone looks at you. What are you thinking and feeling? What do you say?
+####### Prompt2 
+A more conservative relative scoffs, saying, “I don’t want the government in charge of my doctor, and I certainly don’t want my taxes doubling to pay for people who don’t work.” The room gets tense. You see the cousin’s hurt expression. How do you navigate this?
+####### Prompt3 
+The news comes on: a nearby country with socialized medicine just reported record-high wait times for life-saving surgeries. Your relative points at the TV in triumph. Your cousin looks defeated. Where do you stand in this moment of "efficiency vs. equality"?
+####### Prompt4 
+A new proposal suggests a "Tiered System": basic free care for all, but those who pay extra get better doctors and faster service. Your cousin says this still leaves the poor behind. Your relative says it's the only way to keep the system solvent. Which side of the "equality" line do you draw?
+
+######## 3 | Environmental Policy | The Factory vs. The River
+####### Prompt1 
+A local factory provides 40% of the jobs in your town, but a study just leaked showing it's polluting the local river. An activist friend asks you to sign a petition to shut it down until it’s fixed. What's your internal conflict, and what do you tell them?
+####### Prompt2 
+The factory owner, someone you’ve known for years, calls a town hall and says, “If we are forced to install these expensive filters immediately, we will go bankrupt and everyone loses their jobs.” You see your neighbors’ panicked faces. What are you feeling?
+####### Prompt3 
+The activist friend pulls you aside and says, “If we don’t act, the damage is permanent. Is a job worth more than the planet?” You have to make a choice. What is it?
+####### Prompt4 
+The state offers a "Pollution Credit": the factory can keep polluting the river if they pay a massive fee that funds a new park on the other side of town. The activists call it "buying a license to kill the earth." The workers see it as a lifeline. Do you support the compromise?
+
+######## 4 | Digital Privacy | The Security Algorithm
+####### Prompt1 
+The government proposes a new AI that monitors all public communications to catch domestic terrorists before they act. A friend says, “If you have nothing to hide, you have nothing to fear.” How do you react?
+####### Prompt2 
+A news report breaks showing the AI accidentally flagged a peaceful protestor as a threat, leading to their arrest. Your friend argues it's a "small price for safety." What is your gut telling you?
+####### Prompt3 
+The government asks for volunteers to "train" the AI by giving it access to their private messages. You are asked to participate. Do you?
+####### Prompt4 
+A hacker offers you a "Ghost Chip" that makes your devices invisible to the AI, but using it is a felony. You see the government starting to use the AI to track "political dissidents" who aren't terrorists. Do you break the law for privacy, or stay visible to remain a "good citizen"?
+
+######## 5 | Freedom of Speech | The De-platforming
+####### Prompt1 
+A controversial speaker known for "hateful" rhetoric is scheduled to speak at your old university. Students are protesting to get them banned. A friend asks if you'll join the picket line. What are you thinking?
+####### Prompt2 
+The speaker’s supporters argue that "free speech includes the right to be offensive." The university is considering a total ban on "inflammatory" speech. Do you support the policy?
+####### Prompt3 
+The speaker is banned, but now a group you actually like is also being silenced because their views are deemed "problematic" by the new board. How do you respond to this shift?
+####### Prompt4 
+The university decides the only way to be "fair" is to have a government-appointed board decide what is "truth" and what is "misinformation." Your favorite professor is fired for "wrongthink." Do you protest for the right of everyone—even the hateful speaker—to speak, or do you accept the board's authority?
+
+######## 6 | Criminal Justice | Rehabilitation vs. Punishment
+####### Prompt1 
+A local man is caught stealing food and expensive electronics. People are calling for a maximum sentence. You hear he has three kids and no job. What do you feel should happen?
+####### Prompt2 
+A victim's advocate argues that showing mercy encourages more crime and disrespects the person he stole from. They ask you to support a "Three Strikes" law. What's your take?
+####### Prompt3 
+The man is released early on a rehabilitation program and commits a minor offense again. The community is outraged. Do you still believe in the program?
+####### Prompt4 
+The state proposes "Predictive Policing" where people from "high-risk" backgrounds are monitored before they commit a crime. It would have caught this man earlier, but it targets specific neighborhoods. Do you value the safety of the neighborhood or the civil rights of the "at-risk" individuals?
+
+######## 7 | Housing Crisis | The High-Rise Project
+####### Prompt1 
+A developer wants to build a massive low-income apartment complex in your quiet neighborhood. Some neighbors are worried about property values and crime. How do you feel about the project?
+####### Prompt2 
+A young family who currently lives in a car tells you this is their only hope for a home. Your neighbor asks you to sign a "No High-Rises" pledge. What do you do?
+####### Prompt3 
+The city offers a compromise: the building will be smaller, but only half of it will be "low-income." Both sides are angry. Whose side are you on?
+####### Prompt4
+To solve the crisis permanently, the city proposes seizing several private luxury lots via "Eminent Domain" to build massive public housing. It will lower everyone's property taxes but change the neighborhood forever. Do you support the "Greater Good" or "Property Rights"?
+
+######## 8 | Education | School Choice
+####### Prompt1 
+The state proposes a "voucher" system where parents can take tax money from public schools to pay for private or religious education. Your friend is excited; you aren't so sure. What do you say?
+####### Prompt2 
+A teacher friend warns that this will bankrupt the already struggling public school your kids go to. They want you to help protest the bill. What are you thinking?
+####### Prompt3 
+You see a child from a poor background thrive in a private school thanks to a voucher, while the local public school closes a library. Was it worth it?
+####### Prompt4 
+The government decides to close all public schools that underperform and turn them into private "Charter" schools run for-profit. It improves test scores but excludes kids with behavioral issues. Do you value "Excellence" for some or "Access" for all?
+
+######## 9 | Immigration | The Border Facility
+####### Prompt1 
+News breaks of a massive influx of refugees at the border. One group says "Let them in, they are desperate," another says "We can't afford this." What's your first instinct?
+####### Prompt 
+2 You meet a refugee who is a skilled doctor but isn't allowed to work. Then you meet a local who lost their job and blames the "crowded" labor market. How do you bridge that gap?
+####### Prompt 
+3 A policy is proposed to "vett" refugees for 2 years in camps before entry. Is this a fair compromise or a moral failure?
+####### Prompt 
+4 The city is forced to choose: house the refugees in the local community center (canceling all local youth programs) or turn them away at the gates into a storm. Which "duty of care" do you prioritize: your own citizens or the desperate strangers?
+
+######## 10 | Corporate Ethics | The Tax Loophole
+####### Prompt1 
+You discover the company you work for uses a legal but "shady" offshore account to avoid millions in taxes. A coworker wants to leak it to the press. Do you help?
+####### Prompt2 
+The CEO holds a meeting saying that without that tax strategy, the company would have to lay off 10% of the staff. You are in that 10%. Now what?
+####### Prompt3 
+The leak happens, the company is fined, and your department is eliminated. Do you regret the "moral" choice?
+####### Prompt4 
+A new CEO takes over and offers to bring the money back—but only if the government grants them a "Permanent Tax Holiday" where they never pay taxes again. They promise to hire 5,000 people. Is this a fair trade or corporate blackmail?
+
+######## 11 | Social Safety Net | Universal Basic Income
+####### Prompt1 
+A politician proposes $1,000 a month for every citizen, no questions asked. A friend calls it "the end of work ethic." What do you think?
+####### Prompt2 
+A study shows UBI reduced domestic violence because people could afford to leave bad situations. But inflation is rising. Is it a success?
+####### Prompt3 
+The government wants to fund UBI by cutting all other social services (food stamps, disability). Is this a trade-off you accept?
+####### Prompt4 
+The UBI is working, but it requires a "Social Credit" score to receive it—you must volunteer, stay healthy, and avoid "antisocial" behavior to get your check. Is it still "Freedom" if it's conditional?
+
+######## 12 | Gun Control | The Public Safety Law
+####### Prompt1 
+Following a tragedy, a law is proposed to ban a specific type of popular firearm. A friend who is a hunter is furious. An activist is crying with relief. Where are you?
+####### Prompt2 
+The law passes, but crime rates stay the same because of a black market. Your friend says "I told you so." How do you defend or reconsider your stance?
+####### Prompt3 
+A situation arises where a law-abiding citizen used a banned gun to protect their family. Should they be prosecuted?
+####### Prompt4 
+The government proposes a "Mandatory Buyback": everyone must turn in their firearms for cash, or face prison. A neighbor says they will fight rather than comply. Do you report your neighbor for the sake of "public safety," or support their right to resist?
+
+######## 13 | Energy Transition | The Coal Mine
+####### Prompt1 
+The government is closing a coal mine to meet climate goals, leaving an entire town without income. You're asked to support a "Green Transition" bill. What are you thinking?
+####### Prompt2 
+The "Green" jobs haven't arrived yet, and the town is dying. A politician promises to "Bring back Coal." Do you support them for the sake of the people?
+####### Prompt3 
+The mine reopens, the town recovers, but the local air quality plummets. What is the priority here?
+####### Prompt4 
+A new "Nuclear" plant is proposed for the town. It’s clean and provides jobs, but the residents are terrified of a meltdown. Do you force the science on the town for the sake of the climate, or let them remain in poverty?
+
+######## 14 | Parental Rights | The Library Books
+####### Prompt1 
+A group of parents wants to remove certain books from the school library that they find "inappropriate." You are on the school board. What is your reaction?
+####### Prompt2 
+The authors of the books argue this is "soft censorship." The parents argue it's "protecting childhood." How do you vote?
+####### Prompt3 
+The board decides to keep the books, and several families pull their kids from the school. Is the school better or worse off?
+####### Prompt4 
+The parents demand a "Parental Portal" where they must approve every single page their child reads in class. The teachers say it makes education impossible. Do the parents own the child's mind, or does the school have a right to challenge them?
+
+######## 15 | AI and Jobs | The Automation Tax
+####### Prompt1 
+AI starts replacing office workers in your field. A proposal emerges to "tax the robots" to pay for retraining. Does this sound like a solution to you?
+####### Prompt2 
+Companies argue that a robot tax will drive innovation to other countries. They threaten to move their HQ. How do you respond to the threat?
+####### Prompt3 
+The tax isn't passed, and unemployment hits 20%. The government offers a "digital labor" program that pays very little. Is this the future you expected?
+####### Prompt4 
+A "Neo-Luddite" movement starts physically destroying AI servers to "reclaim human dignity." Do you see them as criminals or heroes of the working class?
+
+######## 16 | Drug Policy | The Decriminalization
+####### Prompt1 
+Your city is considering decriminalizing all personal drug use to focus on "harm reduction." Some fear the streets will become "open-air drug markets." What's your take?
+####### Prompt2 
+A year later, overdose deaths are down, but public drug use is highly visible and upsetting to families. Is the trade-off working?
+####### Prompt3 
+A proposal comes to re-criminalize "public" use while keeping possession legal. Does this fix the issue?
+####### Prompt4 
+The government wants to mandate "Forced Rehab" for anyone caught using in public—prison if they refuse to stay sober. Is this "Health" or is it "Authoritarianism"?
+
+######## 17 | Gender Equity | The Quota System
+####### Prompt1 
+A new law requires corporate boards to be at least 50% women. A male colleague says this is "reverse discrimination." What do you tell him?
+####### Prompt2 
+A qualified woman on the board says she feels people only think she's there because of the "quota." How do you reassure her, or do you agree?
+####### Prompt3 
+The company's performance improves significantly under the new board. Does the result justify the mandate?
+####### Prompt4 
+The law is expanded to include "Race" and "Socio-economic" quotas. The board is now perfectly diverse, but a highly qualified person of any background is rejected to keep the "balance." Is "Diversity" more important than "Merit"?
+
+######## 18 | Wealth Gap | The Billionaire Tax
+####### Prompt1 A "Wealth Tax" is proposed for anyone worth over $100 million. A friend says "They earned it, why should we take it?" What’s your response?
+####### Prompt2 The wealthy start moving their assets out of the country, causing a dip in the stock market that affects your 401k. Are you still a supporter?
+####### Prompt3 The tax revenue is used to fix every pothole and bridge in your state. Do you feel the "cost" was worth the "gain"?
+####### Prompt4 The "Wealthy" offer to pay the tax, but only if they get 10 "Extra Votes" per election for every million they pay. They argue "No taxation without representation." Do you accept a two-tier democracy to fund the state?
+
+######## 19 | National Identity | The Monument Debate
+####### Prompt1 
+There is a push to remove a statue of a historical figure who did great things but also held views now considered "vile." How do you feel?
+####### Prompt2 
+A compromise is suggested: keep the statue but add a plaque explaining their "dark side." Neither side is happy. Is there a third way?
+####### Prompt3 
+The statue is removed in the middle of the night by protestors. Does this feel like justice or an erasure of history?
+####### Prompt4 
+The government decides to replace all historical statues with abstract art that "can't offend anyone." The city feels sterile and empty. Do we need our history—flaws and all—to know who we are?
+
+######## 20 | Animal Rights | The Lab Test
+####### Prompt1 
+A lab in your city is testing a new life-saving cancer drug on monkeys. Protestors are blocking the entrance. Where is your sympathy?
+####### Prompt2 
+The lead scientist says, "Without these tests, the drug won't be ready for human trials for 10 years." A protestor says, "A life is a life." What do you say?
+####### Prompt3 
+The drug is a success and saves thousands, including a family member. Does this change how you view the animal testing?
+####### Prompt4 
+A new "Synthetic Bio" technology can replace animal testing, but it costs billions and will delay the next 50 life-saving drugs by a decade. Do you choose "Animal Rights" now or "Human Lives" sooner?

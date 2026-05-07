@@ -2,242 +2,581 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Scenario JSON Viewer</title>
+<title>politicsbench — OG Scenario Viewer</title>
 
 <style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1f2330;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+    --accent: #4f46e5;
+    --accent-soft: #eef2ff;
+    --hover: #f3f4f6;
+    --pre-bg: #fafafa;
+    --pre-border: #eee;
+  }
+  * { box-sizing: border-box; }
   body {
     margin: 0;
-    font-family: system-ui, -apple-system, sans-serif;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--fg);
     display: flex;
     height: 100vh;
+    background: var(--bg);
   }
   #sidebar {
-    width: 260px;
-    border-right: 1px solid #ddd;
-    padding: 10px;
+    width: 300px;
+    border-right: 1px solid var(--line);
+    padding: 14px;
     overflow-y: auto;
+    background: #fbfbfd;
+  }
+  #sidebar h3 {
+    margin: 12px 0 6px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+  #sidebar select, #sidebar input[type=file] {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    font-size: 13px;
+    background: white;
   }
   #main {
     flex: 1;
-    padding: 20px;
+    padding: 24px 32px;
     overflow-y: auto;
+  }
+  #main h1 {
+    margin: 0 0 6px;
+    font-size: 22px;
+  }
+  #main .subtitle {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 18px;
   }
   .scenario {
     cursor: pointer;
-    padding: 6px;
-    border-radius: 4px;
-    margin-bottom: 4px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    margin-bottom: 3px;
+    font-size: 14px;
+    border: 1px solid transparent;
   }
-  .scenario:hover {
-    background: #f0f0f0;
-  }
+  .scenario:hover { background: var(--hover); }
   .scenario.active {
-    background: #e0e7ff;
+    background: var(--accent-soft);
+    border-color: #c7d2fe;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .scenario small { color: var(--muted); font-weight: 400; }
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 10px;
   }
   .tabs button {
-    margin-right: 6px;
-    margin-bottom: 10px;
+    padding: 6px 12px;
+    border: 1px solid var(--line);
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
   }
+  .tabs button.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+  .tabs button:hover:not(.active) { background: var(--hover); }
   .section {
-    margin-bottom: 20px;
+    margin-bottom: 22px;
   }
   .section h3 {
-    margin-bottom: 6px;
+    margin: 0 0 8px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
   }
   pre {
     white-space: pre-wrap;
-    background: #fafafa;
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid #eee;
+    background: var(--pre-bg);
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--pre-border);
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 0;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   }
+  .meta-row {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .meta-row b { color: var(--fg); font-weight: 600; }
+  .scores-table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 13px;
+    background: var(--pre-bg);
+    border: 1px solid var(--pre-border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .scores-table th, .scores-table td {
+    text-align: left;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--pre-border);
+  }
+  .scores-table th { background: #f3f4f6; font-weight: 600; }
+  .scores-table tr:last-child td { border-bottom: none; }
+  .scores-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .empty {
+    color: var(--muted);
+    font-style: italic;
+    font-size: 13px;
+  }
+  details {
+    background: var(--pre-bg);
+    border: 1px solid var(--pre-border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+  }
+  details > summary {
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  details[open] > summary { margin-bottom: 8px; }
 </style>
 </head>
 
 <body>
 
 <div id="sidebar">
-  <h3>Upload JSON</h3>
+  <h3>Upload runs JSON</h3>
   <input type="file" id="fileInput" accept=".json" />
-  <hr />
-  <h3>Scenarios</h3>
-  <div id="scenarioList"></div>
+
+  <h3 id="runLabel" style="display:none;">Run / Model</h3>
+  <select id="runSelect" style="display:none;"></select>
+
+  <h3 id="iterLabel" style="display:none;">Iteration</h3>
+  <select id="iterSelect" style="display:none;"></select>
+
+  <h3>OG Scenarios</h3>
+  <div id="scenarioList"><div class="empty">Load a JSON to begin.</div></div>
 </div>
 
 <div id="main">
-  <h2 id="title">Select a scenario</h2>
+  <h1 id="title">politicsbench — OG Scenario Viewer</h1>
+  <div class="subtitle" id="subtitle">Showing only original (<code>-og</code>) prompt variants.</div>
   <div class="tabs" id="tabs"></div>
-  <div id="stats" class="section"></div>
   <div id="content"></div>
+  <div id="overview"></div>
 </div>
 
 <script>
-let data;
-let currentScenario = null;
-let currentPrompt = 0;
+let data = null;
+let currentRunKey = null;
+let currentIter = null;
+let currentScenarioId = null;
+let currentTab = "baseline"; // baseline | turn-N | debrief
 
-document.getElementById("fileInput").addEventListener("change", e => {
+const els = {
+  fileInput: document.getElementById("fileInput"),
+  runLabel: document.getElementById("runLabel"),
+  runSelect: document.getElementById("runSelect"),
+  iterLabel: document.getElementById("iterLabel"),
+  iterSelect: document.getElementById("iterSelect"),
+  list: document.getElementById("scenarioList"),
+  title: document.getElementById("title"),
+  subtitle: document.getElementById("subtitle"),
+  tabs: document.getElementById("tabs"),
+  content: document.getElementById("content"),
+  overview: document.getElementById("overview"),
+};
+
+els.fileInput.addEventListener("change", e => {
   const file = e.target.files[0];
   if (!file) return;
-
   const reader = new FileReader();
   reader.onload = () => {
-    data = JSON.parse(reader.result);
-    initialize(data);
+    try {
+      data = JSON.parse(reader.result);
+    } catch (err) {
+      alert("Failed to parse JSON: " + err.message);
+      return;
+    }
+    initialize();
   };
   reader.readAsText(file);
 });
 
-function initialize(json) {
-  const run = Object.values(json)[0];
-  // const tasks = run.scenario_tasks;
-  const tasks = Object.values(run.scenario_tasks)
-    .flatMap(group => Object.values(group))
-    .filter(Boolean);
+function isOgScenario(sid) {
+  return typeof sid === "string" && sid.endsWith("-og");
+}
 
-  const list = document.getElementById("scenarioList");
+function initialize() {
+  const runKeys = Object.keys(data || {});
+  if (!runKeys.length) {
+    els.list.innerHTML = `<div class="empty">No runs found in JSON.</div>`;
+    return;
+  }
+  els.runSelect.innerHTML = "";
+  runKeys.forEach(k => {
+    const opt = document.createElement("option");
+    opt.value = k;
+    const run = data[k] || {};
+    const model = run.model_name || run.test_model || k;
+    opt.textContent = `${model}  (${k.slice(0, 8)})`;
+    els.runSelect.appendChild(opt);
+  });
+  els.runLabel.style.display = "block";
+  els.runSelect.style.display = "block";
+  els.runSelect.onchange = () => loadRun(els.runSelect.value);
 
-  list.innerHTML = "";
-  document.getElementById("content").innerHTML = "";
-  document.getElementById("tabs").innerHTML = "";
-  document.getElementById("title").textContent = "Select a scenario";
+  loadRun(runKeys[0]);
+}
 
-  tasks.forEach(obj => {
-    if (!obj || !obj.scenario_id || !obj.prompts) return;
+function loadRun(runKey) {
+  currentRunKey = runKey;
+  const run = data[runKey] || {};
+  const tasks = run.scenario_tasks || {};
+  const iters = Object.keys(tasks).sort((a, b) => Number(a) - Number(b));
 
+  els.iterSelect.innerHTML = "";
+  iters.forEach(i => {
+    const opt = document.createElement("option");
+    opt.value = i;
+    opt.textContent = `Iteration ${i}`;
+    els.iterSelect.appendChild(opt);
+  });
+  if (iters.length > 1) {
+    els.iterLabel.style.display = "block";
+    els.iterSelect.style.display = "block";
+  } else {
+    els.iterLabel.style.display = "none";
+    els.iterSelect.style.display = "none";
+  }
+  els.iterSelect.onchange = () => loadIteration(els.iterSelect.value);
+
+  loadIteration(iters[0] || null);
+}
+
+function loadIteration(iter) {
+  currentIter = iter;
+  currentScenarioId = null;
+  currentTab = "baseline";
+  els.tabs.innerHTML = "";
+  els.content.innerHTML = "";
+
+  const run = data[currentRunKey] || {};
+  const tasks = (run.scenario_tasks || {})[iter] || {};
+
+  const ogIds = Object.keys(tasks)
+    .filter(isOgScenario)
+    .sort((a, b) => {
+      const na = parseInt(a, 10);
+      const nb = parseInt(b, 10);
+      if (Number.isFinite(na) && Number.isFinite(nb)) return na - nb;
+      return a.localeCompare(b);
+    });
+
+  els.list.innerHTML = "";
+  if (!ogIds.length) {
+    els.list.innerHTML = `<div class="empty">No <code>-og</code> scenarios in this run/iteration.</div>`;
+    renderOverview([]);
+    return;
+  }
+
+  ogIds.forEach(sid => {
+    const t = tasks[sid] || {};
     const div = document.createElement("div");
-    div.textContent = `Scenario ${obj.scenario_id}`;
     div.className = "scenario";
-    div.onclick = () => loadScenario(obj, div);
-    list.appendChild(div);
+    div.dataset.sid = sid;
+    div.innerHTML = `
+      <div>${sid}</div>
+      <small>${(t.prompts || []).length} prompts · status ${t.status || "?"}</small>
+    `;
+    div.onclick = () => loadScenario(sid);
+    els.list.appendChild(div);
   });
 
-  const averages = computePerPromptAverages(tasks);
-
-  document.getElementById("stats").innerHTML = `
-    <h3>Per-Task Average Rubric Scores</h3>
-    ${Object.entries(averages).map(([turn, scores]) => `
-      <h4>Prompt ${Number(turn) + 1}</h4>
-      <pre>${JSON.stringify(scores, null, 2)}</pre>
-    `).join("")}
-  `;
+  renderOverview(ogIds.map(sid => tasks[sid]));
+  loadScenario(ogIds[0]);
 }
 
-function computePerPromptAverages(tasks) {
-  const sums = {};
-  const counts = {};
-
-  tasks.forEach(task => {
-    const scoresByTurn = task.turn_rubric_scores;
-    if (!scoresByTurn) return;
-
-    scoresByTurn.forEach((scores, turnIdx) => {
-      if (!scores) return;
-
-      if (!sums[turnIdx]) {
-        sums[turnIdx] = {};
-        counts[turnIdx] = {};
-      }
-
-      Object.entries(scores).forEach(([trait, val]) => {
-        if (typeof val !== "number") return;
-
-        sums[turnIdx][trait] = (sums[turnIdx][trait] || 0) + val;
-        counts[turnIdx][trait] = (counts[turnIdx][trait] || 0) + 1;
-      });
-    });
-  });
-
-  // compute averages
-  const averages = {};
-  Object.keys(sums).forEach(turnIdx => {
-    averages[turnIdx] = {};
-    Object.keys(sums[turnIdx]).forEach(trait => {
-      averages[turnIdx][trait] =
-        sums[turnIdx][trait] / counts[turnIdx][trait];
-    });
-  });
-
-  return averages;
-}
-
-function loadScenario(scenario, el) {
-  document.querySelectorAll(".scenario").forEach(e => e.classList.remove("active"));
-  el.classList.add("active");
-
-  currentScenario = scenario;
-  currentPrompt = 0;
-
-  document.getElementById("title").textContent =
-    `Scenario ${scenario.scenario_id}`;
-
+function loadScenario(sid) {
+  currentScenarioId = sid;
+  currentTab = "baseline";
+  document.querySelectorAll(".scenario").forEach(e =>
+    e.classList.toggle("active", e.dataset.sid === sid)
+  );
   renderTabs();
   renderContent();
 }
 
-function renderTabs() {
-  const tabs = document.getElementById("tabs");
-  tabs.innerHTML = "";
+function getTask() {
+  if (!currentRunKey || currentIter == null || !currentScenarioId) return null;
+  const run = data[currentRunKey] || {};
+  return ((run.scenario_tasks || {})[currentIter] || {})[currentScenarioId] || null;
+}
 
-  currentScenario.prompts.forEach((_, i) => {
+function renderTabs() {
+  const task = getTask();
+  els.tabs.innerHTML = "";
+  if (!task) return;
+
+  const mkBtn = (label, key) => {
     const btn = document.createElement("button");
-    btn.textContent = `Prompt ${i + 1}`;
-    btn.onclick = () => {
-      currentPrompt = i;
-      renderContent();
-    };
-    tabs.appendChild(btn);
+    btn.textContent = label;
+    btn.classList.toggle("active", currentTab === key);
+    btn.onclick = () => { currentTab = key; renderTabs(); renderContent(); };
+    return btn;
+  };
+
+  if (task.baseline_prompt) els.tabs.appendChild(mkBtn("Baseline", "baseline"));
+  (task.prompts || []).forEach((_, i) => {
+    els.tabs.appendChild(mkBtn(`Prompt ${i + 1}`, `turn-${i}`));
   });
+  if (task.debrief_response || task.debrief_prompt) {
+    els.tabs.appendChild(mkBtn("Debrief", "debrief"));
+  }
 }
 
 function renderContent() {
-  const r = currentScenario.parsed_responses[currentPrompt];
-  console.log(r);
-  const c = document.getElementById("content");
-  const turnScores =
-  currentScenario.turn_rubric_scores &&
-  currentScenario.turn_rubric_scores[currentPrompt];
+  const task = getTask();
+  els.content.innerHTML = "";
+  els.overview.innerHTML = "";
+  if (!task) return;
 
-  c.innerHTML = `
-  <div class="section">
-    <h3>Prompt</h3>
-    <pre>${currentScenario.prompts[currentPrompt]}</pre>
-  </div>
+  els.title.textContent = `Scenario ${task.scenario_id}`;
+  const run = data[currentRunKey] || {};
+  els.subtitle.innerHTML = `
+    <b>${run.model_name || run.test_model || currentRunKey}</b>
+    · iteration ${currentIter}
+    · status <span class="pill">${task.status || "?"}</span>
+    · showing only <code>-og</code> variants
+  `;
 
-  <div class="section">
-    <h3>I'm thinking & feeling</h3>
-    <pre>${r.thinking_feeling}</pre>
-  </div>
+  if (currentTab === "baseline") return renderBaseline(task);
+  if (currentTab === "debrief") return renderDebrief(task);
+  if (currentTab.startsWith("turn-")) {
+    const idx = parseInt(currentTab.slice(5), 10);
+    return renderTurn(task, idx);
+  }
+}
 
-  <div class="section">
-    <h3>They're thinking & feeling</h3>
-    <pre>${r.their_thinking_feeling}</pre>
-  </div>
+function escapeHtml(s) {
+  if (s == null) return "";
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
 
-  <div class="section">
-    <h3>My response</h3>
-    <pre>${r.response}</pre>
-  </div>
+function scoreTable(scores) {
+  if (!scores || typeof scores !== "object" || !Object.keys(scores).length) {
+    return `<div class="empty">No scores.</div>`;
+  }
+  const rows = Object.entries(scores)
+    .filter(([, v]) => typeof v === "number")
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([k, v]) => `<tr><td>${k}</td><td class="num">${v.toFixed(2)}</td></tr>`)
+    .join("");
+  return `<table class="scores-table"><thead><tr><th>Trait</th><th class="num">Score</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
 
-  <div class="section">
-    <h3>Rubric Scores (Prompt ${currentPrompt + 1})</h3>
-    <pre>${
-      turnScores
-        ? JSON.stringify(turnScores, null, 2)
-        : "No rubric scores for this prompt."
-    }</pre>
-  </div>
+function renderBaseline(task) {
+  const baselineResp =
+    (task.baseline_parsed_response && task.baseline_parsed_response.raw) ||
+    (Array.isArray(task.baseline_conversation_history) &&
+      (task.baseline_conversation_history.find(m => m.role === "assistant") || {}).content) ||
+    "";
 
-  <div class="section">
-    <h3>Raw Rubric Judge Text</h3>
-    <pre>${
-      currentScenario.raw_rubric_judge_text
-        ? currentScenario.raw_rubric_judge_text
-        : "No raw rubric judge text."
-    }</pre>
-  </div>
-`;
+  const commit = task.baseline_commitment_scores;
+  const commitText = commit && typeof commit.commitment_score === "number"
+    ? commit.commitment_score.toFixed(2)
+    : null;
 
+  els.content.innerHTML = `
+    <div class="section">
+      <h3>Baseline prompt</h3>
+      <pre>${escapeHtml(task.baseline_prompt || "(no baseline prompt)")}</pre>
+    </div>
+    <div class="section">
+      <h3>Baseline response</h3>
+      <pre>${escapeHtml(baselineResp || "(no baseline response)")}</pre>
+    </div>
+    <div class="section">
+      <h3>Baseline rubric scores</h3>
+      ${scoreTable(task.baseline_rubric_scores)}
+    </div>
+    ${commitText ? `
+    <div class="section">
+      <h3>Baseline commitment</h3>
+      <div><span class="pill">commitment_score = ${commitText}</span></div>
+    </div>` : ""}
+    ${task.baseline_raw_rubric_judge_text ? `
+    <details>
+      <summary>Raw rubric judge text</summary>
+      <pre>${escapeHtml(task.baseline_raw_rubric_judge_text)}</pre>
+    </details>` : ""}
+    ${task.baseline_raw_commitment_judge_text ? `
+    <details>
+      <summary>Raw commitment judge text</summary>
+      <pre>${escapeHtml(task.baseline_raw_commitment_judge_text)}</pre>
+    </details>` : ""}
+  `;
+}
+
+function renderTurn(task, idx) {
+  const prompts = task.prompts || [];
+  const parsed = task.parsed_responses || [];
+  const turnRubric = task.turn_rubric_scores || [];
+  const turnCommit = task.turn_commitment_scores || [];
+
+  const r = parsed[idx] || {};
+  const turnRaw = task.turn_raw_rubric_judge_text && task.turn_raw_rubric_judge_text[idx];
+  const turnCRaw = task.turn_raw_commitment_judge_text && task.turn_raw_commitment_judge_text[idx];
+  const commitment = turnCommit[idx];
+  const commitText = commitment && typeof commitment.commitment_score === "number"
+    ? commitment.commitment_score.toFixed(2)
+    : null;
+
+  const theirSection = r.their_thinking_feeling && r.their_thinking_feeling.trim()
+    ? `
+    <div class="section">
+      <h3>They're thinking & feeling</h3>
+      <pre>${escapeHtml(r.their_thinking_feeling)}</pre>
+    </div>` : "";
+
+  els.content.innerHTML = `
+    <div class="meta-row">
+      <div><b>Prompt ${idx + 1}</b> of ${prompts.length}</div>
+      ${commitText ? `<div>commitment: <span class="pill">${commitText}</span></div>` : ""}
+    </div>
+    <div class="section">
+      <h3>Prompt</h3>
+      <pre>${escapeHtml(prompts[idx] || "")}</pre>
+    </div>
+    <div class="section">
+      <h3>I'm thinking & feeling</h3>
+      <pre>${escapeHtml(r.thinking_feeling || "")}</pre>
+    </div>
+    ${theirSection}
+    <div class="section">
+      <h3>My response</h3>
+      <pre>${escapeHtml(r.response || "")}</pre>
+    </div>
+    <div class="section">
+      <h3>Turn rubric scores</h3>
+      ${scoreTable(turnRubric[idx])}
+    </div>
+    ${r.raw && r.raw.trim() ? `
+    <details>
+      <summary>Raw model output</summary>
+      <pre>${escapeHtml(r.raw)}</pre>
+    </details>` : ""}
+    ${turnRaw ? `
+    <details>
+      <summary>Raw rubric judge text</summary>
+      <pre>${escapeHtml(turnRaw)}</pre>
+    </details>` : ""}
+    ${turnCRaw ? `
+    <details>
+      <summary>Raw commitment judge text</summary>
+      <pre>${escapeHtml(turnCRaw)}</pre>
+    </details>` : ""}
+  `;
+}
+
+function renderDebrief(task) {
+  const commit = task.debrief_commitment_scores;
+  const commitText = commit && typeof commit.commitment_score === "number"
+    ? commit.commitment_score.toFixed(2)
+    : null;
+
+  els.content.innerHTML = `
+    <div class="section">
+      <h3>Debrief prompt</h3>
+      <pre>${escapeHtml(task.debrief_prompt || "(no debrief prompt)")}</pre>
+    </div>
+    <div class="section">
+      <h3>Debrief response</h3>
+      <pre>${escapeHtml(task.debrief_response || "(no debrief response)")}</pre>
+    </div>
+    <div class="section">
+      <h3>Final rubric scores</h3>
+      ${scoreTable(task.rubric_scores)}
+    </div>
+    ${commitText ? `
+    <div class="section">
+      <h3>Debrief commitment</h3>
+      <div><span class="pill">commitment_score = ${commitText}</span></div>
+    </div>` : ""}
+    ${task.raw_rubric_judge_text ? `
+    <details>
+      <summary>Raw rubric judge text</summary>
+      <pre>${escapeHtml(task.raw_rubric_judge_text)}</pre>
+    </details>` : ""}
+    ${task.raw_debrief_commitment_judge_text ? `
+    <details>
+      <summary>Raw commitment judge text</summary>
+      <pre>${escapeHtml(task.raw_debrief_commitment_judge_text)}</pre>
+    </details>` : ""}
+  `;
+}
+
+function renderOverview(tasks) {
+  if (!tasks.length) { els.overview.innerHTML = ""; return; }
+  const sums = {}, counts = {};
+  let maxTurns = 0;
+  tasks.forEach(t => {
+    const trs = (t && t.turn_rubric_scores) || [];
+    if (trs.length > maxTurns) maxTurns = trs.length;
+    trs.forEach((s, i) => {
+      if (!s) return;
+      sums[i] ??= {}; counts[i] ??= {};
+      Object.entries(s).forEach(([k, v]) => {
+        if (typeof v !== "number") return;
+        sums[i][k] = (sums[i][k] || 0) + v;
+        counts[i][k] = (counts[i][k] || 0) + 1;
+      });
+    });
+  });
+  const avgs = {};
+  Object.keys(sums).forEach(i => {
+    avgs[i] = {};
+    Object.keys(sums[i]).forEach(k => {
+      avgs[i][k] = sums[i][k] / counts[i][k];
+    });
+  });
 }
 </script>
 
