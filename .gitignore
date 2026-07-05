@@ -8,3 +8,7 @@ venv/
 eqbench3_runs.json
 .DS_Store
 *estimate_cost.py
+test_anthropic_curl.sh
+merge_results_to_canonical.py
+generate_results_html.ipynb
+results/
