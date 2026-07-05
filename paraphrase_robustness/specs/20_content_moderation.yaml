@@ -1,0 +1,24 @@
+base_id: "20"
+title: "Big Tech | The Content Moderation"
+issue_summary: "Platform moderation of misinformation vs free expression and overreach."
+
+value_a: "Platform stability and harm reduction from false content"
+value_b: "Free speech and suspicion of centralized truth enforcement"
+
+beats:
+  setup: "Platforms ban ‘misinformation’ framed as protecting democracy."
+  tension: "Safety vs ‘Ministry of Truth’ critique from journalists."
+  choice: "Reporting harmful lies strengthens moderation power you distrust."
+  consequence: "Automated enforcement deletes your account and history by mistake."
+
+non_negotiable_facts:
+  - "Platforms remove content labeled misinformation."
+  - "Journalists warn about censorship power."
+  - "You face tension between reporting harm and empowering moderation."
+  - "Your account is wrongly deleted with major personal loss."
+
+framing_notes:
+  pro: "Protect users from dangerous lies."
+  anti: "Free inquiry and distrust of opaque moderation."
+
+tone_axes: [neutral]

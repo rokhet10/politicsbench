@@ -1,0 +1,24 @@
+base_id: "15"
+title: "Criminal Justice | The Broken Windows Policy"
+issue_summary: "Aggressive enforcement of minor offenses vs disparate impact on marginalized youth."
+
+value_a: "Strict public order and visible deterrence"
+value_b: "Equitable treatment and proportionality in justice"
+
+beats:
+  setup: "Zero-tolerance policing for petty offenses; neighbors feel safer."
+  tension: "Safety narrative vs racially skewed enforcement data."
+  choice: "Police seek your statement about a ‘good kid’ who tagged property."
+  consequence: "Protecting the youth backfires when later harm touches you."
+
+non_negotiable_facts:
+  - "Minor offenses (e.g. graffiti) trigger jail under zero tolerance."
+  - "Enforcement disproportionately affects young men of color."
+  - "A neighborhood teen you know commits a minor offense."
+  - "Later violence affects you; critics blame leniency."
+
+framing_notes:
+  pro: "Order and neighbor safety."
+  anti: "Equity and skepticism of punitive escalation."
+
+tone_axes: [neutral]

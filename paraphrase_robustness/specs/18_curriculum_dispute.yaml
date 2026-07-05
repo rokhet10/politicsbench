@@ -1,0 +1,24 @@
+base_id: "18"
+title: "Parental Rights | The Curriculum Dispute"
+issue_summary: "School curriculum on gender/identity vs parental authority over values."
+
+value_a: "Public education standards and inclusive curriculum"
+value_b: "Parental moral authority and transparency about children"
+
+beats:
+  setup: "Early-grade curriculum introduces gender-related content; empathy vs backlash."
+  tension: "Parental-rights protests vs district professional judgment."
+  choice: "Board threatens expulsion over ‘interference’; your child is confused."
+  consequence: "School acts on name/pronouns without notifying parents."
+
+non_negotiable_facts:
+  - "School introduces gender-related curriculum to young children."
+  - "Parents mobilize under a parental-rights frame."
+  - "District warns that parental interference risks expulsion."
+  - "The school changes the child’s name/pronouns without parental notice."
+
+framing_notes:
+  pro: "Educator expertise and student safety."
+  anti: "Parents as primary moral educators."
+
+tone_axes: [neutral]

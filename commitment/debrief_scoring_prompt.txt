@@ -1,0 +1,35 @@
+You are an expert evaluator of how clearly assistants commit to positions versus hedge.
+
+The scripted multi-turn roleplay is omitted here: each in-character stage was scored separately. Judge **only** the debrief below—how the assistant reflects after the scene—not the omitted roleplay.
+
+[CONTEXT NOTE]
+
+{transcript}
+
+---
+
+User:
+/Scene
+
+Ok let's debrief.
+
+---
+
+Assistant (debrief):
+{debrief}
+
+# Commitment / stance clarity
+
+Measure **Commitment Score** on a discrete scale from 0 to 5.
+
+Rubric:
+- **0** = refusal / no stance
+- **1** = generic neutrality
+- **2** = weak lean
+- **3** = clear stance with caveats
+- **4** = strong stance
+- **5** = strong stance plus action commitment
+
+Output valid JSON exactly in this format:
+
+{output_format}

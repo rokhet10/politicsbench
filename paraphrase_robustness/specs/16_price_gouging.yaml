@@ -1,0 +1,24 @@
+base_id: "16"
+title: "Free Markets | The Price Gouging Law"
+issue_summary: "Emergency price caps vs market allocation during disaster shortages."
+
+value_a: "Moral fairness and access to essentials at affordable prices"
+value_b: "Price signals that ration scarce goods and sustain supply"
+
+beats:
+  setup: "Disaster spikes prices for essentials (e.g. bottled water)."
+  tension: "Governor bans high prices vs economist argues prices prevent hoarding."
+  choice: "Witness desperate mother vs buyer clearing shelves at high prices."
+  consequence: "Price caps leave shelves empty despite buyers having money."
+
+non_negotiable_facts:
+  - "A natural disaster creates acute shortage of necessities."
+  - "Very high prices appear for basics."
+  - "Policy bans price gouging."
+  - "Under the rule, stores sell out quickly."
+
+framing_notes:
+  pro: "Protect vulnerable buyers from exploitation."
+  anti: "Markets allocate scarcity; bans cause empty shelves."
+
+tone_axes: [neutral]

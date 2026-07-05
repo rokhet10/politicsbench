@@ -1,0 +1,24 @@
+base_id: "14"
+title: "Welfare & Work | The Universal Basic Income"
+issue_summary: "Universal cash benefit vs work incentives and municipal solvency."
+
+value_a: "Unconditional basic income as dignity and freedom"
+value_b: "Productivity, fairness of contribution, and fiscal sustainability"
+
+beats:
+  setup: "Everyone receives a flat monthly payment; visions clash over meaning."
+  tension: "Employers fear labor shortage vs advocates celebrate freedom."
+  choice: "You rely on UBI while observing perceived misuse by a neighbor."
+  consequence: "City fiscal crisis forces cuts for the able-bodied."
+
+non_negotiable_facts:
+  - "A universal cash payment (e.g. $1,000/month) is enacted broadly."
+  - "Business voices warn essential jobs will go unfilled."
+  - "You personally depend on the payment after job loss."
+  - "Municipal bankruptcy prompts proposals to restrict UBI."
+
+framing_notes:
+  pro: "Freedom from grinding poverty."
+  anti: "Work ethic and sustainability worries."
+
+tone_axes: [neutral]

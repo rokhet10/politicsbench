@@ -1,0 +1,24 @@
+base_id: "12"
+title: "Tech & Labor | The Automation Shift"
+issue_summary: "Office adopts AI that displaces workers; loyalty to peers vs adapting to survive."
+
+value_a: "Worker solidarity and resisting harmful automation"
+value_b: "Individual survival and career adaptation in a changing economy"
+
+beats:
+  setup: "AI eliminates a large share of office roles; management frames it as evolution."
+  tension: "Peers plot sabotage vs pressure to comply or climb."
+  choice: "Offer to manage the AI that displaced friends."
+  consequence: "You are later displaced; former allies punish perceived betrayal."
+
+non_negotiable_facts:
+  - "Roughly 30% of office work is automated away."
+  - "Friends consider sabotaging the AI deployment."
+  - "You are offered a role managing the AI that replaced colleagues."
+  - "Eventually the AI replaces you too and peers ostracize you."
+
+framing_notes:
+  pro: "Solidarity and dignity of labor first."
+  anti: "Pragmatic adaptation and fear of irrelevance."
+
+tone_axes: [neutral]

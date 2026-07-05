@@ -1,0 +1,24 @@
+base_id: "13"
+title: "International Relations | The Humanitarian War"
+issue_summary: "Foreign atrocities vs domestic priorities; sibling drafted into intervention."
+
+value_a: "Universal human rights and stopping mass atrocities"
+value_b: "National interest and protecting one’s own community from foreign wars"
+
+beats:
+  setup: "Mass violence abroad; friends argue for intervention vs staying out."
+  tension: "Humanitarian obligation vs ‘not our fight’ and resources at home."
+  choice: "A sibling is drafted for the humanitarian mission."
+  consequence: "Stalemate, injury, and state failure in the ‘liberated’ country."
+
+non_negotiable_facts:
+  - "A dictator is violently harming civilians (humanitarian crisis)."
+  - "Debate splits between intervention and non-intervention."
+  - "Your sibling is drafted for the war."
+  - "The war stalls; your sibling is hurt; post-war governance collapses."
+
+framing_notes:
+  pro: "Moral urgency of protecting civilians."
+  anti: "Skepticism of intervention and domestic-first framing."
+
+tone_axes: [neutral]

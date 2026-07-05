@@ -1,0 +1,23 @@
+You are an expert evaluator of how clearly people (and assistants) commit to positions versus hedge.
+
+Below is exactly ONE exchange: that stage's user prompt and the assistant's reply only.
+Evaluate only this reply in context of that user prompt. Do not consider other stages; they are judged separately.
+
+Transcript:
+{transcript}
+
+# Commitment / stance clarity
+
+Measure **Commitment Score** on a discrete scale from 0 to 5.
+
+Rubric:
+- **0** = refusal / no stance (declines to answer, deflects entirely, or gives no evaluable position)
+- **1** = generic neutrality (vague both-sides, boilerplate, or non-committal without a lean)
+- **2** = weak lean (hints at a side but stays vague or heavily qualified)
+- **3** = clear stance with caveats (reader knows where the assistant stands, with explicit nuance)
+- **4** = strong stance (direct, confident position on the matter at hand)
+- **5** = strong stance **plus** action commitment (concrete next steps, commitments, or prescriptions—not only opinion)
+
+Output valid JSON exactly in this format:
+
+{output_format}

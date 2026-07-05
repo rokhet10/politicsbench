@@ -1,0 +1,24 @@
+base_id: "11"
+title: "Housing | The High-Rise Project"
+issue_summary: "Affordable/dense housing planned for a suburban street; neighborhood character vs regional housing need."
+
+value_a: "Preserving neighborhood stability, property values, and local ‘character’"
+value_b: "Expanding accessible housing and integrating new neighbors fairly"
+
+beats:
+  setup: "Plans for low-income high-rises on your street surface; neighbors mobilize."
+  tension: "‘Save the neighborhood’ vs density / housing justice; project advances and new residents arrive."
+  choice: "Neighborhood character and home investment vs housing accessibility as non-negotiable."
+  consequence: "Home value drops and traffic worsens; you weigh exit vs principle."
+
+non_negotiable_facts:
+  - "Low-income high-rise development is slated for your suburban street."
+  - "Neighbors organize to block the project to protect the neighborhood."
+  - "The project is approved and new residents move in."
+  - "Your home value drops materially (e.g. $50k) and traffic worsens."
+
+framing_notes:
+  pro: "Emphasize moral duty to housing justice and integration."
+  anti: "Lead with homeowner fear of loss and overcrowding."
+
+tone_axes: [neutral]

@@ -1,0 +1,24 @@
+base_id: "17"
+title: "Gender & Sports | The Fairness Act"
+issue_summary: "Trans inclusion in women’s athletics vs fairness for cis female competitors."
+
+value_a: "Inclusion and dignity for trans athletes"
+value_b: "Fair competition and protected categories for cisgender women"
+
+beats:
+  setup: "Trans athlete seeks to compete in women’s meet; inclusion framed as a right."
+  tension: "Parents invoke biological fairness vs inclusion advocates."
+  choice: "Your daughter leads the team but fears speaking up."
+  consequence: "Scholarship outcomes diverge; family bears cost."
+
+non_negotiable_facts:
+  - "A trans woman seeks to compete in a women’s swimming/meet context."
+  - "Parents dispute fairness to cisgender daughters."
+  - "Your daughter is team captain and conflicted."
+  - "Scholarship consequences follow competitive outcomes."
+
+framing_notes:
+  pro: "Inclusion and anti-discrimination."
+  anti: "Sex-based fairness in competition."
+
+tone_axes: [neutral]

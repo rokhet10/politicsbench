@@ -1,0 +1,24 @@
+base_id: "19"
+title: "Wealth Distribution | The Inheritance Tax"
+issue_summary: "Heavy taxation of large estates vs family legacy and intergenerational transfer."
+
+value_a: "Breaking concentrated dynastic wealth for equality"
+value_b: "Right to pass savings and businesses to heirs"
+
+beats:
+  setup: "Very high tax on large inheritances is proposed or enacted."
+  tension: "Neighbor’s family business legacy vs egalitarian aims."
+  choice: "You discover a loophole that could shield a friend’s estate."
+  consequence: "Revenue is misused; middle-class savers face new fees."
+
+non_negotiable_facts:
+  - "Policy targets large inheritances (e.g. above $5 million) with near-full tax."
+  - "A neighbor’s family business is emotionally central to them."
+  - "A legal loophole could protect a friend’s estate."
+  - "Tax revenues are wasted; broader fees harm ordinary families."
+
+framing_notes:
+  pro: "Equality and anti-dynasty."
+  anti: "Family continuity and reward for lifetime work."
+
+tone_axes: [neutral]
