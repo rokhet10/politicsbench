@@ -72,6 +72,23 @@ python3 judge_agreement/scripts/analyze_judge_agreement.py \
 
 ---
 
+### Weight sensitivity (composite score robustness)
+
+Folder: [`sensitivity/`](sensitivity/README.md)
+
+- **Equal weights** — all trait weights set to 1 (or sign-preserving ±1).
+- **Random perturbation** — ±20% weight noise, 1000 replicates; rank/score stability vs baseline.
+- **Leave-one-trait-out** — drop each trait; test whether moral certainty / nuanced pragmatism drive conclusions.
+
+```bash
+python3 evaluation/sensitivity/analyze_weight_sensitivity.py \
+  --runs-json eqbench_runs_final.json \
+  --run-key-regex '.*-paraphrase-final$' \
+  --scenario-regex '.*-og$'
+```
+
+---
+
 ### Paraphrase robustness (spread)
 
 Folder: [`paraphrase_robustness/`](../paraphrase_robustness/README.md) — see **Post-hoc spread** section.
