@@ -24,7 +24,6 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
 RUNS_FILE="${RUNS_FILE:-eqbench_runs_final.json}"
-ELO_FILE="${ELO_FILE:-eqbench_elo_final.json}"
 THREADS="${THREADS:-6}"
 # Default: Claude + GPT + Grok (comma-separated; scores are aggregated across judges).
 JUDGE_MODELS="${JUDGE_MODELS:-anthropic/claude-3.7-sonnet,openai/gpt-4.1-mini,x-ai/grok-4.1-fast}"
@@ -41,12 +40,10 @@ run_one() {
     --judge-models "$JUDGE_MODELS" \
     --threads "$THREADS" \
     --iterations 1 \
-    --no-elo \
     --ignore-canonical \
     --scenario-prompts-file scenario_prompts.txt \
     --paraphrase-manifest paraphrase_robustness/manifest.json \
-    --runs-file "$RUNS_FILE" \
-    --elo-results-file "$ELO_FILE"
+    --runs-file "$RUNS_FILE"
 }
 
 # API id (OpenRouter-style) | logical model_name for this run (stored in JSON)
@@ -66,11 +63,9 @@ python3 eqbench3.py \
   --judge-models "$JUDGE_MODELS" \
   --threads "$_LLAMA_THREADS" \
   --iterations 1 \
-  --no-elo \
   --ignore-canonical \
   --scenario-prompts-file scenario_prompts.txt \
   --paraphrase-manifest paraphrase_robustness/manifest.json \
-  --runs-file "$RUNS_FILE" \
-  --elo-results-file "$ELO_FILE"
+  --runs-file "$RUNS_FILE"
 
-echo "Llama-only batch finished. Results in $RUNS_FILE (ELO sidecar: $ELO_FILE)."
+echo "Llama-only batch finished. Results in $RUNS_FILE."

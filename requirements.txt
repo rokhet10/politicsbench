@@ -7,4 +7,3 @@ joblib
 nltk
 wordfreq
 scipy
-trueskill

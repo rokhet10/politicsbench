@@ -23,7 +23,6 @@ python3 eqbench3.py \
   --test-model "$GEMINI_API_ID" \
   --model-name "$MODEL_NAME" \
   --judge-models "$JUDGE_MODELS" \
-  --no-elo \
   --iterations 1 \
   --scenario-prompts-file paraphrase_robustness/archive/pre_unified_prompts/scenario_prompts_og_only.txt \
   --paraphrase-manifest paraphrase_robustness/manifest.json \

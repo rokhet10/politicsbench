@@ -2,7 +2,7 @@
 
 """
 Main entry point for the EQBench3 benchmark based on multi-turn scenarios.
-Includes scenario simulation, debriefing, optional rubric scoring, and optional ELO analysis.
+Includes scenario simulation, debriefing, and optional rubric scoring.
 """
 import argparse
 import sys
@@ -20,7 +20,7 @@ load_dotenv()
 
 from utils.logging_setup import setup_logging, get_verbosity
 from utils.file_io import load_json_file, update_run_data, save_json_file # save_json_file needed for reset
-# Logging is not configured until main() — imports below can take 15s+ (matplotlib, elo, …).
+# Logging is not configured until main() — imports below can take a while on cold start.
 print("EQBench3: loading modules (cold start can take a while before logs appear)...", flush=True)
 from core.benchmark import run_eq_bench3 # Import the main benchmark runner
 import utils.constants as C # Import constants for default file paths
@@ -33,7 +33,7 @@ def signal_handler(signum, frame):
     # Perform any necessary cleanup here if needed
     sys.exit(1)
 
-def print_summary_box(run_key: str, local_runs_file: str, run_elo: bool, run_rubric: bool):
+def print_summary_box(run_key: str, local_runs_file: str, run_rubric: bool):
     """
     Prints a formatted summary box of the benchmark run.
     Reads data ONLY from the local runs file.
@@ -95,37 +95,13 @@ def print_summary_box(run_key: str, local_runs_file: str, run_elo: bool, run_rub
             # Handle cases where score might be "N/A" or other non-numeric string
              rubric_score_100_str = str(rubric_score_0_20)
 
-
-        # --- ELO Score ---
-        elo_raw = results.get("elo_raw", "N/A")
-        elo_norm = results.get("elo_normalized", "N/A")
-        elo_error = results.get("elo_error")
-        elo_raw_str = "N/A"
-        elo_norm_str = "N/A"
-
-        if not run_elo:
-            elo_raw_str = "Skipped"
-            elo_norm_str = "Skipped"
-        elif elo_error:
-             elo_raw_str = f"Error ({elo_error[:20]}...)"
-             elo_norm_str = f"Error ({elo_error[:20]}...)"
-        else:
-            elo_raw_str = f"{elo_raw:.2f}" if isinstance(elo_raw, (int, float)) else str(elo_raw)
-            elo_norm_str = f"{elo_norm:.2f}" if isinstance(elo_norm, (int, float)) else str(elo_norm)
-
-        import unicodedata
-
-        # ──────────  helper: printable width  ──────────
         def cell_width(s: str) -> int:
-            """Return the on‑screen width of s in monospaced fonts."""
             w = 0
             for ch in s:
-                # ‘F’=Full, ‘W’=Wide → 2 columns; everything else → 1
                 w += 2 if unicodedata.east_asian_width(ch) in ("F", "W") else 1
             return w
 
         def crop_to_width(s: str, max_w: int, ellipsis="…") -> str:
-            """Trim string so its visual width ≤ max_w (add ellipsis if trimmed)."""
             if cell_width(s) <= max_w:
                 return s + " " * (max_w - cell_width(s))
             keep_w = max_w - cell_width(ellipsis)
@@ -137,33 +113,26 @@ def print_summary_box(run_key: str, local_runs_file: str, run_elo: bool, run_rub
                 out += ch
             return out + ellipsis
 
-        # ──────────  box parameters  ──────────
-        BOX_W      = 80          # total width including borders
-        PAD        = 1           # spaces inside each cell
-        LINE       = "─"
-        TOP        = "┌" + LINE * (BOX_W - 2) + "┐"
-        BOTTOM     = "└" + LINE * (BOX_W - 2) + "┘"
-        ROW_SEP    = "├" + LINE * (BOX_W - 2) + "┤"
-        TITLE_SEP  = "╞" + LINE * (BOX_W - 2) + "╡"
+        BOX_W = 80
+        PAD = 1
+        LINE = "─"
+        TOP = "┌" + LINE * (BOX_W - 2) + "┐"
+        BOTTOM = "└" + LINE * (BOX_W - 2) + "┘"
+        ROW_SEP = "├" + LINE * (BOX_W - 2) + "┤"
+        TITLE_SEP = "╞" + LINE * (BOX_W - 2) + "╡"
 
-        # ──────────  collect rows first  ──────────
         rows = [
             ("Run Key:",               run_key),
-            ("Model Name:",            model_name), # Changed label
-            ("API Model ID:",          api_model_id), # Added API ID
+            ("Model Name:",            model_name),
+            ("API Model ID:",          api_model_id),
         ]
-        if run_elo or run_rubric:
-            lbl_bits = []
-            if run_rubric: lbl_bits.append("Rubric")
-            if run_elo:   lbl_bits.append("ELO")
-            rows.append((f"Judge ({'/'.join(lbl_bits)}):", judge_model))
+        if run_rubric:
+            rows.append(("Judge (Rubric):", judge_model))
 
         rows.extend([
             ("Status:",                run_status),
             ("Duration:",              duration_str),
             ("Rubric Score (0‑100):",  rubric_score_100_str),
-            ("ELO Raw:",               elo_raw_str),
-            ("ELO (Normalised):",      elo_norm_str),
         ])
 
         # ──────────  calculate column widths  ──────────
@@ -191,10 +160,6 @@ def print_summary_box(run_key: str, local_runs_file: str, run_elo: bool, run_rub
         for (lbl, val) in rows:
             if lbl == "Duration:":
                 print(ROW_SEP)
-            if lbl == "Rubric Score (0‑100):":
-                print(ROW_SEP)
-                print(make_row("", "ELO Analysis Results".center(value_col)))
-                print(ROW_SEP)
             print(make_row(lbl, str(val)))
         print(BOTTOM)
 
@@ -203,129 +168,6 @@ def print_summary_box(run_key: str, local_runs_file: str, run_elo: bool, run_rub
         print(f"\nError generating summary box: {e}")
         logging.error(f"Error generating summary box for run {run_key}", exc_info=True)
 
-
-def print_leaderboard_summary(elo_data: Dict[str, Any], highlight_model: str):
-    """Prints a formatted leaderboard summary, sorted by ELO Norm."""
-    if not elo_data:
-        print("\n[INFO] No ELO data available to display leaderboard.")
-        return
-
-    # --- Prepare data ---
-    leaderboard_entries = []
-    for model, data in elo_data.items():
-        if model == "__metadata__" or not isinstance(data, dict):
-            continue
-        # Use .get with defaults for robustness
-        elo_norm = data.get("elo_norm", 0.0) # Default to 0 for sorting if missing
-        elo_raw = data.get("elo", "N/A")
-        sigma = data.get("sigma", "N/A")
-        ci_low_norm = data.get("ci_low_norm", "N/A")
-        ci_high_norm = data.get("ci_high_norm", "N/A")
-
-        # Format CI string
-        ci_str = "N/A"
-        if ci_low_norm != "N/A" and ci_high_norm != "N/A":
-            try:
-                # Use norm CI for display
-                ci_str = f"{ci_low_norm:.0f} - {ci_high_norm:.0f}"
-            except (TypeError, ValueError):
-                ci_str = "[Err]" # Handle non-numeric CI values
-
-        leaderboard_entries.append({
-            "name": model,
-            "elo_norm": elo_norm if isinstance(elo_norm, (int, float)) else 0.0, # Ensure numeric for sort
-            "elo_norm_disp": f"{elo_norm:.0f}" if isinstance(elo_norm, (int, float)) else str(elo_norm),
-            "elo_raw_disp": f"{elo_raw:.0f}" if isinstance(elo_raw, (int, float)) else str(elo_raw),
-            "ci_norm_disp": ci_str,
-            "sigma_disp": f"{sigma:.1f}" if isinstance(sigma, (int, float)) else str(sigma),
-        })
-
-    # Sort by ELO Norm descending
-    leaderboard_entries.sort(key=lambda x: x["elo_norm"], reverse=True)
-
-    # --- Formatting Helpers (from print_summary_box) ---
-    def cell_width(s: str) -> int:
-        w = 0
-        for ch in s: w += 2 if unicodedata.east_asian_width(ch) in ("F", "W") else 1
-        return w
-
-    def crop_to_width(s: str, max_w: int, ellipsis="…") -> str:
-        s = str(s) # Ensure string conversion
-        if cell_width(s) <= max_w: return s + " " * (max_w - cell_width(s))
-        keep_w = max_w - cell_width(ellipsis)
-        out = ""
-        current_w = 0
-        for ch in s:
-            ch_w = 2 if unicodedata.east_asian_width(ch) in ("F", "W") else 1
-            if current_w + ch_w > keep_w: break
-            out += ch
-            current_w += ch_w
-        return out + ellipsis + " " * (max_w - cell_width(out + ellipsis))
-
-
-    # --- Table Parameters ---
-    COL_PAD = 1
-    RANK_W = 4
-    MODEL_W = 35 # Adjust as needed
-    ELO_NORM_W = 8
-    ELO_RAW_W = 8
-    CI_W = 12 # Width for "[XXXX - YYYY]"
-    SIGMA_W = 7
-
-    cols = [RANK_W, MODEL_W, ELO_NORM_W, ELO_RAW_W, CI_W, SIGMA_W]
-    LINE = "─"
-
-    # --- Corrected Separator and Box Width Calculation ---
-    # Calculate the width of each line segment including padding
-    segments = [LINE * (w + 2 * COL_PAD) for w in cols]
-    # Join segments with the correct column separator (┼)
-    ROW_SEP_INNER = "┼".join(segments)
-    # Create the full row separator line
-    ROW_SEP = f"├{ROW_SEP_INNER}┤"
-    # Calculate the total box width based on the correctly calculated separator
-    BOX_W = len(ROW_SEP)
-
-    # --- Recalculate other lines based on correct BOX_W ---
-    TOP = "┌" + LINE * (BOX_W - 2) + "┐"
-    BOTTOM = "└" + LINE * (BOX_W - 2) + "┘"
-    TITLE_SEP = "╞" + LINE * (BOX_W - 2) + "╡"
-
-    # --- Header Row ---
-    headers = ["Rank", "Model Name", "ELO Norm", "ELO Raw", "95% CI Norm", "Sigma"]
-    header_cells = [
-        crop_to_width(h, w).center(w) # Center header text within its column width
-        for h, w in zip(headers, cols)
-    ]
-    # Construct the header row string with padding and column separators
-    header_parts = []
-    for cell_content in header_cells:
-        header_parts.append(f"{' ' * COL_PAD}{cell_content}{' ' * COL_PAD}")
-    header_row = f"│{'│'.join(header_parts)}│" # Join padded cells with │
-
-    # --- Print Table ---
-    print("\n" + TOP)
-    print(f"│{'EQBench3 Elo Results'.center(BOX_W - 2)}│") # Center title within the box
-    print(TITLE_SEP)
-    print(header_row)
-    print(ROW_SEP) # Print the correctly calculated row separator directly
-
-    for rank, entry in enumerate(leaderboard_entries, 1):
-        is_highlighted = entry["name"] == highlight_model
-        prefix = ">" if is_highlighted else " "
-        rank_str = f"{prefix}{rank}"
-
-        cells = [
-            crop_to_width(rank_str, RANK_W),
-            crop_to_width(entry["name"], MODEL_W),
-            crop_to_width(entry["elo_norm_disp"], ELO_NORM_W).rjust(ELO_NORM_W),
-            crop_to_width(entry["elo_raw_disp"], ELO_RAW_W).rjust(ELO_RAW_W),
-            crop_to_width(entry["ci_norm_disp"], CI_W).center(CI_W),
-            crop_to_width(entry["sigma_disp"], SIGMA_W).rjust(SIGMA_W),
-        ]
-        row_str = f"│{' ' * COL_PAD}" + f"{' ' * COL_PAD}│{' ' * COL_PAD}".join(cells) + f"{' ' * COL_PAD}│"
-        print(row_str)
-
-    print(BOTTOM)
 
 def print_rubric_summary(runs_data: Dict[str, Any], highlight_model: str):
     """Prints a formatted leaderboard summary based on Rubric Scores."""
@@ -440,17 +282,11 @@ def print_rubric_summary(runs_data: Dict[str, Any], highlight_model: str):
 
     print(BOTTOM)
 
-def _reset_model_data(model_name: str, local_runs_file: str, local_elo_file: str):
-    """
-    Remove all entries for the logical `model_name` from the LOCAL files:
-      • local_runs_file (main run data)
-      • local_elo_file (ELO results and pairwise comparisons)
-    Does NOT touch leaderboard files.
-    """
-    # --- purge local runs file ---
+def _reset_model_data(model_name: str, local_runs_file: str):
+    """Remove all entries for the logical `model_name` from the local runs file."""
     runs = load_json_file(local_runs_file) or {}
     to_delete = [k for k,v in runs.items()
-                 if isinstance(v, dict) and v.get("model_name", v.get("test_model")) == model_name] # Check model_name first, fallback to test_model
+                 if isinstance(v, dict) and v.get("model_name", v.get("test_model")) == model_name]
     deleted_count = 0
     for k in to_delete:
         if k in runs:
@@ -459,41 +295,8 @@ def _reset_model_data(model_name: str, local_runs_file: str, local_elo_file: str
     if deleted_count > 0:
         save_json_file(runs, local_runs_file)
         logging.info(f"[RESET] Removed {deleted_count} run(s) for '{model_name}' from local runs file: {local_runs_file}")
-
-    # --- purge local ELO file ---
-    if not os.path.exists(local_elo_file):
-        logging.info(f"[RESET] Local ELO file not found, skipping purge: {local_elo_file}")
-        return
-
-    elo = load_json_file(local_elo_file) or {}
-    elo_changed = False
-    # Check if the logical model name exists as a top-level key
-    if model_name in elo:
-        del elo[model_name]
-        elo_changed = True
-        logging.info(f"[RESET] Removed top-level ELO entry for '{model_name}' from {local_elo_file}")
-
-    meta = elo.setdefault("__metadata__", {})
-    comps = meta.get("global_pairwise_comparisons", [])
-    initial_comp_count = len(comps)
-    # Filter comparisons based on logical model names stored in the pair dict
-    comps_filtered = [
-        c for c in comps
-        if model_name not in (
-            c.get("pair",{}).get("test_model"), # These should hold logical names
-            c.get("pair",{}).get("neighbor_model")
-        )
-    ]
-    if len(comps_filtered) < initial_comp_count:
-        meta["global_pairwise_comparisons"] = comps_filtered
-        elo_changed = True
-        logging.info(f"[RESET] Pruned {initial_comp_count - len(comps_filtered)} comparisons involving '{model_name}' from {local_elo_file}")
-
-    if elo_changed:
-        save_json_file(elo, local_elo_file)
-        logging.info(f"[RESET] Saved updated local ELO file: {local_elo_file}")
     else:
-        logging.info(f"[RESET] No data found for '{model_name}' in local ELO file: {local_elo_file}")
+        logging.info(f"[RESET] No runs found for '{model_name}' in {local_runs_file}")
 
 
 def main():
@@ -508,9 +311,7 @@ def main():
     )
     # --- File Paths ---
     parser.add_argument("--runs-file", default=C.DEFAULT_LOCAL_RUNS_FILE, help=f"File to store local run data (default: {C.DEFAULT_LOCAL_RUNS_FILE}).")
-    parser.add_argument("--elo-results-file", default=C.DEFAULT_LOCAL_ELO_FILE, help=f"File to store local ELO results and comparisons (default: {C.DEFAULT_LOCAL_ELO_FILE}).")
     parser.add_argument("--leaderboard-runs-file", default=C.CANONICAL_LEADERBOARD_RUNS_FILE, help=f"Path to the canonical leaderboard runs file (read-only, default: {C.CANONICAL_LEADERBOARD_RUNS_FILE}).")
-    parser.add_argument("--leaderboard-elo-file", default=C.CANONICAL_LEADERBOARD_ELO_FILE, help=f"Path to the canonical leaderboard ELO file (read-only, default: {C.CANONICAL_LEADERBOARD_ELO_FILE}).")
     # --- Run Control ---
     parser.add_argument("--run-id", help="Optional: Resume or specify a run ID prefix for the local run.")
     parser.add_argument("--threads", type=int, default=4, help="Number of parallel threads for API calls.")
@@ -524,7 +325,6 @@ def main():
         default=False,
         help="If set, do not load or use default canonical leaderboard files. Runs will be based on local files only."
     )
-    parser.add_argument("--no-elo", action="store_true", default=False, help="Disable the ELO analysis step.")
     parser.add_argument("--no-rubric", action="store_true", default=False, help="Disable the Rubric scoring step.")
     parser.add_argument("--redo-rubric-judging", action="store_true", default=False,
                         help="If set, tasks in the local runs file that have completed rubric scoring will be reset so the rubric step is re-run.")
@@ -532,7 +332,7 @@ def main():
         "--reset-model",
         action="store_true",
         default=False,
-        help="Delete all existing run data and ELO comparisons for the logical model name from the LOCAL files before running.",
+        help="Delete all existing run data for the logical model name from the local runs file before running.",
     )
     # --- Removed file path arguments (now handled via constants) ---
     parser.add_argument(
@@ -580,34 +380,25 @@ def main():
     setup_logging(get_verbosity(args.verbosity))
 
     actual_leaderboard_runs_file = args.leaderboard_runs_file
-    actual_leaderboard_elo_file = args.leaderboard_elo_file
 
     if args.ignore_canonical:
         logging.info("--ignore-canonical flag is set. Canonical leaderboard files will not be loaded or used.")
-        actual_leaderboard_runs_file = None # load_json_file will return {} for this
-        actual_leaderboard_elo_file = None  # load_json_file will return {} for this
+        actual_leaderboard_runs_file = None
     else:
-        # Optional: Check existence and warn if not found, though load_json_file handles it
         if not os.path.exists(args.leaderboard_runs_file):
             logging.warning(f"Canonical leaderboard runs file not found: {args.leaderboard_runs_file}. Will proceed as if empty. Use --ignore-canonical to run purely locally and suppress this warning.")
-        if not os.path.exists(args.leaderboard_elo_file):
-            logging.warning(f"Canonical leaderboard ELO file not found: {args.leaderboard_elo_file}. Will proceed as if empty. Use --ignore-canonical to run purely locally and suppress this warning.")
 
     logging.info("--- EQBench3 Run Start ---")
     logging.info(f"Logical Model Name: {logical_model_name}")
     logging.info(f"API Model ID: {api_model_id}")
     logging.info(f"Local Runs File: {args.runs_file}")
-    logging.info(f"Local ELO File: {args.elo_results_file}")
     logging.info(f"Leaderboard Runs File (effective): {actual_leaderboard_runs_file if actual_leaderboard_runs_file else 'Ignored'}")
-    logging.info(f"Leaderboard ELO File (effective): {actual_leaderboard_elo_file if actual_leaderboard_elo_file else 'Ignored'}")
     logging.debug(f"Full Arguments: {args}")
 
     if args.reset_model:
         # Reset using the logical model name and LOCAL file paths
-        _reset_model_data(logical_model_name, args.runs_file, args.elo_results_file)
+        _reset_model_data(logical_model_name, args.runs_file)
 
-    # Validate arguments
-    run_elo_flag = not args.no_elo
     run_rubric_flag = not args.no_rubric
 
     judge_models_resolved = None
@@ -618,9 +409,9 @@ def main():
     elif args.judge_model and args.judge_model.strip():
         judge_models_resolved = [args.judge_model.strip()]
 
-    if (run_elo_flag or run_rubric_flag) and not judge_models_resolved:
+    if run_rubric_flag and not judge_models_resolved:
         parser.error(
-            "Provide --judge-model and/or --judge-models unless both --no-elo and --no-rubric are set."
+            "Provide --judge-model and/or --judge-models unless --no-rubric is set."
         )
         sys.exit(1)
 
@@ -653,21 +444,13 @@ def main():
         run_key = run_eq_bench3(
             model_name=logical_model_name,
             api_model_id=api_model_id,
-            judge_models=judge_models_resolved
-            if (run_elo_flag or run_rubric_flag)
-            else None,
-            # File Paths
+            judge_models=judge_models_resolved if run_rubric_flag else None,
             local_runs_file=args.runs_file,
-            local_elo_file=args.elo_results_file,
             leaderboard_runs_file=actual_leaderboard_runs_file,
-            leaderboard_elo_file=actual_leaderboard_elo_file,
-            # Run Control
             num_threads=args.threads,
             run_id=args.run_id,
             save_interval=args.save_interval,
             iterations=args.iterations,
-            # Feature Flags
-            run_elo=run_elo_flag,
             run_rubric=run_rubric_flag,
             redo_judging=args.redo_rubric_judging,
             truncate_for_rubric=False, # Hardcoded for now, could be arg
@@ -719,30 +502,8 @@ def main():
                 logging.error(f"Failed to load or print Rubric leaderboard summary: {e}", exc_info=True)
         elif not run_rubric_flag:
             logging.info("Skipping Rubric leaderboard display because Rubric scoring was disabled.")
-            
-        # Print Leaderboard Summary if ELO was run successfully
-        if run_elo_flag:
-            # Check the status in the run file to see if ELO step had an error stored
-            final_run_data = load_json_file(args.runs_file).get(run_key, {})
-            elo_step_error = final_run_data.get("results", {}).get("elo_error")
 
-            if not elo_step_error:
-                try:
-                    logging.info(f"Loading final ELO data from {args.elo_results_file} for leaderboard display.")
-                    # Load the local ELO file which now contains the full snapshot
-                    final_local_elo_data = load_json_file(args.elo_results_file)
-                    if final_local_elo_data:
-                        print_leaderboard_summary(final_local_elo_data, logical_model_name)
-                    else:
-                        logging.warning(f"Could not load local ELO data from {args.elo_results_file} for leaderboard display.")
-                except Exception as e:
-                    logging.error(f"Failed to load or print leaderboard summary: {e}", exc_info=True)
-            else:
-                logging.warning(f"Skipping leaderboard display because ELO analysis reported an error: {elo_step_error}")
-        else:
-            logging.info("Skipping leaderboard display because ELO analysis was disabled.")
-            
-        print_summary_box(run_key, args.runs_file, run_elo_flag, run_rubric_flag)
+        print_summary_box(run_key, args.runs_file, run_rubric_flag)
 
 
 if __name__ == "__main__":

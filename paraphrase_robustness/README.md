@@ -12,8 +12,6 @@ This folder holds **PoliticsBench wording-robustness** assets: scenario specs, a
 
 **Human QC** is recommended so `wa`/`wb` stay strict paraphrases (no fact drift). Use `qc/CHECKLIST.md` on a sample before large API spend; for bases **11–20**, QC the new families the same way as 1–10.
 
-The older **framing** pilot (`N-pro` / `N-anti`) is **archived** at `archive/framing_pilot/`.
-
 The **first wording snapshot** (`wa`/`wb`/`wc` pilot + manifest version frozen there) is **archived** at `archive/wording_1/`.
 
 ## Layout
@@ -109,7 +107,6 @@ python3 eqbench3.py \
   --test-model openai/gpt-4.1-mini \
   --model-name gpt-4.1-mini-paraphrase-full20 \
   --judge-model anthropic/claude-3.7-sonnet \
-  --no-elo \
   --iterations 1 \
   --scenario-prompts-file scenario_prompts.txt \
   --paraphrase-manifest paraphrase_robustness/manifest.json \

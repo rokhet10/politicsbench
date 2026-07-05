@@ -4,7 +4,7 @@ Re-run rubric judge calls using saved conversation_history in a local runs JSON 
 
 Use this after changing judge prompts or per-stage transcript logic. It re-invokes:
   - run_turn_rubric for each scenario stage (when --turns is set, default on)
-  - final debrief / analysis rubric via the same path as the benchmark (when --final is set, default on)
+  - final debrief rubric via the same path as the benchmark (when --final is set, default on)
 
 The built-in ``eqbench3.py --redo-rubric-judging`` only resets *final* rubric fields and does not
 re-call per-turn judges (those run inside run_scenario, which skips completed turns).
@@ -42,10 +42,6 @@ from core.benchmark import _execute_rubric_scoring_task  # noqa: E402
 from core.conversation import ScenarioTask  # noqa: E402
 from core.judge_suite import aggregate_rubric_scores  # noqa: E402
 from utils.constants import (  # noqa: E402
-    ANALYSIS_SCENARIO_IDS,
-    ANALYSIS_RUBRIC_CRITERIA_FILE,
-    ANALYSIS_RUBRIC_PROMPT_FILE,
-    COMMITMENT_ANALYSIS_PROMPT_FILE,
     COMMITMENT_DEBRIEF_PROMPT_FILE,
     COMMITMENT_OUTPUT_FORMAT,
     COMMITMENT_TURN_PROMPT_FILE,
@@ -58,8 +54,8 @@ import utils.constants as C  # noqa: E402
 from utils.file_io import load_json_file, update_run_data  # noqa: E402
 
 
-def _load_output_formats() -> Tuple[str, str, str, str]:
-    """Return (std_template, std_fmt, anl_template, anl_fmt)."""
+def _load_output_formats() -> Tuple[str, str]:
+    """Return (std_template, std_fmt)."""
     with open(STANDARD_RUBRIC_CRITERIA_FILE, "r", encoding="utf-8") as f:
         std_crit = [
             line.strip()
@@ -75,33 +71,13 @@ def _load_output_formats() -> Tuple[str, str, str, str]:
         out_std[c] = 0
     std_fmt = json.dumps(out_std, indent=2).replace(": 0", ": 0-20")
     std_tpl = Path(STANDARD_RUBRIC_PROMPT_FILE).read_text(encoding="utf-8")
-
-    with open(ANALYSIS_RUBRIC_CRITERIA_FILE, "r", encoding="utf-8") as f:
-        anl_crit = [
-            line.strip()
-            for line in f
-            if line.strip() and not line.strip().startswith("#")
-        ]
-    if not anl_crit:
-        raise ValueError(f"Empty or missing criteria: {ANALYSIS_RUBRIC_CRITERIA_FILE}")
-    out_anl: Dict[str, Any] = {
-        "chain_of_thought_reasoning": "detailed chain of thought reasoning about the coming scoring decisions"
-    }
-    for c in anl_crit:
-        out_anl[c] = 0
-    anl_fmt = json.dumps(out_anl, indent=2).replace(": 0", ": 0-20")
-    anl_tpl = Path(ANALYSIS_RUBRIC_PROMPT_FILE).read_text(encoding="utf-8")
-    return std_tpl, std_fmt, anl_tpl, anl_fmt
+    return std_tpl, std_fmt
 
 
-def _load_commitment_formats() -> Tuple[str, str, str, str, str, str]:
-    """
-    Return (turn_tpl, turn_fmt, debrief_tpl, debrief_fmt, analysis_tpl, analysis_fmt).
-    debrief_fmt and analysis_fmt are the same JSON schema (commitment_score 0-5).
-    """
+def _load_commitment_formats() -> Tuple[str, str, str, str]:
+    """Return (turn_tpl, turn_fmt, debrief_tpl, debrief_fmt)."""
     turn_tpl = Path(COMMITMENT_TURN_PROMPT_FILE).read_text(encoding="utf-8")
     debrief_tpl = Path(COMMITMENT_DEBRIEF_PROMPT_FILE).read_text(encoding="utf-8")
-    analysis_tpl = Path(COMMITMENT_ANALYSIS_PROMPT_FILE).read_text(encoding="utf-8")
     fmt = COMMITMENT_OUTPUT_FORMAT
     if "{transcript}" not in turn_tpl or "{output_format}" not in turn_tpl:
         raise ValueError("Commitment turn prompt missing {transcript} or {output_format}.")
@@ -113,9 +89,7 @@ def _load_commitment_formats() -> Tuple[str, str, str, str, str, str]:
         raise ValueError(
             "Commitment debrief prompt missing {transcript}, {debrief}, or {output_format}."
         )
-    if "{transcript}" not in analysis_tpl or "{output_format}" not in analysis_tpl:
-        raise ValueError("Commitment analysis prompt missing {transcript} or {output_format}.")
-    return turn_tpl, fmt, debrief_tpl, fmt, analysis_tpl, fmt
+    return turn_tpl, fmt, debrief_tpl, fmt
 
 
 def _resolve_judge_models(run_data: Dict[str, Any]) -> List[str]:
@@ -205,8 +179,6 @@ def rejudge_task(
     judge_models: List[str],
     trait_std_tpl: str,
     trait_std_fmt: str,
-    trait_anl_tpl: str,
-    trait_anl_fmt: str,
     do_turns: bool,
     do_final: bool,
     truncate_for_rubric: bool,
@@ -216,7 +188,6 @@ def rejudge_task(
     c_turn_tpl: Optional[str],
     c_turn_fmt: Optional[str],
     c_std_tpl: Optional[str],
-    c_anl_tpl: Optional[str],
     c_out_fmt: Optional[str],
     commitment_judging: bool,
     commitment_only_storage: bool,
@@ -276,17 +247,13 @@ def rejudge_task(
                         judge_models=judge_models,
                     )
     if do_final:
-        is_analysis = task.scenario_id in ANALYSIS_SCENARIO_IDS
-        trait_tmpl = trait_anl_tpl if is_analysis else trait_std_tpl
-        trait_fmt = trait_anl_fmt if is_analysis else trait_std_fmt
-        c_tmpl = c_anl_tpl if is_analysis else c_std_tpl
         _execute_rubric_scoring_task(
             task,
             api_clients,
             judge_models,
-            trait_tmpl if trait_judging else None,
-            trait_fmt if trait_judging else None,
-            c_tmpl if commitment_judging else None,
+            trait_std_tpl if trait_judging else None,
+            trait_std_fmt if trait_judging else None,
+            c_std_tpl if commitment_judging else None,
             c_out_fmt if commitment_judging else None,
             queue.Queue(),
             "",
@@ -321,8 +288,6 @@ def _process_one_task(
     judge_models: List[str],
     trait_std_tpl: str,
     trait_std_fmt: str,
-    trait_anl_tpl: str,
-    trait_anl_fmt: str,
     do_turns: bool,
     do_final: bool,
     truncate_for_rubric: bool,
@@ -332,7 +297,6 @@ def _process_one_task(
     c_turn_tpl: Optional[str],
     c_turn_fmt: Optional[str],
     c_std_tpl: Optional[str],
-    c_anl_tpl: Optional[str],
     c_out_fmt: Optional[str],
     commitment_judging: bool,
     commitment_only_storage: bool,
@@ -344,8 +308,6 @@ def _process_one_task(
         judge_models,
         trait_std_tpl,
         trait_std_fmt,
-        trait_anl_tpl,
-        trait_anl_fmt,
         do_turns=do_turns,
         do_final=do_final,
         truncate_for_rubric=truncate_for_rubric,
@@ -355,7 +317,6 @@ def _process_one_task(
         c_turn_tpl=c_turn_tpl,
         c_turn_fmt=c_turn_fmt,
         c_std_tpl=c_std_tpl,
-        c_anl_tpl=c_anl_tpl,
         c_out_fmt=c_out_fmt,
         commitment_judging=commitment_judging,
         commitment_only_storage=commitment_only_storage,
@@ -384,7 +345,7 @@ def main() -> None:
     parser.add_argument(
         "--final-only",
         action="store_true",
-        help="Only re-run final rubric (debrief or analysis).",
+        help="Only re-run final debrief rubric.",
     )
     parser.add_argument(
         "--truncate-for-rubric",
@@ -461,19 +422,16 @@ def main() -> None:
         commitment_judging = True
     commitment_only_storage = commitment_judging and not trait_judging
 
-    trait_std_tpl = trait_std_fmt = trait_anl_tpl = trait_anl_fmt = ""
+    trait_std_tpl = trait_std_fmt = ""
     trait_turn_tpl = trait_turn_fmt = ""
-    c_turn_tpl = c_turn_fmt = c_std_tpl = c_anl_tpl = c_out_fmt = None
+    c_turn_tpl = c_turn_fmt = c_std_tpl = c_out_fmt = None
 
     if trait_judging:
-        trait_std_tpl, trait_std_fmt, trait_anl_tpl, trait_anl_fmt = _load_output_formats()
+        trait_std_tpl, trait_std_fmt = _load_output_formats()
         trait_turn_tpl = TURN_RUBRIC_PROMPT_TEMPLATE
         trait_turn_fmt = TURN_RUBRIC_OUTPUT_FORMAT
     if commitment_judging:
-        c_turn_tpl, c_turn_fmt, c_std_tpl, c_out_fmt, c_anl_tpl, c_out2 = (
-            _load_commitment_formats()
-        )
-        assert c_out_fmt == c_out2
+        c_turn_tpl, c_turn_fmt, c_std_tpl, c_out_fmt = _load_commitment_formats()
     logging.info(
         "Rejudge: traits=%s commitment=%s (scoring_mode=%s)",
         trait_judging,
@@ -533,8 +491,6 @@ def main() -> None:
             judge_models,
             trait_std_tpl,
             trait_std_fmt,
-            trait_anl_tpl,
-            trait_anl_fmt,
             do_turns,
             do_final,
             args.truncate_for_rubric,
@@ -544,7 +500,6 @@ def main() -> None:
             c_turn_tpl,
             c_turn_fmt,
             c_std_tpl,
-            c_anl_tpl,
             c_out_fmt,
             commitment_judging,
             commitment_only_storage,

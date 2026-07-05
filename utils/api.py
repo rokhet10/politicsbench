@@ -24,7 +24,7 @@ class APIClient:
             self.api_key = os.getenv("TEST_API_KEY", os.getenv("OPENAI_API_KEY"))
             self.base_url = os.getenv("TEST_API_URL", os.getenv("OPENAI_API_URL", "https://api.openai.com/v1/chat/completions"))
         elif model_type == "judge":
-            # Judge model is used for ELO pairwise comparisons
+            # Judge model is used for rubric scoring
             self.api_key = os.getenv("JUDGE_API_KEY", os.getenv("OPENAI_API_KEY"))
             self.base_url = os.getenv("JUDGE_API_URL", os.getenv("OPENAI_API_URL", "https://api.openai.com/v1/chat/completions"))
         else: # Default/fallback

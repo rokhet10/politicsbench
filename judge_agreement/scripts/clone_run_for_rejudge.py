@@ -129,10 +129,8 @@ def main() -> int:
     # Refresh prompt file paths to current repo defaults (paths may match the old run).
     new_run["rubric_criteria_file_standard"] = C.STANDARD_RUBRIC_CRITERIA_FILE
     new_run["rubric_prompt_file_standard"] = C.STANDARD_RUBRIC_PROMPT_FILE
-    new_run["rubric_criteria_file_analysis"] = C.ANALYSIS_RUBRIC_CRITERIA_FILE
-    new_run["rubric_prompt_file_analysis"] = C.ANALYSIS_RUBRIC_PROMPT_FILE
 
-    for k in ("results", "elo_analysis"):
+    for k in ("results",):
         if k in new_run:
             del new_run[k]
 

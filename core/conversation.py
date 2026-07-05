@@ -15,12 +15,10 @@ from core.judge_suite import aggregate_rubric_scores
 from utils.constants import (
     NO_RP_SCENARIO_IDS,
     MESSAGE_DRAFTING_SCENARIO_IDS,
-    ANALYSIS_SCENARIO_IDS, # Added
     SECTION_CHAR_LIMITS,
     SECTION_CHAR_LIMITS_MESSAGE_DRAFT,
     RAW_RESPONSE_CHAR_LIMIT,
     DEBRIEF_CHAR_LIMIT,
-    ANALYSIS_RESPONSE_CHAR_LIMIT,
     TURN_RUBRIC_PROMPT_TEMPLATE,
     TURN_RUBRIC_OUTPUT_FORMAT,
 )
@@ -134,7 +132,7 @@ class ScenarioTask:
         Only applicable for standard role-play and message drafting scenarios.
         """
         # Patterns for different scenario types that require parsing
-        # core/elo.py  (or wherever you define _parse_response)
+        # core/conversation.py (or wherever you define _parse_response)
         draft_patterns = {
             "perspective_taking":   r"#\s*Perspective[- ]taking\s*\n([\s\S]*?)(?=#|\Z)",
             "draft_brainstorming":  r"#\s*Draft brainstorming\s*\n([\s\S]*?)(?=#|\Z)",
@@ -155,11 +153,10 @@ class ScenarioTask:
         # Determine which patterns to use
         if self.scenario_id in MESSAGE_DRAFTING_SCENARIO_IDS:
             patterns = draft_patterns
-        elif self.scenario_id not in NO_RP_SCENARIO_IDS and self.scenario_id not in ANALYSIS_SCENARIO_IDS:
+        elif self.scenario_id not in NO_RP_SCENARIO_IDS:
             patterns = rp_patterns
         else:
-            # Should not be called for NO_RP or ANALYSIS, but return raw if it is
-            logging.warning(f"_parse_response called unexpectedly for scenario {self.scenario_id}. Returning raw.")
+            logging.warning(f"_parse_response called unexpectedly for NO_RP scenario {self.scenario_id}. Returning raw.")
             return {"raw": response}
 
         parsed = {k: "" for k in patterns}
@@ -237,7 +234,6 @@ class ScenarioTask:
         self, assistant_response_index: int, truncate_for_rubric: bool
     ) -> str:
         """Format one assistant turn for rubric prompts (parsed sections or raw)."""
-        is_analysis = self.scenario_id in ANALYSIS_SCENARIO_IDS
         is_no_rp = self.scenario_id in NO_RP_SCENARIO_IDS
         is_drafting = self.scenario_id in MESSAGE_DRAFTING_SCENARIO_IDS
 
@@ -250,10 +246,6 @@ class ScenarioTask:
         if truncate_for_rubric:
             if is_no_rp:
                 return ScenarioTask._truncate_text(raw_content, RAW_RESPONSE_CHAR_LIMIT)
-            if is_analysis:
-                return ScenarioTask._truncate_text(
-                    raw_content, ANALYSIS_RESPONSE_CHAR_LIMIT
-                )
             try:
                 if assistant_response_index >= len(self.parsed_responses):
                     raise IndexError(
@@ -289,7 +281,7 @@ class ScenarioTask:
                 )
                 return ScenarioTask._truncate_text(raw_content, RAW_RESPONSE_CHAR_LIMIT)
 
-        if is_no_rp or is_analysis:
+        if is_no_rp:
             return raw_content
         try:
             if assistant_response_index >= len(self.parsed_responses):
@@ -774,14 +766,16 @@ class ScenarioTask:
         """
         Runs the multi-turn scenario simulation sequentially using the test model.
         Updates conversation_history and status. Puts progress updates on the save_queue.
-        Handles standard, drafting, NO_RP, and analysis types.
+        Handles standard, drafting, and NO_RP types.
         Uses the provided api_model_id for API calls.
         """
-        is_analysis = self.scenario_id in ANALYSIS_SCENARIO_IDS
-        # Determine valid skip statuses based on type
-        valid_skip_statuses = ["scenario_completed", "running_rubric_scoring", "rubric_scored"]
-        if not is_analysis:
-            valid_skip_statuses.extend(["running_debrief", "completed"])
+        valid_skip_statuses = [
+            "scenario_completed",
+            "running_debrief",
+            "completed",
+            "running_rubric_scoring",
+            "rubric_scored",
+        ]
 
         if self.status in valid_skip_statuses:
             logging.debug(f"Scenario task {self.scenario_id} (Iter {self.iteration_index}) status is '{self.status}'. Skipping scenario run.")
@@ -789,7 +783,7 @@ class ScenarioTask:
         if self.status == "error":
              logging.info(f"Retrying scenario run for task {self.scenario_id} (Iter {self.iteration_index}) which previously errored.")
 
-        logging.info(f"Starting scenario run for task {self.scenario_id} (Iter {self.iteration_index}, Analysis: {is_analysis}) with model {self.model_name} (API ID: {api_model_id})")
+        logging.info(f"Starting scenario run for task {self.scenario_id} (Iter {self.iteration_index}) with model {self.model_name} (API ID: {api_model_id})")
         self.status = "running_scenario"
         self.scenario_run_error = None; self.error = None
         if not self.start_time: self.start_time = time.time()
@@ -842,7 +836,7 @@ class ScenarioTask:
                     # Master template is already selected based on type in benchmark.py
                     formatted_prompt = self.master_prompt_template.format(scenario_prompt=user_prompt)
                 else:
-                    # Fallback for NO_RP or if template is missing (shouldn't happen for analysis/drafting now)
+                    # Fallback for NO_RP or if template is missing
                     formatted_prompt = user_prompt # Maybe add word count hint here too?
 
                 # Add user prompt to history
@@ -869,9 +863,9 @@ class ScenarioTask:
                     min_p=0.1
                     )
 
-                # Store response: Parse for standard/drafting, store raw for NO_RP/Analysis
+                # Store response: Parse for standard/drafting, store raw for NO_RP
                 parsed_entry = {}
-                if not no_rp_scenario and not is_analysis:
+                if not no_rp_scenario:
                     parsed_entry = self._parse_response(assistant_response)
                 else:
                     # Store raw response in a consistent structure
@@ -962,17 +956,9 @@ class ScenarioTask:
     def run_debrief(self, api_clients: Dict[str, Any], save_queue: Optional[queue.Queue], run_key: Optional[str], api_model_id: str):
         """
         Runs the debrief prompt using the test model after the scenario is completed.
-        SKIPS this step for Analysis tasks.
         Updates debrief_response and status. Puts progress updates on the save_queue.
         Uses the provided api_model_id for API calls.
         """
-        # --- Skip entirely for Analysis tasks ---
-        if self.scenario_id in ANALYSIS_SCENARIO_IDS:
-            logging.debug(f"Skipping debrief step for analysis task {self.scenario_id} (Iter {self.iteration_index}). Status remains '{self.status}'.")
-            # No status change needed, stays 'scenario_completed' ready for rubric
-            return
-
-        # --- Logic for non-analysis tasks ---
         if self.status not in ["scenario_completed", "error"]:
              logging.debug(f"Debrief cannot run for task {self.scenario_id} (Iter {self.iteration_index}). Status is '{self.status}'. Skipping.")
              return
@@ -1005,7 +991,7 @@ class ScenarioTask:
              self.status = "error"; self.error = "Debrief Run Error: Conversation history is empty."; self.debrief_run_error = "Conversation history is empty."
              self._save_progress(save_queue, run_key)
              return
-        if not self.debrief_prompt: # Should not happen for non-analysis tasks if loaded correctly
+        if not self.debrief_prompt:
              logging.error(f"Cannot run debrief for task {self.scenario_id} (Iter {self.iteration_index}): Debrief prompt is missing.")
              self.status = "error"; self.error = "Debrief Run Error: Debrief prompt missing."; self.debrief_run_error = "Debrief prompt missing."
              self._save_progress(save_queue, run_key)
@@ -1101,64 +1087,32 @@ class ScenarioTask:
         """
         Formats the rubric scoring prompt. Scenario roleplay is judged per stage during
         run_scenario (run_turn_rubric); this final prompt uses debrief-only text for
-        standard tasks, or the last analysis stage only for analysis tasks.
+        standard tasks.
         """
-        is_analysis = self.scenario_id in ANALYSIS_SCENARIO_IDS
-
         if not self.conversation_history:
             logging.error(f"Cannot prepare rubric prompt for task {self.scenario_id} (Iter {self.iteration_index}): Conversation history is empty.")
             self.status = "error"; self.error = "Rubric Prep Error: History missing."; self.rubric_run_error = "History missing."
             return None
-        # Debrief is required ONLY for non-analysis tasks
-        if not is_analysis and self.debrief_response is None:
-            logging.error(f"Cannot prepare rubric prompt for task {self.scenario_id} (Iter {self.iteration_index}): Debrief response is missing for non-analysis task.")
+        if self.debrief_response is None:
+            logging.error(f"Cannot prepare rubric prompt for task {self.scenario_id} (Iter {self.iteration_index}): Debrief response is missing.")
             self.status = "error"; self.error = "Rubric Prep Error: Debrief missing."; self.rubric_run_error = "Debrief missing."
             return None
 
-        # Roleplay is omitted here for standard tasks (each stage scored in isolation in run_turn_rubric).
-        # Analysis: judge sees only the last stage (typically the full analysis output).
-        if is_analysis:
-            n_stages = len(self.conversation_history) // 2
-            if n_stages < 1:
-                logging.error(
-                    f"Cannot prepare rubric prompt for task {self.scenario_id} (Iter {self.iteration_index}): "
-                    "no complete user/assistant turns in history."
-                )
-                self.status = "error"
-                self.error = "Rubric Prep Error: No turns in history."
-                self.rubric_run_error = "No turns in history."
-                return None
-            last_stage_index = n_stages - 1
-            full_transcript = self.build_single_stage_rubric_transcript(
-                last_stage_index, truncate_for_rubric
-            )
-            if full_transcript is None:
-                self.status = "error"
-                self.error = "Rubric Prep Error: Could not build analysis transcript."
-                self.rubric_run_error = "Analysis transcript build failed."
-                return None
-        else:
-            full_transcript = (
-                "[The scripted multi-turn roleplay is omitted: each stage was scored separately. "
-                "Do not infer values from omitted roleplay. Score only the debrief below on the rubric criteria.]"
-            )
+        full_transcript = (
+            "[The scripted multi-turn roleplay is omitted: each stage was scored separately. "
+            "Do not infer values from omitted roleplay. Score only the debrief below on the rubric criteria.]"
+        )
 
-        # Handle debrief text (only relevant for non-analysis)
-        debrief_text = ""
-        if not is_analysis:
-            debrief_text = self.debrief_response or "" # Use empty string if None somehow
-            if truncate_for_rubric and len(debrief_text) > DEBRIEF_CHAR_LIMIT:
-                debrief_text = debrief_text[:DEBRIEF_CHAR_LIMIT] + '...[truncated]'
+        debrief_text = self.debrief_response or ""
+        if truncate_for_rubric and len(debrief_text) > DEBRIEF_CHAR_LIMIT:
+            debrief_text = debrief_text[:DEBRIEF_CHAR_LIMIT] + '...[truncated]'
 
-        # Format the final prompt using the specific template
         try:
             format_args = {
                 "transcript": full_transcript,
-                "output_format": rubric_output_format_str
+                "output_format": rubric_output_format_str,
+                "debrief": debrief_text,
             }
-            # Only add debrief if it's expected by the template (i.e., not analysis)
-            if not is_analysis:
-                format_args["debrief"] = debrief_text
 
             final_rubric_prompt = rubric_prompt_template.format(**format_args)
 
@@ -1167,7 +1121,7 @@ class ScenarioTask:
             return final_rubric_prompt
         except KeyError as e:
              # This error means the template has a placeholder not provided in format_args
-             logging.error(f"Missing key '{e}' in rubric prompt template formatting for task {self.scenario_id} (Iter {self.iteration_index}, Analysis: {is_analysis}). Provided keys: {list(format_args.keys())}")
+             logging.error(f"Missing key '{e}' in rubric prompt template formatting for task {self.scenario_id} (Iter {self.iteration_index}). Provided keys: {list(format_args.keys())}")
              self.status = "error"; self.error = f"Rubric Prep Error: Invalid template key ({e})."; self.rubric_run_error = f"Invalid template key ({e})."
              return None
         except Exception as e: # Catch other formatting errors

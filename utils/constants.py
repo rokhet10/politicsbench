@@ -51,7 +51,6 @@ RUBRIC_CRITERION_WEIGHTS = {
 COMMITMENT_DIR = "commitment"
 COMMITMENT_TURN_PROMPT_FILE = os.path.join(COMMITMENT_DIR, "turn_scoring_prompt.txt")
 COMMITMENT_DEBRIEF_PROMPT_FILE = os.path.join(COMMITMENT_DIR, "debrief_scoring_prompt.txt")
-COMMITMENT_ANALYSIS_PROMPT_FILE = os.path.join(COMMITMENT_DIR, "analysis_scoring_prompt.txt")
 COMMITMENT_OUTPUT_FORMAT = """
 {
   "chain_of_thought_reasoning": "brief reasoning (1-3 sentences)",
@@ -84,12 +83,6 @@ MESSAGE_DRAFTING_SCENARIO_IDS = {
     "201", "202", "203", "204", "205", "206", "207", "208", "209"
 }
 
-# --- NEW: Analysis Scenario IDs ---
-ANALYSIS_SCENARIO_IDS = {
-    "401", "402", "403", "404", "405", "406", "407", "408", "409", "410",
-    "411", "412", "413", "414", "415", "416", "417", "418", "419", "420",
-}
-
 # Character‑limits for the three parsed sections in a message‑drafting reply
 SECTION_CHAR_LIMITS_MESSAGE_DRAFT = {
     "perspective_taking":   2200, # Updated key name
@@ -105,10 +98,9 @@ SECTION_CHAR_LIMITS = {
     "response": 1600
 }
 
-# Character limits for raw responses (NO_RP and ANALYSIS scenarios)
-RAW_RESPONSE_CHAR_LIMIT = 4000 # Used for NO_RP during judging, potentially for ANALYSIS too
+# Character limits for raw responses (NO_RP scenarios)
+RAW_RESPONSE_CHAR_LIMIT = 4000
 DEBRIEF_CHAR_LIMIT = 4000 # Used for standard/drafting debriefs
-ANALYSIS_RESPONSE_CHAR_LIMIT = 6000
 
 # --- Hardcoded File Paths ---
 DATA_DIR = "data"
@@ -119,24 +111,15 @@ STANDARD_MASTER_PROMPT_FILE = os.path.join(DATA_DIR, "scenario_master_prompt.txt
 STANDARD_DEBRIEF_PROMPT_FILE = os.path.join(DATA_DIR, "debrief_prompt.txt")
 STANDARD_RUBRIC_CRITERIA_FILE = os.path.join(DATA_DIR, "rubric_scoring_criteria.txt")
 STANDARD_RUBRIC_PROMPT_FILE = os.path.join(DATA_DIR, "rubric_scoring_prompt.txt")
-STANDARD_PAIRWISE_PROMPT_FILE = os.path.join(DATA_DIR, "pairwise_prompt_eqbench3.txt")
 STANDARD_SCENARIO_NOTES_FILE = os.path.join(DATA_DIR, "scenario_notes.txt") # Assuming notes apply generally
 # Message Drafting Task Files
 MESSAGE_DRAFTING_MASTER_PROMPT_FILE = os.path.join(DATA_DIR, "scenario_master_prompt_message_drafting.txt")
-# Analysis Task Files
-ANALYSIS_MASTER_PROMPT_FILE = os.path.join(DATA_DIR, "scenario_master_prompt_analysis.txt")
-ANALYSIS_RUBRIC_CRITERIA_FILE = os.path.join(DATA_DIR, "rubric_scoring_criteria_analysis.txt")
-ANALYSIS_RUBRIC_PROMPT_FILE = os.path.join(DATA_DIR, "rubric_scoring_prompt_analysis.txt")
-ANALYSIS_PAIRWISE_PROMPT_FILE = os.path.join(DATA_DIR, "pairwise_prompt_eqbench3_analysis.txt")
-ANALYSIS_SCENARIO_NOTES_FILE = os.path.join(DATA_DIR, "scenario_notes.txt")
 
 # --- NEW: Canonical Leaderboard File Paths ---
 CANONICAL_LEADERBOARD_RUNS_FILE = os.path.join(DATA_DIR, "canonical_leaderboard_results.json.gz")
-CANONICAL_LEADERBOARD_ELO_FILE = os.path.join(DATA_DIR, "canonical_leaderboard_elo_results.json.gz")
 
 # --- Default Local File Paths (used in argparse defaults) ---
 DEFAULT_LOCAL_RUNS_FILE = "eqbench3_runs.json"
-DEFAULT_LOCAL_ELO_FILE = "elo_results_eqbench3.json"
 
 
 MODEL_NAME_SUBS = {

@@ -22,7 +22,6 @@ from utils.file_io import load_json_file, update_run_data, save_json_file
 from utils.scenario_prompts import load_scenario_prompts_and_baseline, parse_scenario_prompts
 from utils.api import APIClient
 from core.conversation import ScenarioTask
-from core.elo import run_elo_analysis_eqbench3  # Keep existing import
 from core.judge_suite import aggregate_rubric_scores
 
 # Import constants including file paths and scenario type IDs
@@ -339,7 +338,7 @@ def _execute_rubric_scoring_task(
     commitment_only_final_storage: bool,
 ):
     """
-    Final debrief/analysis rubric: trait rubric, commitment rubric, or both.
+    Final debrief rubric: trait rubric, commitment rubric, or both.
     When both, trait scores go to rubric_scores*; commitment to debrief_commitment_*.
     Commitment-only (legacy) stores commitment in rubric_scores*.
     """
@@ -568,7 +567,7 @@ def _task_has_all_expected_responses(task: "ScenarioTask") -> bool:
       conversation (i.e., not the debrief) whose raw text length is
       ≥ `_MIN_RAW_LEN`.
 
-    • NO_RP / Analysis : at least one assistant message ≥ `_MIN_RAW_LEN`
+    • NO_RP : at least one assistant message ≥ `_MIN_RAW_LEN`
     • Role-play / Draft:
         – every assistant turn must have either
             • raw text ≥ `_MIN_RAW_LEN`  **or**
@@ -576,7 +575,6 @@ def _task_has_all_expected_responses(task: "ScenarioTask") -> bool:
         – plus a non-empty debrief.
     """
     sid = task.scenario_id
-    is_analysis = sid in C.ANALYSIS_SCENARIO_IDS
     is_drafting = sid in C.MESSAGE_DRAFTING_SCENARIO_IDS
     is_no_rp = sid in C.NO_RP_SCENARIO_IDS
 
@@ -592,8 +590,8 @@ def _task_has_all_expected_responses(task: "ScenarioTask") -> bool:
             len(m.get("content", "").strip()) >= _MIN_RAW_LEN for m in assistants
         )
 
-    # ── NO_RP / analysis ───────────────────────────────────────────────
-    if is_analysis or is_no_rp:
+    # ── NO_RP ──────────────────────────────────────────────────────────
+    if is_no_rp:
         return any(
             len(m.get("content", "").strip()) >= _MIN_RAW_LEN for m in assistants
         )
@@ -625,16 +623,13 @@ def run_eq_bench3(
     api_model_id: str,  # API model ID
     # File Paths
     local_runs_file: str,
-    local_elo_file: str,
     leaderboard_runs_file: str,
-    leaderboard_elo_file: str,
     # Run Control
     num_threads: int = 4,
     run_id: Optional[str] = None,
     save_interval: int = 2,
     iterations: int = 1,
     # Feature Flags & Models
-    run_elo: bool = True,
     run_rubric: bool = True,
     judge_models: Optional[List[str]] = None,
     redo_judging: bool = False,
@@ -646,16 +641,16 @@ def run_eq_bench3(
 ) -> str:
     """
     Main function to run the EQBench3 benchmark.
-    Orchestrates scenario simulation, debriefing, optional rubric scoring,
-    and optional ELO analysis across iterations. Uses asynchronous saving.
-    Handles standard, message drafting, and analysis task types.
+    Orchestrates scenario simulation, debriefing, and optional rubric scoring
+    across iterations. Uses asynchronous saving.
+    Handles standard, message drafting, and NO_RP types.
     Uses logical model_name for tracking and api_model_id for API calls.
     Loads leaderboard data for context but writes ONLY to local files.
 
     scenario_prompts_file: optional path overriding ``STANDARD_SCENARIO_PROMPTS_FILE``
     (stored on the run and reused on resume). paraphrase_manifest_file: optional
     path to experiment manifest; its SHA-256 is stored for analysis provenance.
-    trait_judging: run 10-trait value rubrics (baseline, per-stage, debrief/analysis final).
+    trait_judging: run 10-trait value rubrics (baseline, per-stage, debrief final).
     commitment_judging: run 0–5 commitment judge at the same evaluation points.
     """
     effective_prompts_arg = scenario_prompts_file or C.STANDARD_SCENARIO_PROMPTS_FILE
@@ -668,10 +663,6 @@ def run_eq_bench3(
         scoring_mode = "traits"
 
     # --- Argument Validation ---
-    if run_elo and not judge_models:
-        raise ValueError(
-            "Judge model(s) must be specified when running ELO analysis (--no-elo not set)."
-        )
     if run_rubric and not judge_models:
         raise ValueError(
             "Judge model(s) must be specified when running Rubric scoring (--no-rubric not set)."
@@ -690,63 +681,16 @@ def run_eq_bench3(
         )
     elif scoring_mode == "commitment":
         logging.info(
-            "Commitment-only scoring: 0–5 judge for baseline, each stage, and debrief/analysis."
+            "Commitment-only scoring: 0–5 judge for baseline, each stage, and debrief."
         )
 
     # --- Load Leaderboard Data (Read-Only) ---
     logging.info(f"Loading leaderboard runs data from: {leaderboard_runs_file}")
     leaderboard_runs = load_json_file(leaderboard_runs_file)
-    logging.info(f"Loading leaderboard ELO data from: {leaderboard_elo_file}")
-    leaderboard_elo = load_json_file(
-        leaderboard_elo_file
-    )  # Loaded here, passed to ELO function
 
     # --- Load Local Data (Read/Write) ---
     logging.info(f"Loading local runs data from: {local_runs_file}")
     local_runs = load_json_file(local_runs_file)
-
-    # --- Duplicate Model Name Check (Across Leaderboard & Local, only if ELO enabled) ---
-    if run_elo:
-        logging.info(
-            f"Checking for duplicate model name '{model_name}' in run files (ELO enabled)..."
-        )
-        # Check Leaderboard Runs
-        for existing_run_key, run_data in leaderboard_runs.items():
-            if isinstance(run_data, dict):
-                existing_model = run_data.get("model_name", run_data.get("test_model"))
-                if existing_model == model_name:
-                    raise ValueError(
-                        f"\nERROR: Logical model name '{model_name}' already exists in the LEADERBOARD runs file ('{leaderboard_runs_file}') under run key '{existing_run_key}'.\n"
-                        f"       Unique model names are required when ELO is enabled to ensure comparisons are correctly attributed.\n"
-                        f"       Please choose a different --model-name."
-                    )
-
-        # Check Local Runs (excluding the run being resumed, if applicable)
-        for existing_run_key, run_data in local_runs.items():
-            if isinstance(run_data, dict):
-                existing_model = run_data.get("model_name", run_data.get("test_model"))
-                if existing_model == model_name:
-                    # Check if this is the exact run we are trying to resume
-                    is_resuming_this_run = False
-                    if run_id:  # run_id is the prefix passed via CLI
-                        # Construct potential run key for comparison
-                        sanitized_model_for_check = re.sub(
-                            r"[^a-zA-Z0-9_.-]+", "_", model_name
-                        )
-                        potential_resume_key = f"{run_id}_{sanitized_model_for_check}"
-                        if existing_run_key == potential_resume_key:
-                            is_resuming_this_run = True
-
-                    if not is_resuming_this_run:
-                        raise ValueError(
-                            f"\nERROR: Logical model name '{model_name}' already exists in the LOCAL runs file ('{local_runs_file}') under run key '{existing_run_key}'.\n"
-                            f"       Unique model names (that don't collide with other runs) are required when ELO is enabled.\n"
-                            f"       This prevents ELO analysis from incorrectly reusing comparisons from a different run/version of the model.\n"
-                            f"       Please choose a different --model-name or resume the existing run using --run-id {existing_run_key.split('_')[0]}"
-                        )
-        logging.info(f"Model name '{model_name}' is unique across run files.")
-    else:
-        logging.info("Skipping duplicate model name check as ELO is disabled.")
 
     # --- Run Key Setup ---
     def sanitize_model_name(name: str) -> str:
@@ -764,9 +708,9 @@ def run_eq_bench3(
             "model_name": model_name,  # Store logical name
             "api_model_id": api_model_id,  # Store API ID
             "test_model": model_name,  # Store logical name in legacy field
-            "judge_models": list(judge_models) if (run_elo or run_rubric) else [],
+            "judge_models": list(judge_models) if run_rubric else [],
             "judge_model": (
-                " / ".join(judge_models) if (run_elo or run_rubric) and judge_models else "N/A"
+                " / ".join(judge_models) if run_rubric and judge_models else "N/A"
             ),
             "start_time": datetime.now(timezone.utc).isoformat(),
             "status": "initializing",
@@ -776,7 +720,6 @@ def run_eq_bench3(
             "paraphrase_manifest_sha256": None,
             "scenario_master_prompt_file": C.STANDARD_MASTER_PROMPT_FILE,
             "message_drafting_master_prompt_file": C.MESSAGE_DRAFTING_MASTER_PROMPT_FILE,
-            "analysis_master_prompt_file": C.ANALYSIS_MASTER_PROMPT_FILE,
             "debrief_prompt_file": C.STANDARD_DEBRIEF_PROMPT_FILE,
             "scoring_mode": scoring_mode,
             "trait_judging": trait_judging,
@@ -800,23 +743,6 @@ def run_eq_bench3(
             ),
             "commitment_debrief_prompt_file": (
                 C.COMMITMENT_DEBRIEF_PROMPT_FILE if commitment_judging and run_rubric else None
-            ),
-            "commitment_analysis_prompt_file": (
-                C.COMMITMENT_ANALYSIS_PROMPT_FILE if commitment_judging and run_rubric else None
-            ),
-            "rubric_criteria_file_analysis": (
-                C.ANALYSIS_RUBRIC_CRITERIA_FILE
-                if (run_rubric and trait_judging)
-                else "N/A"
-            ),
-            "rubric_prompt_file_analysis": (
-                C.ANALYSIS_RUBRIC_PROMPT_FILE
-                if (run_rubric and trait_judging)
-                else (
-                    C.COMMITMENT_ANALYSIS_PROMPT_FILE
-                    if (run_rubric and commitment_judging)
-                    else "N/A"
-                )
             ),
             "truncate_for_rubric": truncate_for_rubric,
             "iterations_requested": iterations,
@@ -910,10 +836,6 @@ def run_eq_bench3(
             update_payload["message_drafting_master_prompt_file"] = (
                 C.MESSAGE_DRAFTING_MASTER_PROMPT_FILE
             )
-        if "analysis_master_prompt_file" not in current_run_data:
-            update_payload["analysis_master_prompt_file"] = (
-                C.ANALYSIS_MASTER_PROMPT_FILE
-            )
         if run_rubric:
             if "rubric_criteria_file_standard" not in current_run_data:
                 update_payload["rubric_criteria_file_standard"] = (
@@ -922,14 +844,6 @@ def run_eq_bench3(
             if "rubric_prompt_file_standard" not in current_run_data:
                 update_payload["rubric_prompt_file_standard"] = (
                     C.STANDARD_RUBRIC_PROMPT_FILE
-                )
-            if "rubric_criteria_file_analysis" not in current_run_data:
-                update_payload["rubric_criteria_file_analysis"] = (
-                    C.ANALYSIS_RUBRIC_CRITERIA_FILE
-                )
-            if "rubric_prompt_file_analysis" not in current_run_data:
-                update_payload["rubric_prompt_file_analysis"] = (
-                    C.ANALYSIS_RUBRIC_PROMPT_FILE
                 )
             if "truncate_for_rubric" not in current_run_data:
                 update_payload["truncate_for_rubric"] = truncate_for_rubric
@@ -973,9 +887,7 @@ def run_eq_bench3(
                     and task_info.get("status") == "rubric_scored"
                 ):
                     new_task_info = task_info.copy()
-                    is_analysis = sid in C.ANALYSIS_SCENARIO_IDS
-                    reset_status = "scenario_completed" if is_analysis else "completed"
-                    new_task_info["status"] = reset_status
+                    new_task_info["status"] = "completed"
                     # Clear old rubric data
                     new_task_info.pop("rubric_scores", None)
                     new_task_info.pop("raw_rubric_judge_text", None)
@@ -989,7 +901,7 @@ def run_eq_bench3(
                     tasks_reset_count += 1
                     updated_scen_dict[sid] = new_task_info
                     logging.debug(
-                        f"Resetting task {sid} (Iter {iter_str}) to '{reset_status}' for rubric re-judging."
+                        f"Resetting task {sid} (Iter {iter_str}) to 'completed' for rubric re-judging."
                     )
                 else:
                     updated_scen_dict[sid] = task_info  # Keep others
@@ -1096,15 +1008,6 @@ def run_eq_bench3(
             f"Loaded drafting master prompt template from {C.MESSAGE_DRAFTING_MASTER_PROMPT_FILE}"
         )
 
-        analysis_master_template = Path(C.ANALYSIS_MASTER_PROMPT_FILE).read_text(
-            encoding="utf-8"
-        )
-        if not analysis_master_template.strip():
-            raise ValueError("Analysis master prompt template file is empty.")
-        logging.info(
-            f"Loaded analysis master prompt template from {C.ANALYSIS_MASTER_PROMPT_FILE}"
-        )
-
     except Exception as e:
         logging.error(
             f"Failed to load one or more master prompt templates: {e}", exc_info=True
@@ -1142,12 +1045,8 @@ def run_eq_bench3(
     standard_rubric_criteria = []
     standard_rubric_prompt_template = None
     standard_rubric_output_format_str = "{}"
-    analysis_rubric_criteria = []
-    analysis_rubric_prompt_template = None
-    analysis_rubric_output_format_str = "{}"
     commitment_turn_prompt_template: Optional[str] = None
     standard_commitment_debrief_template: Optional[str] = None
-    analysis_commitment_debrief_template: Optional[str] = None
 
     if run_rubric and commitment_judging:
         try:
@@ -1156,9 +1055,6 @@ def run_eq_bench3(
             ).read_text(encoding="utf-8")
             standard_commitment_debrief_template = Path(
                 C.COMMITMENT_DEBRIEF_PROMPT_FILE
-            ).read_text(encoding="utf-8")
-            analysis_commitment_debrief_template = Path(
-                C.COMMITMENT_ANALYSIS_PROMPT_FILE
             ).read_text(encoding="utf-8")
             if (
                 "{transcript}" not in commitment_turn_prompt_template
@@ -1174,13 +1070,6 @@ def run_eq_bench3(
             ):
                 raise ValueError(
                     "Commitment debrief prompt missing {transcript}, {debrief}, or {output_format}."
-                )
-            if (
-                "{transcript}" not in analysis_commitment_debrief_template
-                or "{output_format}" not in analysis_commitment_debrief_template
-            ):
-                raise ValueError(
-                    "Commitment analysis prompt missing {transcript} or {output_format}."
                 )
             logging.info(
                 "Loaded commitment scoring prompts from %s/",
@@ -1252,63 +1141,6 @@ def run_eq_bench3(
             )  # Write error to local
             return run_key
 
-        # Load Analysis Rubric Files
-        try:
-            with open(C.ANALYSIS_RUBRIC_CRITERIA_FILE, "r", encoding="utf-8") as f:
-                analysis_rubric_criteria = [
-                    line.strip()
-                    for line in f
-                    if line.strip() and not line.strip().startswith("#")
-                ]
-            if not analysis_rubric_criteria:
-                raise ValueError("Analysis rubric criteria file is empty.")
-            logging.info(
-                f"Loaded {len(analysis_rubric_criteria)} analysis rubric criteria from {C.ANALYSIS_RUBRIC_CRITERIA_FILE}"
-            )
-
-            output_format_dict_anl = {
-                "chain_of_thought_reasoning": "detailed chain of thought reasoning about the coming scoring decisions"
-            }
-            for criterion in analysis_rubric_criteria:
-                output_format_dict_anl[criterion] = 0
-            analysis_rubric_output_format_str = json.dumps(
-                output_format_dict_anl, indent=2
-            ).replace(
-                ": 0", ": 0-20"
-            )  # Assuming 0-20 scale
-
-            analysis_rubric_prompt_template = Path(
-                C.ANALYSIS_RUBRIC_PROMPT_FILE
-            ).read_text(encoding="utf-8")
-            # Analysis prompt should NOT have {debrief} placeholder
-            if (
-                not analysis_rubric_prompt_template
-                or "{transcript}" not in analysis_rubric_prompt_template
-                or "{output_format}" not in analysis_rubric_prompt_template
-            ):
-                raise ValueError(
-                    "Analysis rubric prompt template missing required placeholders ({transcript}, {output_format})."
-                )
-            if "{debrief}" in analysis_rubric_prompt_template:
-                logging.warning(
-                    f"Analysis rubric prompt template ({C.ANALYSIS_RUBRIC_PROMPT_FILE}) contains a '{{debrief}}' placeholder, which is not used for analysis tasks."
-                )
-            logging.info(
-                f"Loaded analysis rubric prompt template from {C.ANALYSIS_RUBRIC_PROMPT_FILE}"
-            )
-
-        except Exception as e:
-            logging.error(f"Failed to load analysis rubric files: {e}", exc_info=True)
-            update_run_data(
-                local_runs_file,
-                run_key,
-                {
-                    "status": "error",
-                    "error": f"Failed to load analysis rubric files: {e}",
-                },
-            )  # Write error to local
-            return run_key
-
     if run_rubric:
         logging.info(
             f"Rubric scoring enabled (traits={trait_judging}, commitment={commitment_judging}). "
@@ -1319,15 +1151,10 @@ def run_eq_bench3(
 
     # --- Build API clients (Remains the same) ---
     api_clients = {"test": APIClient(model_type="test")}
-    if run_elo or run_rubric:
+    if run_rubric:
         api_clients["judge"] = APIClient(model_type="judge")
-        judge_usage = []
-        if run_rubric:
-            judge_usage.append("Rubric")
-        if run_elo:
-            judge_usage.append("ELO")
         logging.info(
-            f"Judge model(s) ({'/'.join(judge_usage)}): {' | '.join(judge_models)}"
+            f"Judge model(s) (Rubric): {' | '.join(judge_models)}"
         )
 
     # --- Prepare Task Objects (Load or Create from Merged Data) ---
@@ -1345,15 +1172,11 @@ def run_eq_bench3(
         i_str = str(i)
         for scenario_id, prompts_list in scenarios.items():
             # Determine task type and select appropriate templates/prompts (Remains the same)
-            is_analysis = scenario_id in C.ANALYSIS_SCENARIO_IDS
             is_drafting = scenario_id in C.MESSAGE_DRAFTING_SCENARIO_IDS
 
             chosen_master_template = None
             chosen_debrief_prompt = None
-            if is_analysis:
-                chosen_master_template = analysis_master_template
-                chosen_debrief_prompt = None  # Analysis tasks have no debrief
-            elif is_drafting:
+            if is_drafting:
                 chosen_master_template = drafting_master_template
                 chosen_debrief_prompt = standard_debrief_prompt
             else:  # Standard role-play
@@ -1374,7 +1197,7 @@ def run_eq_bench3(
                         task_obj = ScenarioTask.from_dict(task_data)
                         # Update templates/prompts in case they changed or were missing
                         task_obj.master_prompt_template = chosen_master_template
-                        task_obj.debrief_prompt = chosen_debrief_prompt  # Update debrief prompt (or set to None for analysis)
+                        task_obj.debrief_prompt = chosen_debrief_prompt
 
                         if task_obj.iteration_index != i:
                             logging.warning(
@@ -1406,7 +1229,7 @@ def run_eq_bench3(
                 task_obj = ScenarioTask(
                     scenario_id=scenario_id,
                     prompts=prompts_list,
-                    debrief_prompt=chosen_debrief_prompt,  # Pass None for analysis
+                    debrief_prompt=chosen_debrief_prompt,
                     iteration_index=i,
                     test_model=model_name,  # Pass logical name to task constructor
                     master_prompt_template=chosen_master_template,
@@ -1415,7 +1238,7 @@ def run_eq_bench3(
                     ),
                 )
                 logging.debug(
-                    f"Creating new task: Scenario {scenario_id}, Iteration {i} (Analysis: {is_analysis})"
+                    f"Creating new task: Scenario {scenario_id}, Iteration {i}"
                 )
 
             tasks_to_process.append(task_obj)
@@ -1507,16 +1330,15 @@ def run_eq_bench3(
                 "No tasks require scenario simulation based on initial status."
             )
 
-        # 2. Run debrief steps (Skip for Analysis tasks)
+        # 2. Run debrief steps
         tasks_needing_debrief = [
             t
             for t in tasks_to_process
             if t.status == "scenario_completed"
-            and t.scenario_id not in C.ANALYSIS_SCENARIO_IDS
         ]
         if tasks_needing_debrief:
             logging.info(
-                f"Running debrief for {len(tasks_needing_debrief)} non-analysis tasks..."
+                f"Running debrief for {len(tasks_needing_debrief)} tasks..."
             )
             with ThreadPoolExecutor(
                 max_workers=num_threads, thread_name_prefix="DebriefRun"
@@ -1549,27 +1371,16 @@ def run_eq_bench3(
                             task._save_progress(save_queue, run_key)
         else:
             logging.info(
-                "No non-analysis tasks require debriefing based on current status."
+                "No tasks require debriefing based on current status."
             )
 
-        # 3. Run Rubric Scoring steps (if enabled) - Handles different task types
+        # 3. Run Rubric Scoring steps (if enabled)
         if run_rubric:
-            # Standard/Drafting tasks need rubric if status is 'completed'
-            # Analysis tasks need rubric if status is 'scenario_completed'
             tasks_needing_rubric = [
                 t
                 for t in tasks_to_process
-                if (
-                    (
-                        t.scenario_id in C.ANALYSIS_SCENARIO_IDS
-                        and t.status == "scenario_completed"
-                    )
-                    or (
-                        t.scenario_id not in C.ANALYSIS_SCENARIO_IDS
-                        and t.status == "completed"
-                    )
-                )
-                and _task_has_all_expected_responses(t)  # <<< new guard
+                if t.status == "completed"
+                and _task_has_all_expected_responses(t)
             ]
 
             if tasks_needing_rubric:
@@ -1581,40 +1392,22 @@ def run_eq_bench3(
                 ) as executor:
                     futures = {}
                     for t in tasks_needing_rubric:
-                        is_analysis = t.scenario_id in C.ANALYSIS_SCENARIO_IDS
-                        trait_tmpl = (
-                            analysis_rubric_prompt_template
-                            if is_analysis
-                            else standard_rubric_prompt_template
-                        )
-                        trait_fmt = (
-                            analysis_rubric_output_format_str
-                            if is_analysis
-                            else standard_rubric_output_format_str
-                        )
-                        commit_tmpl = (
-                            analysis_commitment_debrief_template
-                            if is_analysis
-                            else standard_commitment_debrief_template
-                        )
-                        commit_fmt = C.COMMITMENT_OUTPUT_FORMAT
-
                         future = executor.submit(
                             _execute_rubric_scoring_task,
                             task=t,
                             api_clients=api_clients,
                             judge_model_ids=judge_models,
                             trait_rubric_prompt_template=(
-                                trait_tmpl if trait_judging else None
+                                standard_rubric_prompt_template if trait_judging else None
                             ),
                             trait_rubric_output_format_str=(
-                                trait_fmt if trait_judging else None
+                                standard_rubric_output_format_str if trait_judging else None
                             ),
                             commitment_rubric_prompt_template=(
-                                commit_tmpl if commitment_judging else None
+                                standard_commitment_debrief_template if commitment_judging else None
                             ),
                             commitment_rubric_output_format_str=(
-                                commit_fmt if commitment_judging else None
+                                C.COMMITMENT_OUTPUT_FORMAT if commitment_judging else None
                             ),
                             save_queue=save_queue,
                             run_key=run_key,
@@ -1661,23 +1454,11 @@ def run_eq_bench3(
             else:
                 logging.info("No tasks require rubric scoring based on current status.")
         else:
-            # If rubric is disabled, count tasks reaching 'completed' (standard/drafting)
-            # or 'scenario_completed' (analysis) as done.
-            tasks_reaching_final_state = sum(
-                1
-                for t in tasks_to_process
-                if (
-                    t.scenario_id in C.ANALYSIS_SCENARIO_IDS
-                    and t.status == "scenario_completed"
-                )
-                or (
-                    t.scenario_id not in C.ANALYSIS_SCENARIO_IDS
-                    and t.status == "completed"
-                )
+            tasks_completed_this_run = sum(
+                1 for t in tasks_to_process if t.status == "completed"
             )
-            tasks_completed_this_run = tasks_reaching_final_state
             logging.info(
-                "Rubric scoring disabled. Tasks reaching their respective pre-rubric completed state are considered finished for this run."
+                "Rubric scoring disabled. Tasks reaching 'completed' are considered finished for this run."
             )
 
     finally:
@@ -1769,124 +1550,6 @@ def run_eq_bench3(
             current_results["rubric_error"] = None
             update_run_data(local_runs_file, run_key, {"results": current_results})
 
-    # --- Final ELO analysis (if enabled) ---
-    final_elo_snapshot = {}  # To store the solved ratings from the ELO run
-    elo_error_msg = None  # Initialize error message for ELO step
-
-    # --- Reload local runs data AFTER saving is complete ---
-    logging.info(
-        f"Reloading local runs data from {local_runs_file} before ELO analysis..."
-    )
-    local_runs = load_json_file(local_runs_file)  # Reload the updated local runs
-    merged_runs = {
-        **leaderboard_runs,
-        **local_runs,
-    }  # Re-merge with the read-only leaderboard data
-    logging.info(
-        f"Refreshed merged run data: {len(leaderboard_runs)} leaderboard runs, {len(local_runs)} local runs -> {len(merged_runs)} total runs for ELO context."
-    )
-
-    if run_elo:
-        logging.info("Starting ELO analysis using merged leaderboard/local data...")
-        try:
-            # Pass merged run data, leaderboard/local ELO paths
-            # ELO function now loads prompts internally based on scenario type
-            # Pass the logical model name as test_model
-            # Capture the returned snapshot and error message
-            final_elo_snapshot, elo_error_msg = run_elo_analysis_eqbench3(
-                run_key=run_key,
-                # ELO Files
-                leaderboard_elo_file=leaderboard_elo_file,  # Passed into run_eq_bench3
-                local_elo_file=local_elo_file,  # Passed into run_eq_bench3
-                # Run Data
-                merged_runs_data=merged_runs,  # Use the merged data prepared earlier
-                # Models
-                test_model=model_name,  # Logical name passed into run_eq_bench3
-                judge_models=judge_models,
-                api_clients=api_clients,
-                # Other params
-                scenarios_data=scenarios,
-                concurrency=num_threads,
-                recompute_existing=True,
-            )
-
-            # Extract scores for the current model from the *solved* snapshot returned
-            elo_raw, elo_norm = "N/A", "N/A"
-            current_model_elo_data = final_elo_snapshot.get(
-                model_name
-            )  # Use model_name passed into run_eq_bench3
-
-            if isinstance(current_model_elo_data, dict):
-                elo_raw = current_model_elo_data.get("elo", "N/A")
-                elo_norm = current_model_elo_data.get("elo_norm", "N/A")
-            elif isinstance(
-                current_model_elo_data, (int, float)
-            ):  # Handle older format if necessary
-                elo_raw = current_model_elo_data
-                # Attempt to get norm from potentially updated local file as fallback
-                final_local_elo_data = load_json_file(local_elo_file)
-                if isinstance(final_local_elo_data.get(model_name), dict):
-                    elo_norm = final_local_elo_data[model_name].get("elo_norm", "N/A")
-
-            # Update results in the LOCAL run file
-            current_local_run_data = load_json_file(local_runs_file).get(run_key, {})
-            current_results = current_local_run_data.get("results", {})
-            current_results.update(
-                {
-                    "elo_raw": elo_raw,
-                    "elo_normalized": elo_norm,
-                    "elo_calculation_time": datetime.now(timezone.utc).isoformat(),
-                    "elo_error": elo_error_msg,  # Store error message from ELO run
-                }
-            )
-            update_run_data(local_runs_file, run_key, {"results": current_results})
-
-            if elo_error_msg is None:
-                logging.info(
-                    f"ELO scores for {model_name} (from solved snapshot): Raw={elo_raw}, Normalized={elo_norm}"
-                )
-                # NO leaderboard printing here
-            else:
-                logging.error(f"ELO calculation finished with message: {elo_error_msg}")
-
-        except FileNotFoundError as e:
-            logging.error(f"ELO analysis skipped: Required file not found: {e}")
-            elo_error_msg = f"File not found: {e}"
-            current_local_run_data = load_json_file(local_runs_file).get(run_key, {})
-            current_results = current_local_run_data.get("results", {})
-            current_results.update(
-                {
-                    "elo_error": elo_error_msg,
-                    "elo_raw": "Error",
-                    "elo_normalized": "Error",
-                }
-            )
-            update_run_data(local_runs_file, run_key, {"results": current_results})
-        except Exception as e:
-            logging.error(f"ELO analysis failed: {e}", exc_info=True)
-            elo_error_msg = str(e)
-            current_local_run_data = load_json_file(local_runs_file).get(run_key, {})
-            current_results = current_local_run_data.get("results", {})
-            current_results.update(
-                {
-                    "elo_error": elo_error_msg,
-                    "elo_raw": "Error",
-                    "elo_normalized": "Error",
-                }
-            )
-            update_run_data(local_runs_file, run_key, {"results": current_results})
-    else:
-        logging.info("Skipping ELO analysis as per --no-elo flag.")
-        # Update results in the LOCAL file if skipped
-        current_local_run_data = load_json_file(local_runs_file).get(run_key, {})
-        current_results = current_local_run_data.get("results", {})
-        if "elo_raw" not in current_results:
-            current_results["elo_raw"] = "Skipped"
-        if "elo_normalized" not in current_results:
-            current_results["elo_normalized"] = "Skipped"
-        current_results["elo_error"] = None
-        update_run_data(local_runs_file, run_key, {"results": current_results})
-
     # --- Mark run as completed or completed_with_errors (in LOCAL file) ---
     final_status = "completed"
     # Load final data from LOCAL file
@@ -1901,14 +1564,11 @@ def run_eq_bench3(
             for scenario_id, task_data in scenarios_in_iter.items():
                 if isinstance(task_data, dict):
                     task_status = task_data.get("status")
-                    is_analysis = scenario_id in C.ANALYSIS_SCENARIO_IDS
-                    # Define expected final state based on task type and whether rubric is run
+
                     if run_rubric:
                         final_expected_status = "rubric_scored"
                     else:
-                        final_expected_status = (
-                            "scenario_completed" if is_analysis else "completed"
-                        )
+                        final_expected_status = "completed"
 
                     if task_status == "error":
                         tasks_in_error_count += 1
